@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Blog</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Jayron's Blog</h1>
+        <nav>
+            <button onclick="filterPosts('all')">All</button>
+            <button onclick="filterPosts('food')">Food</button>
+            <button onclick="filterPosts('movies')">Movies</button>
+            <button onclick="filterPosts('tv')">TV Shows</button>
+            <button onclick="filterPosts('books')">Books</button>
+        </nav>
+
+        <!-- 🔍 Search Bar -->
+        <input type="text" id="searchInput" onkeyup="searchPosts()" placeholder="Search blog posts...">
+
+        <!-- Rating Filter Dropdown -->
+<label for="ratingFilter">Filter by Rating:</label>
+<select id="ratingFilter" onchange="filterByRating()">
+    <option value="all">All Ratings</option>
+    <option value="9">9+ Stars</option>
+    <option value="8">8+ Stars</option>
+    <option value="7">7+ Stars</option>
+    <option value="6">6+ Stars</option>
+</select>
+
+<label for="sortFilter">Sort by:</label>
+<select id="sortFilter" onchange="sortPostsByDate()">
+    <option value="newest">Recently Uploaded</option>
+    <option value="oldest">Oldest Uploaded</option>
+</select>
+
+
+    </header>
+    <main id="blog-posts">
+        <article class="post food" data-rating="9" data-uploaded="2025-02-26">
+            <a href="reviews/food/pasta.html">
+                <img src="images/pasta.png" alt="Creamy Garlic Pasta">
+            </a>
+            <h2><a href="reviews/food/pasta.html">Creamy Garlic Pasta</a></h2>
+            <p>Rating: ⭐ 9/10</p>
+        </article>
+    
+        <article class="post movies" data-rating="9" data-uploaded="2025-02-15">
+            <a href="reviews/films/inception.html">
+                <img src="images/inception.png" alt="Inception Movie">
+            </a>
+            <h2><a href="reviews/films/inception.html"></a></h2>
+            <p>Rating: ⭐ 9/10</p>
+        </article>
+
+        <article class="post movies" data-rating="8" data-uploaded="2025-02-23">
+            <a href="reviews/films/snatch.html">
+                <img src="images/snatch.png" alt="snatch">
+            </a>
+            <h2><a href="reviews/films/snatch.html"></a></h2>
+            <p>Rating: ⭐ 8/10</p>
+        </article>
+
+        <article class="post movies" data-rating="9" data-uploaded="2025-02-23">
+            <a href="reviews/films/im_still_here.html">
+                <img src="images/im_still_here.png" alt="im still here">
+            </a>
+            <h2><a href="reviews/films/im_still_here.html"></a></h2>
+            <p>Rating: ⭐ 9/10</p>
+        </article>
+    
+        <article class="post tv" data-rating="8" data-uploaded="2025-02-23">
+            <a href="reviews/tv/invincible_s3.html">
+                <img src="images/invincible_S3.png" alt="Invincible Season 3">
+            </a>
+            <h2><a href="reviews/tv/invincible_s3.html"></a></h2>
+            <p>Rating: ⭐ 8/10</p>
+        </article>
+
+        <article class="post tv" data-rating="10" data-uploaded="2025-02-23">
+            <a href="reviews/tv/severance_s1.html">
+                <img src="images/Severance_S1.png" alt="Severance Season 1">
+            </a>
+            <h2><a href="reviews/tv/severance_s1.html"></a></h2>
+            <p>Rating: ⭐ 10/10</p>
+        </article>
+
+        <article class="post tv" data-rating="8" data-uploaded="2025-02-23">
+            <a href="reviews/tv/severance_s2.html">
+                <img src="images/Severance_S2.png" alt="Severance Season 2">
+            </a>
+            <h2><a href="reviews/tv/severance_s2.html"></a></h2>
+            <p>Rating: ⭐ 8/10</p>
+        </article>
+    
+        <article class="post books" data-rating="8.5" data-uploaded="2025-02-20">
+            <a href="reviews/books/hobbit.html">
+                <img src="images/the_hobbit.png" alt="The Hobbit">
+            </a>
+            <h2><a href="reviews/books/hobbit.html"></a></h2>
+            <p>Rating: ⭐ 8.5/10</p>
+        </article>
+    
+        <article class="post books" data-rating="7.5" data-uploaded="2025-02-23">
+            <a href="reviews/books/hothouse.html">
+                <img src="images/hothouse.png" alt="Hothouse">
+            </a>
+            <h2><a href="reviews/books/hothouse.html"></a></h2>
+            <p>Rating: ⭐ 7.5/10</p>
+        </article>
+
+        <article class="post books" data-rating="3.5" data-uploaded="2025-02-23">
+            <a href="reviews/books/kafka_on_the_shore.html">
+                <img src="images/kafka_on_the_shore.png" alt="kafka_on_the_shore">
+            </a>
+            <h2><a href="reviews/books/kafka_on_the_shore.html"></a></h2>
+            <p>Rating: ⭐ 9/10</p>
+        </article>
+    </main>
+
+    <!-- ✅ Add script.js at the END, before </body> -->
+    <script src="script.js"></script>
+</body>
+</html>
+
+    
