@@ -16,10 +16,40 @@
             <button onclick="filterPosts('tv')">TV Shows</button>
             <button onclick="filterPosts('books')">Books</button>
             <button onclick="filterPosts('games')">Games</button>
+            <button onclick="filterPosts('restaurants')">Restaurants</button>
         </nav>
 
         <!-- 🔍 Search Bar -->
-        <input type="text" id="searchInput" onkeyup="searchPosts()" placeholder="Search blog posts...">
+        <div class="search-bar-container" style="position:relative; width:80%; max-width:400px; margin:0 auto 20px auto;">
+          <input type="text" id="searchInput" onkeyup="searchPosts()" placeholder="Search blog posts...">
+          <span class="search-icon">
+            <!-- SVG icon for magnifying glass -->
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="9" cy="9" r="7" stroke="#ffcc00" stroke-width="2"/>
+              <line x1="14.4142" y1="14" x2="19" y2="18.5858" stroke="#ffcc00" stroke-width="2"/>
+            </svg>
+          </span>
+        </div>
+
+        <!-- Restaurant Filters (hidden by default) -->
+        <div id="restaurantFilters" style="display:none; margin-bottom: 20px;">
+            <label for="cityFilter">Filter by City:</label>
+            <select id="cityFilter" onchange="filterRestaurants()">
+                <option value="all">All Cities</option>
+            </select>
+            <label for="cuisineFilter">Filter by Cuisine:</label>
+            <select id="cuisineFilter" onchange="filterRestaurants()">
+                <option value="all">All Cuisines</option>
+            </select>
+            <label for="restaurantRatingFilter">Filter by Rating:</label>
+            <select id="restaurantRatingFilter" onchange="filterRestaurants()">
+                <option value="all">All Ratings</option>
+                <option value="9">9+ Stars</option>
+                <option value="8">8+ Stars</option>
+                <option value="7">7+ Stars</option>
+                <option value="6">6+ Stars</option>
+            </select>
+        </div>
 
         <!-- Rating Filter Dropdown -->
 <label for="ratingFilter">Filter by Rating:</label>
@@ -37,6 +67,9 @@
     <option value="oldest">Oldest Uploaded</option>
 </select>
 
+<div id="wordCountContainer" style="display: none; position: absolute; top: 20px; right: 20px; background: rgba(0, 0, 0, 0.1); padding: 10px; border-radius: 5px;">
+    Total Words Read: <span id="totalWordCount">0</span>
+</div>
 
     </header>
     <main id="blog-posts">
@@ -304,6 +337,23 @@
             </a>
             <h2><a href="reviews/books/sputnik_sweetheart.html"></a></h2>
             <p>Rating: ⭐ 8.3/10</p>
+        </article>
+
+        <article class="post restaurants" data-city="York" data-cuisine="Italian" data-rating="8.5">
+            <a href="reviews/restaurants/italian_york.html">
+                <img src="images/italian_york.png" alt="Italian Restaurant in York">
+            </a>
+            <h2><a href="reviews/restaurants/italian_york.html">Luigi's Trattoria York</a></h2>
+            <p>Rating: ⭐ 8.5/10</p>
+            <p>City: York | Cuisine: Italian</p>
+        </article>
+        <article class="post restaurants" data-city="Leeds" data-cuisine="Indian" data-rating="9">
+            <a href="reviews/restaurants/indian_leeds.html">
+                <img src="images/indian_leeds.png" alt="Indian Restaurant in Leeds">
+            </a>
+            <h2><a href="reviews/restaurants/indian_leeds.html">Spice House Leeds</a></h2>
+            <p>Rating: ⭐ 9/10</p>
+            <p>City: Leeds | Cuisine: Indian</p>
         </article>
     </main>
 

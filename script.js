@@ -87,12 +87,53 @@ document.addEventListener("DOMContentLoaded", function () {
             });
         });
     });
+
+    // Add event listener for when new book reviews are added
+    if (blogPostsContainer) {
+        const observer = new MutationObserver((mutations) => {
+            // If we're currently showing books, recalculate the word count
+            if (currentCategory === "books") {
+                calculateTotalWordCount();
+            }
+        });
+
+        // Start observing the container for changes
+        observer.observe(blogPostsContainer, {
+            childList: true, // Watch for added/removed posts
+            subtree: true    // Watch all descendants
+        });
+    }
 });
 
 // 🎭 **Fix: Category Filtering Now Works Correctly**
 function filterPosts(category) {
     currentCategory = category; // Store selected category
     let posts = document.querySelectorAll(".post");
+    let wordCountContainer = document.getElementById("wordCountContainer");
+    let restaurantFilters = document.getElementById("restaurantFilters");
+    let ratingFilter = document.getElementById("ratingFilter");
+    let sortFilter = document.getElementById("sortFilter");
+
+    // Show/hide word count container based on category
+    if (category === "books") {
+        wordCountContainer.style.display = "block";
+        calculateTotalWordCount();
+    } else {
+        wordCountContainer.style.display = "none";
+    }
+
+    // Show/hide restaurant filters and rating/sort filters
+    if (category === "restaurants") {
+        restaurantFilters.style.display = "block";
+        if (ratingFilter) ratingFilter.style.display = "none";
+        if (sortFilter) sortFilter.style.display = "none";
+        populateRestaurantFilters();
+        filterRestaurants();
+    } else {
+        restaurantFilters.style.display = "none";
+        if (ratingFilter) ratingFilter.style.display = "inline-block";
+        if (sortFilter) sortFilter.style.display = "inline-block";
+    }
 
     posts.forEach(post => {
         let belongsToCategory = post.classList.contains(category) || category === "all";
@@ -100,7 +141,43 @@ function filterPosts(category) {
     });
 
     // ✅ Ensure rating filter applies after category selection
-    filterByRating();
+    if (category !== "restaurants") filterByRating();
+}
+
+// 📚 Calculate total word count for book reviews
+async function calculateTotalWordCount() {
+    let totalWords = 0;
+    let bookPosts = document.querySelectorAll(".post.books");
+    
+    for (let post of bookPosts) {
+        let link = post.querySelector("a").href;
+        try {
+            const response = await fetch(link);
+            const text = await response.text();
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(text, "text/html");
+            
+            // Look for the word count paragraph
+            const paragraphs = doc.querySelectorAll("p");
+            for (let p of paragraphs) {
+                if (p.textContent.includes("📚 Total Words:")) {
+                    // Extract the number from the text
+                    const wordCountText = p.textContent;
+                    const wordCount = parseInt(wordCountText.replace(/[^0-9]/g, '')) || 0;
+                    totalWords += wordCount;
+                    break;
+                }
+            }
+        } catch (error) {
+            console.error("Error fetching word count for:", link, error);
+        }
+    }
+    
+    // Update the display with the total
+    const wordCountDisplay = document.getElementById("totalWordCount");
+    if (wordCountDisplay) {
+        wordCountDisplay.textContent = totalWords.toLocaleString();
+    }
 }
 
 // 🔍 **Fix: Search Now Works for All Posts, Even If `<h2>` is Empty**
@@ -173,5 +250,43 @@ function enableDarkMode() {
     document.body.classList.add("dark-mode");
     document.querySelector("header").classList.add("dark-mode");
     document.querySelectorAll(".post").forEach(post => post.classList.add("dark-mode"));
+}
+
+// Populate city and cuisine dropdowns based on restaurant posts
+function populateRestaurantFilters() {
+    let citySet = new Set();
+    let cuisineSet = new Set();
+    let restaurantPosts = document.querySelectorAll(".post.restaurants");
+    restaurantPosts.forEach(post => {
+        citySet.add(post.getAttribute("data-city"));
+        cuisineSet.add(post.getAttribute("data-cuisine"));
+    });
+    let cityFilter = document.getElementById("cityFilter");
+    let cuisineFilter = document.getElementById("cuisineFilter");
+    // Clear existing options except 'all'
+    cityFilter.innerHTML = '<option value="all">All Cities</option>';
+    cuisineFilter.innerHTML = '<option value="all">All Cuisines</option>';
+    // Add unique cities/cuisines
+    Array.from(citySet).sort().forEach(city => {
+        cityFilter.innerHTML += `<option value="${city}">${city}</option>`;
+    });
+    Array.from(cuisineSet).sort().forEach(cuisine => {
+        cuisineFilter.innerHTML += `<option value="${cuisine}">${cuisine}</option>`;
+    });
+}
+
+// Filter restaurant posts by selected city and cuisine
+function filterRestaurants() {
+    let city = document.getElementById("cityFilter").value;
+    let cuisine = document.getElementById("cuisineFilter").value;
+    let rating = document.getElementById("restaurantRatingFilter").value;
+    let restaurantPosts = document.querySelectorAll(".post.restaurants");
+    restaurantPosts.forEach(post => {
+        let matchCity = (city === "all" || post.getAttribute("data-city") === city);
+        let matchCuisine = (cuisine === "all" || post.getAttribute("data-cuisine") === cuisine);
+        let postRating = parseFloat(post.getAttribute("data-rating"));
+        let matchRating = (rating === "all" || (!isNaN(postRating) && postRating >= parseFloat(rating)));
+        post.style.display = (matchCity && matchCuisine && matchRating) ? "block" : "none";
+    });
 }
 
