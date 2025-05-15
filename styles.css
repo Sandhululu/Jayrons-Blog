@@ -251,11 +251,19 @@ body {
 /* Ensure posts have a consistent width */
 .post {
     background: #222;
-    padding: 15px;
-    width: 280px; /* Adjust width so multiple fit in a row */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 30px;
+    width: 260px;
+    height: 500px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
     text-align: center;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+    border-radius: 20px;
+    overflow: hidden;
+    gap: 12px;
 }
 
 /* Ensure images fit inside the post boxes */
@@ -593,4 +601,23 @@ ul, ol {
 }
 #cityFilter:hover, #cuisineFilter:hover, #restaurantRatingFilter:hover {
     background: #444;
+}
+
+.back-to-top {
+    margin-top: auto;
+    background: #ffcc00;
+    color: #222;
+    border: none;
+    border-radius: 20px;
+    padding: 8px 18px;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+    transition: background 0.2s, color 0.2s, transform 0.2s;
+}
+.back-to-top:hover {
+    background: #ffd84d;
+    color: #111;
+    transform: translateY(-2px) scale(1.05);
 }
