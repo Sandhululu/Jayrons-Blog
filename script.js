@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // ✅ Ensure category buttons apply filtering
     filterButtons.forEach(button => {
         button.addEventListener("click", function () {
-            let category = this.getAttribute("onclick").replace("filterPosts('", "").replace("')", "");
+            let category = this.getAttribute("data-category");
             filterPosts(category);
         });
     });
@@ -103,6 +103,30 @@ document.addEventListener("DOMContentLoaded", function () {
             subtree: true    // Watch all descendants
         });
     }
+
+    // Wishlist checkbox persistence (fixed: no :contains)
+    const wishlistCategories = ["books", "movies", "games", "restaurants"];
+    document.querySelectorAll('.wishlist-category').forEach((categoryDiv) => {
+        const h3 = categoryDiv.querySelector('h3');
+        if (!h3) return;
+        const category = h3.textContent.trim().toLowerCase();
+        if (!wishlistCategories.includes(category)) return;
+        const ul = categoryDiv.querySelector('ul');
+        if (!ul) return;
+        const checkboxes = ul.querySelectorAll('.wishlist-checkbox');
+        checkboxes.forEach((checkbox, idx) => {
+            const key = `wishlist-${category}-${idx}`;
+            // Restore checked state
+            checkbox.checked = localStorage.getItem(key) === "true";
+            // Save state on change
+            checkbox.addEventListener("change", function() {
+                localStorage.setItem(key, this.checked);
+            });
+        });
+    });
+
+    // Call filterPosts('all') on page load to set default state
+    filterPosts('all');
 });
 
 // 🎭 **Fix: Category Filtering Now Works Correctly**
@@ -113,6 +137,27 @@ function filterPosts(category) {
     let restaurantFilters = document.getElementById("restaurantFilters");
     let ratingFilter = document.getElementById("ratingFilter");
     let sortFilter = document.getElementById("sortFilter");
+    let wishlistSection = document.getElementById("wishlist-section");
+    let blogPostsContainer = document.getElementById("blog-posts");
+    let filterSortContainer = document.getElementById("filter-sort-container");
+
+    // Wishlist mode
+    if (category === "wishlist") {
+        if (wishlistSection) wishlistSection.classList.add("show");
+        if (blogPostsContainer) blogPostsContainer.style.display = "none";
+        if (restaurantFilters) restaurantFilters.style.display = "none";
+        if (ratingFilter) ratingFilter.style.display = "none";
+        if (sortFilter) sortFilter.style.display = "none";
+        if (filterSortContainer) filterSortContainer.style.display = "none";
+        if (wordCountContainer) wordCountContainer.style.display = "none";
+        return;
+    } else {
+        if (wishlistSection) wishlistSection.classList.remove("show");
+        if (blogPostsContainer) blogPostsContainer.style.display = "";
+        if (ratingFilter) ratingFilter.style.display = "inline-block";
+        if (sortFilter) sortFilter.style.display = "inline-block";
+        if (filterSortContainer) filterSortContainer.style.display = "block";
+    }
 
     // Show/hide word count container based on category
     if (category === "books") {
@@ -137,7 +182,7 @@ function filterPosts(category) {
 
     posts.forEach(post => {
         let belongsToCategory = post.classList.contains(category) || category === "all";
-        post.style.display = belongsToCategory ? "block" : "none";
+        post.style.display = belongsToCategory ? "" : "none";
     });
 
     // ✅ Ensure rating filter applies after category selection
@@ -196,7 +241,7 @@ function searchPosts() {
             title = imgElement.alt.toLowerCase(); // Fallback to image alt text
         }
 
-        post.style.display = title.includes(input) ? "block" : "none";
+        post.style.display = title.includes(input) ? "" : "none";
     });
 }
 
@@ -210,7 +255,7 @@ function filterByRating() {
         let postCategory = post.classList.contains(currentCategory) || currentCategory === "all";
 
         if (!isNaN(rating) && postCategory) {
-            post.style.display = selectedRating === "all" || rating >= parseFloat(selectedRating) ? "block" : "none";
+            post.style.display = selectedRating === "all" || rating >= parseFloat(selectedRating) ? "" : "none";
         }
     });
 }
@@ -286,7 +331,7 @@ function filterRestaurants() {
         let matchCuisine = (cuisine === "all" || post.getAttribute("data-cuisine") === cuisine);
         let postRating = parseFloat(post.getAttribute("data-rating"));
         let matchRating = (rating === "all" || (!isNaN(postRating) && postRating >= parseFloat(rating)));
-        post.style.display = (matchCity && matchCuisine && matchRating) ? "block" : "none";
+        post.style.display = (matchCity && matchCuisine && matchRating) ? "" : "none";
     });
 }
 
