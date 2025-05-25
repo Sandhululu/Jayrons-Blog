@@ -377,22 +377,23 @@
         </article>
 
         <!-- ====== RESTAURANTS POSTS ====== -->
-        <article class="post restaurants" data-city="York" data-cuisine="Italian" data-rating="8.5">
-            <a href="reviews/restaurants/italian_york.html">
-                <img src="images/italian_york.png" alt="Italian Restaurant in York" loading="lazy">
-            </a>
-            <h2><a href="reviews/restaurants/italian_york.html">Luigi's Trattoria York</a></h2>
-            <p>Rating: ⭐ 8.5/10</p>
-            <p>City: York | Cuisine: Italian</p>
-        </article>
-        <article class="post restaurants" data-city="Leeds" data-cuisine="Indian" data-rating="9">
-            <a href="reviews/restaurants/indian_leeds.html">
-                <img src="images/indian_leeds.png" alt="Indian Restaurant in Leeds" loading="lazy">
-            </a>
-            <h2><a href="reviews/restaurants/indian_leeds.html">Spice House Leeds</a></h2>
-            <p>Rating: ⭐ 9/10</p>
-            <p>City: Leeds | Cuisine: Indian</p>
-        </article>
+        <section class="restaurant-list-section" id="main-restaurant-list-section" style="display: none;">
+          <button id="addMainRestaurantBtn" class="wishlist-action-btn" style="margin-bottom: 18px;">Add Restaurant</button>
+          <h2>Restaurants</h2>
+          <ul class="restaurant-list" style="list-style: none; padding-left: 0;">
+            <li class="restaurant-list-item">
+              <a href="reviews/restaurants/italian_york.html" class="restaurant-link"><span class="restaurant-name">Luigi's Trattoria York</span></a>
+              <span class="restaurant-meta">York</span>
+              <span class="restaurant-cuisine">Italian</span>
+            </li>
+            <li class="restaurant-list-item">
+              <a href="reviews/restaurants/indian_leeds.html" class="restaurant-link"><span class="restaurant-name">Spice House Leeds</span></a>
+              <span class="restaurant-meta">Leeds</span>
+              <span class="restaurant-cuisine">Indian</span>
+            </li>
+            <!-- Add more restaurants here as needed -->
+          </ul>
+        </section>
     </main>
     
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
@@ -485,10 +486,36 @@
         <h2>Add Restaurant</h2>
         <label for="restaurantNameInput">Name of Restaurant:</label>
         <input type="text" id="restaurantNameInput" placeholder="Type name of restaurant here">
-        <label for="restaurantLocationInput">Location:</label>
-        <input type="text" id="restaurantLocationInput" placeholder="Type location here">
-        <label for="restaurantCuisineInput">Cuisine:</label>
-        <input type="text" id="restaurantCuisineInput" placeholder="Type cuisine here">
+        <label for="restaurantLocationSelect">Location:</label>
+        <select id="restaurantLocationSelect">
+          <option value="York">York</option>
+          <option value="Leeds">Leeds</option>
+          <option value="London">London</option>
+          <option value="Manchester">Manchester</option>
+          <option value="Birmingham">Birmingham</option>
+          <option value="Others">Others</option>
+          <option value="new-location">New Location</option>
+        </select>
+        <div id="restaurantNewLocationContainer" style="display:none;">
+          <input type="text" id="restaurantNewLocationInput" placeholder="Enter new location">
+        </div>
+        <label for="restaurantCuisineSelect">Cuisine:</label>
+        <select id="restaurantCuisineSelect">
+          <option value="Italian">Italian</option>
+          <option value="Indian">Indian</option>
+          <option value="Chinese">Chinese</option>
+          <option value="Japanese">Japanese</option>
+          <option value="Thai">Thai</option>
+          <option value="French">French</option>
+          <option value="American">American</option>
+          <option value="Mediterranean">Mediterranean</option>
+          <option value="Mexican">Mexican</option>
+          <option value="Others">Others</option>
+          <option value="new-cuisine">New Cuisine</option>
+        </select>
+        <div id="restaurantNewCuisineContainer" style="display:none;">
+          <input type="text" id="restaurantNewCuisineInput" placeholder="Enter new cuisine">
+        </div>
         <button id="submitAddRestaurant" class="wishlist-action-btn">Submit</button>
       </div>
     </div>
@@ -503,6 +530,49 @@
         <label for="tvShowServiceInput">Streaming Service:</label>
         <input type="text" id="tvShowServiceInput" placeholder="Type streaming service here">
         <button id="submitAddTvShow" class="wishlist-action-btn">Submit</button>
+      </div>
+    </div>
+
+    <!-- Add Main Restaurant Modal -->
+    <div id="addMainRestaurantModal" class="wishlist-modal">
+      <div class="wishlist-modal-content">
+        <span class="wishlist-modal-close" id="closeAddMainRestaurantModal">&times;</span>
+        <h2>Add Restaurant</h2>
+        <label for="mainRestaurantNameInput">Name of Restaurant:</label>
+        <input type="text" id="mainRestaurantNameInput" placeholder="Type name of restaurant here">
+
+        <label for="mainRestaurantLocationSelect">Location:</label>
+        <select id="mainRestaurantLocationSelect">
+          <option value="new-location">Add new location...</option>
+        </select>
+        <div id="mainRestaurantNewLocationContainer" style="display:none;">
+          <input type="text" id="mainRestaurantNewLocationInput" placeholder="Enter new location">
+        </div>
+
+        <label for="mainRestaurantCuisineSelect">Cuisine:</label>
+        <select id="mainRestaurantCuisineSelect">
+          <option value="new-cuisine">Add new cuisine...</option>
+        </select>
+        <div id="mainRestaurantNewCuisineContainer" style="display:none;">
+          <input type="text" id="mainRestaurantNewCuisineInput" placeholder="Enter new cuisine">
+        </div>
+
+        <label for="mainRestaurantRatingInput">Rating:</label>
+        <input type="text" id="mainRestaurantRatingInput" placeholder="e.g. 8.5/10">
+
+        <label for="mainRestaurantPriceSelect">Price:</label>
+        <select id="mainRestaurantPriceSelect">
+          <option value="1">💵</option>
+          <option value="2">💵💵</option>
+          <option value="3">💵💵💵</option>
+          <option value="4">💵💵💵💵</option>
+          <option value="5">💵💵💵💵💵</option>
+        </select>
+
+        <label for="mainRestaurantMenuLinkInput">Menu Link:</label>
+        <input type="text" id="mainRestaurantMenuLinkInput" placeholder="Paste menu link here">
+
+        <button id="submitAddMainRestaurant" class="wishlist-action-btn">Submit</button>
       </div>
     </div>
 

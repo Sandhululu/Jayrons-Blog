@@ -971,3 +971,84 @@ ul, ol {
     display: block;
     padding-bottom: 4px;
 }
+
+/* === Improved Restaurant List Section (Main Blog) === */
+#main-restaurant-list-section {
+  background: none;
+  border-radius: 0;
+  box-shadow: none;
+  padding: 0;
+  margin: 32px 0 0 0;
+  text-align: left;
+  max-width: 500px;
+  margin-left: 0;
+}
+
+#main-restaurant-list-section h2 {
+  color: #ffcc00;
+  font-size: 1.25em;
+  margin-bottom: 10px;
+  letter-spacing: 1px;
+  text-align: left;
+  font-weight: bold;
+}
+
+#main-restaurant-list-section .restaurant-list {
+  margin: 0;
+  padding: 0;
+  max-width: 100%;
+}
+
+#main-restaurant-list-section .restaurant-list-item {
+  background: none;
+  border-radius: 0;
+  margin-bottom: 6px;
+  padding: 0 0 2px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  box-shadow: none;
+  text-align: left;
+  border: none;
+}
+
+#main-restaurant-list-section .restaurant-link {
+  color: #ffcc00;
+  font-weight: bold;
+  font-size: 1.08em;
+  text-decoration: none;
+  margin-bottom: 0;
+  transition: color 0.2s;
+  display: inline-block;
+}
+
+#main-restaurant-list-section .restaurant-link:hover .restaurant-name {
+  text-decoration: underline;
+  color: #fff200;
+}
+
+#main-restaurant-list-section .restaurant-name {
+  font-family: inherit;
+  font-size: 1.08em;
+  font-weight: bold;
+  letter-spacing: 0.5px;
+}
+
+#main-restaurant-list-section .restaurant-meta {
+  color: #bbb;
+  font-size: 0.98em;
+  font-style: normal;
+  margin-left: 0;
+  margin-top: 0;
+  display: block;
+}
+
+#main-restaurant-list-section .restaurant-cuisine {
+  color: #aaa;
+  font-size: 0.95em;
+  font-style: italic;
+  margin-left: 0;
+  margin-top: 0;
+  display: block;
+}

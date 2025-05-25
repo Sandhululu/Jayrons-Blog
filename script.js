@@ -236,6 +236,25 @@ document.addEventListener("DOMContentLoaded", function () {
         }
       });
     }
+
+    // Wishlist Add Restaurant Modal logic
+    const restaurantLocationSelect = document.getElementById('restaurantLocationSelect');
+    const restaurantNewLocationContainer = document.getElementById('restaurantNewLocationContainer');
+    const restaurantNewLocationInput = document.getElementById('restaurantNewLocationInput');
+    const restaurantCuisineSelect = document.getElementById('restaurantCuisineSelect');
+    const restaurantNewCuisineContainer = document.getElementById('restaurantNewCuisineContainer');
+    const restaurantNewCuisineInput = document.getElementById('restaurantNewCuisineInput');
+
+    if (restaurantLocationSelect && restaurantNewLocationContainer) {
+      restaurantLocationSelect.addEventListener('change', function () {
+        restaurantNewLocationContainer.style.display = this.value === 'new-location' ? '' : 'none';
+      });
+    }
+    if (restaurantCuisineSelect && restaurantNewCuisineContainer) {
+      restaurantCuisineSelect.addEventListener('change', function () {
+        restaurantNewCuisineContainer.style.display = this.value === 'new-cuisine' ? '' : 'none';
+      });
+    }
 });
 
 // 🎭 **Fix: Category Filtering Now Works Correctly**
@@ -249,6 +268,7 @@ function filterPosts(category) {
     let wishlistSection = document.getElementById("wishlist-section");
     let blogPostsContainer = document.getElementById("blog-posts");
     let filterSortContainer = document.getElementById("filter-sort-container");
+    let mainRestaurantListSection = document.getElementById("main-restaurant-list-section");
 
     // Wishlist mode
     if (category === "wishlist") {
@@ -259,6 +279,7 @@ function filterPosts(category) {
         if (sortFilter) sortFilter.style.display = "none";
         if (filterSortContainer) filterSortContainer.style.display = "none";
         if (wordCountContainer) wordCountContainer.style.display = "none";
+        if (mainRestaurantListSection) mainRestaurantListSection.style.display = "none";
         return;
     } else {
         if (wishlistSection) wishlistSection.classList.remove("show");
@@ -281,21 +302,23 @@ function filterPosts(category) {
         restaurantFilters.style.display = "block";
         if (ratingFilter) ratingFilter.style.display = "none";
         if (sortFilter) sortFilter.style.display = "none";
+        if (filterSortContainer) filterSortContainer.style.display = "none";
         populateRestaurantFilters();
         filterRestaurants();
+        if (mainRestaurantListSection) mainRestaurantListSection.style.display = "block";
+        posts.forEach(post => post.style.display = "none");
     } else {
         restaurantFilters.style.display = "none";
         if (ratingFilter) ratingFilter.style.display = "inline-block";
         if (sortFilter) sortFilter.style.display = "inline-block";
+        if (filterSortContainer) filterSortContainer.style.display = "block";
+        if (mainRestaurantListSection) mainRestaurantListSection.style.display = "none";
+        posts.forEach(post => {
+            let belongsToCategory = post.classList.contains(category) || category === "all";
+            post.style.display = belongsToCategory ? "" : "none";
+        });
+        if (category !== "restaurants") filterByRating();
     }
-
-    posts.forEach(post => {
-        let belongsToCategory = post.classList.contains(category) || category === "all";
-        post.style.display = belongsToCategory ? "" : "none";
-    });
-
-    // ✅ Ensure rating filter applies after category selection
-    if (category !== "restaurants") filterByRating();
 }
 
 // 📚 Calculate total word count for book reviews
@@ -415,6 +438,19 @@ function populateRestaurantFilters() {
         citySet.add(post.getAttribute("data-city"));
         cuisineSet.add(post.getAttribute("data-cuisine"));
     });
+    // Also check the main-restaurant-list-section list items
+    let mainListSection = document.getElementById("main-restaurant-list-section");
+    if (mainListSection) {
+        let listItems = mainListSection.querySelectorAll(".restaurant-list-item");
+        listItems.forEach(item => {
+            let cityElem = item.querySelector(".restaurant-meta, .restaurant-location");
+            let cuisineElem = item.querySelector(".restaurant-cuisine");
+            let cityText = cityElem ? cityElem.textContent.trim() : "";
+            let cuisineText = cuisineElem ? cuisineElem.textContent.trim() : "";
+            if (cityText) citySet.add(cityText);
+            if (cuisineText) cuisineSet.add(cuisineText);
+        });
+    }
     let cityFilter = document.getElementById("cityFilter");
     let cuisineFilter = document.getElementById("cuisineFilter");
     // Clear existing options except 'all'
@@ -422,10 +458,10 @@ function populateRestaurantFilters() {
     cuisineFilter.innerHTML = '<option value="all">All Cuisines</option>';
     // Add unique cities/cuisines
     Array.from(citySet).sort().forEach(city => {
-        cityFilter.innerHTML += `<option value="${city}">${city}</option>`;
+        if (city && city !== 'undefined') cityFilter.innerHTML += `<option value="${city}">${city}</option>`;
     });
     Array.from(cuisineSet).sort().forEach(cuisine => {
-        cuisineFilter.innerHTML += `<option value="${cuisine}">${cuisine}</option>`;
+        if (cuisine && cuisine !== 'undefined') cuisineFilter.innerHTML += `<option value="${cuisine}">${cuisine}</option>`;
     });
 }
 
@@ -442,6 +478,21 @@ function filterRestaurants() {
         let matchRating = (rating === "all" || (!isNaN(postRating) && postRating >= parseFloat(rating)));
         post.style.display = (matchCity && matchCuisine && matchRating) ? "" : "none";
     });
+
+    // Also filter the main-restaurant-list-section list items
+    let mainListSection = document.getElementById("main-restaurant-list-section");
+    if (mainListSection) {
+        let listItems = mainListSection.querySelectorAll(".restaurant-list-item");
+        listItems.forEach(item => {
+            let cityElem = item.querySelector(".restaurant-meta, .restaurant-location");
+            let cuisineElem = item.querySelector(".restaurant-cuisine");
+            let cityText = cityElem ? cityElem.textContent.trim().toLowerCase() : "";
+            let cuisineText = cuisineElem ? cuisineElem.textContent.trim().toLowerCase() : "";
+            let matchCity = (city === "all" || cityText === city.toLowerCase());
+            let matchCuisine = (cuisine === "all" || cuisineText === cuisine.toLowerCase());
+            item.style.display = (matchCity && matchCuisine) ? "" : "none";
+        });
+    }
 }
 
 // ===== Add Wishlist Item Logic =====
@@ -633,13 +684,35 @@ document.getElementById('submitAddGame').addEventListener('click', function() {
 // --- Add Restaurant ---
 document.getElementById('submitAddRestaurant').addEventListener('click', function() {
   const name = document.getElementById('restaurantNameInput').value.trim();
-  const location = document.getElementById('restaurantLocationInput').value.trim();
-  const cuisine = document.getElementById('restaurantCuisineInput').value.trim();
-  if (!name) return;
+  let location = restaurantLocationSelect.value;
+  if (location === 'new-location') {
+    location = restaurantNewLocationInput.value.trim();
+    if (location && !Array.from(restaurantLocationSelect.options).some(opt => opt.value === location)) {
+      const newOption = document.createElement('option');
+      newOption.value = location;
+      newOption.textContent = location;
+      restaurantLocationSelect.insertBefore(newOption, restaurantLocationSelect.querySelector('option[value="new-location"]'));
+    }
+  }
+  let cuisine = restaurantCuisineSelect.value;
+  if (cuisine === 'new-cuisine') {
+    cuisine = restaurantNewCuisineInput.value.trim();
+    if (cuisine && !Array.from(restaurantCuisineSelect.options).some(opt => opt.value === cuisine)) {
+      const newOption = document.createElement('option');
+      newOption.value = cuisine;
+      newOption.textContent = cuisine;
+      restaurantCuisineSelect.insertBefore(newOption, restaurantCuisineSelect.querySelector('option[value="new-cuisine"]'));
+    }
+  }
+  if (!name || !location || !cuisine) return;
   addWishlistItem('restaurants', { title: name + (location ? (', ' + location) : ''), note: cuisine, checked: false });
   document.getElementById('restaurantNameInput').value = '';
-  document.getElementById('restaurantLocationInput').value = '';
-  document.getElementById('restaurantCuisineInput').value = '';
+  restaurantLocationSelect.value = '';
+  restaurantNewLocationInput.value = '';
+  restaurantNewLocationContainer.style.display = 'none';
+  restaurantCuisineSelect.value = '';
+  restaurantNewCuisineInput.value = '';
+  restaurantNewCuisineContainer.style.display = 'none';
   document.getElementById('addRestaurantModal').classList.remove('show');
 });
 // --- Add TV Show ---
@@ -677,3 +750,144 @@ auth.onAuthStateChanged(function(user) {
     // Re-attach dynamic listeners for the correct sync key
     attachAllWishlistListeners();
 });
+
+// === Main Restaurant Modal Logic ===
+
+document.addEventListener('DOMContentLoaded', function () {
+  // Modal elements
+  const addBtn = document.getElementById('addMainRestaurantBtn');
+  const modal = document.getElementById('addMainRestaurantModal');
+  const closeModalBtn = document.getElementById('closeAddMainRestaurantModal');
+  const locationSelect = document.getElementById('mainRestaurantLocationSelect');
+  const newLocationContainer = document.getElementById('mainRestaurantNewLocationContainer');
+  const newLocationInput = document.getElementById('mainRestaurantNewLocationInput');
+  const cuisineSelect = document.getElementById('mainRestaurantCuisineSelect');
+  const newCuisineContainer = document.getElementById('mainRestaurantNewCuisineContainer');
+  const newCuisineInput = document.getElementById('mainRestaurantNewCuisineInput');
+  const submitBtn = document.getElementById('submitAddMainRestaurant');
+
+  // Show modal
+  if (addBtn && modal) {
+    addBtn.addEventListener('click', () => {
+      populateMainRestaurantDropdowns(); // Always refresh before showing
+      modal.classList.add('show');
+    });
+  }
+  // Hide modal
+  if (closeModalBtn && modal) {
+    closeModalBtn.addEventListener('click', () => {
+      modal.classList.remove('show');
+    });
+  }
+  if (modal) {
+    modal.addEventListener('mousedown', (e) => {
+      if (e.target === modal) modal.classList.remove('show');
+    });
+  }
+  // Show/hide new location input
+  if (locationSelect && newLocationContainer) {
+    locationSelect.addEventListener('change', function () {
+      newLocationContainer.style.display = this.value === 'new-location' ? '' : 'none';
+    });
+  }
+  // Show/hide new cuisine input
+  if (cuisineSelect && newCuisineContainer) {
+    cuisineSelect.addEventListener('change', function () {
+      newCuisineContainer.style.display = this.value === 'new-cuisine' ? '' : 'none';
+    });
+  }
+  // Submit logic
+  if (submitBtn) {
+    submitBtn.addEventListener('click', async function () {
+      const name = document.getElementById('mainRestaurantNameInput').value.trim();
+      let location = locationSelect.value;
+      if (location === 'new-location') location = newLocationInput.value.trim();
+      let cuisine = cuisineSelect.value;
+      if (cuisine === 'new-cuisine') cuisine = newCuisineInput.value.trim();
+      const rating = document.getElementById('mainRestaurantRatingInput').value.trim();
+      const price = document.getElementById('mainRestaurantPriceSelect').value;
+      const menuLink = document.getElementById('mainRestaurantMenuLinkInput').value.trim();
+      if (!name || !location || !cuisine) return;
+      // Add to Firestore
+      await db.collection('main_restaurants').add({
+        name, location, cuisine, rating, price, menuLink, created: new Date()
+      });
+      // Add to DOM at the bottom
+      appendMainRestaurantToList({ name, location, cuisine, rating, price, menuLink });
+      // Reset form
+      document.getElementById('mainRestaurantNameInput').value = '';
+      newLocationInput.value = '';
+      newCuisineInput.value = '';
+      document.getElementById('mainRestaurantRatingInput').value = '';
+      document.getElementById('mainRestaurantPriceSelect').selectedIndex = 0;
+      document.getElementById('mainRestaurantMenuLinkInput').value = '';
+      modal.classList.remove('show');
+      populateMainRestaurantDropdowns(); // Refresh dropdowns after add
+    });
+  }
+
+  // Live update dropdowns if the DOM changes (e.g., new restaurant added)
+  const mainListSection = document.getElementById('main-restaurant-list-section');
+  if (mainListSection) {
+    const observer = new MutationObserver(() => {
+      populateMainRestaurantDropdowns();
+    });
+    observer.observe(mainListSection.querySelector('.restaurant-list'), { childList: true, subtree: true });
+  }
+});
+
+// Populate dropdowns for location/cuisine from Firestore and current list
+async function populateMainRestaurantDropdowns() {
+  const locationSelect = document.getElementById('mainRestaurantLocationSelect');
+  const cuisineSelect = document.getElementById('mainRestaurantCuisineSelect');
+  if (!locationSelect || !cuisineSelect) return;
+  // Gather from Firestore
+  const snapshot = await db.collection('main_restaurants').get();
+  const locations = new Set();
+  const cuisines = new Set();
+  snapshot.forEach(doc => {
+    const data = doc.data();
+    if (data.location) locations.add(data.location);
+    if (data.cuisine) cuisines.add(data.cuisine);
+  });
+  // Also gather from current DOM
+  document.querySelectorAll('#main-restaurant-list-section .restaurant-meta').forEach(el => locations.add(el.textContent.trim()));
+  document.querySelectorAll('#main-restaurant-list-section .restaurant-cuisine').forEach(el => cuisines.add(el.textContent.trim()));
+  // Populate location dropdown
+  locationSelect.innerHTML = '';
+  Array.from(locations).sort().forEach(loc => {
+    if (loc) locationSelect.innerHTML += `<option value="${loc}">${loc}</option>`;
+  });
+  locationSelect.innerHTML += '<option value="new-location">Add new location...</option>';
+  // Populate cuisine dropdown
+  cuisineSelect.innerHTML = '';
+  Array.from(cuisines).sort().forEach(cui => {
+    if (cui) cuisineSelect.innerHTML += `<option value="${cui}">${cui}</option>`;
+  });
+  cuisineSelect.innerHTML += '<option value="new-cuisine">Add new cuisine...</option>';
+}
+
+// Append new restaurant to the bottom of the list
+function appendMainRestaurantToList({ name, location, cuisine, rating, price, menuLink }) {
+  const ul = document.querySelector('#main-restaurant-list-section .restaurant-list');
+  if (!ul) return;
+  const li = document.createElement('li');
+  li.className = 'restaurant-list-item';
+  // Name (link is optional, here just plain text)
+  const nameSpan = document.createElement('span');
+  nameSpan.className = 'restaurant-name';
+  nameSpan.textContent = name;
+  li.appendChild(nameSpan);
+  // City
+  const citySpan = document.createElement('span');
+  citySpan.className = 'restaurant-meta';
+  citySpan.textContent = location;
+  li.appendChild(citySpan);
+  // Cuisine
+  const cuisineSpan = document.createElement('span');
+  cuisineSpan.className = 'restaurant-cuisine';
+  cuisineSpan.textContent = cuisine;
+  li.appendChild(cuisineSpan);
+  // Optionally, you can add rating, price, menuLink display here
+  ul.appendChild(li);
+}
