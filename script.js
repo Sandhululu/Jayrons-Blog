@@ -43,8 +43,8 @@ function updateAuthBtn(user) {
     const authBtn = document.getElementById('authBtn');
     if (!authBtn) return;
     if (user) {
-        authBtn.textContent = 'Logout';
-        authBtn.style.display = 'none';
+        // Remove the button from the DOM if logged in
+        authBtn.parentNode.removeChild(authBtn);
     } else {
         authBtn.textContent = 'Login with Google';
         authBtn.style.display = 'block';
@@ -808,12 +808,13 @@ document.addEventListener('DOMContentLoaded', function () {
       const price = document.getElementById('mainRestaurantPriceSelect').value;
       const menuLink = document.getElementById('mainRestaurantMenuLinkInput').value.trim();
       if (!name || !location || !cuisine) return;
+      const slug = slugify(name);
       // Add to Firestore
       await db.collection('main_restaurants').add({
-        name, location, cuisine, rating, price, menuLink, created: new Date()
+        name, location, cuisine, rating, price, menuLink, slug, created: new Date()
       });
       // Add to DOM at the bottom
-      appendMainRestaurantToList({ name, location, cuisine, rating, price, menuLink });
+      appendMainRestaurantToList({ name, location, cuisine, rating, price, menuLink, slug });
       // Reset form
       document.getElementById('mainRestaurantNameInput').value = '';
       newLocationInput.value = '';
@@ -868,16 +869,17 @@ async function populateMainRestaurantDropdowns() {
 }
 
 // Append new restaurant to the bottom of the list
-function appendMainRestaurantToList({ name, location, cuisine, rating, price, menuLink }) {
+function appendMainRestaurantToList({ name, location, cuisine, rating, price, menuLink, slug }) {
   const ul = document.querySelector('#main-restaurant-list-section .restaurant-list');
   if (!ul) return;
   const li = document.createElement('li');
   li.className = 'restaurant-list-item';
-  // Name (link is optional, here just plain text)
-  const nameSpan = document.createElement('span');
-  nameSpan.className = 'restaurant-name';
-  nameSpan.textContent = name;
-  li.appendChild(nameSpan);
+  // Name as link
+  const link = document.createElement('a');
+  link.className = 'restaurant-link';
+  link.href = `restaurant.html?name=${encodeURIComponent(slug)}`;
+  link.textContent = name;
+  li.appendChild(link);
   // City
   const citySpan = document.createElement('span');
   citySpan.className = 'restaurant-meta';
@@ -888,6 +890,56 @@ function appendMainRestaurantToList({ name, location, cuisine, rating, price, me
   cuisineSpan.className = 'restaurant-cuisine';
   cuisineSpan.textContent = cuisine;
   li.appendChild(cuisineSpan);
-  // Optionally, you can add rating, price, menuLink display here
   ul.appendChild(li);
+}
+
+// Function to append a new restaurant blog post
+function appendRestaurantBlogPost({ name, location, cuisine, rating, price, menuLink }) {
+  const blogPostsContainer = document.getElementById('blog-posts');
+  if (!blogPostsContainer) return;
+  const article = document.createElement('article');
+  article.className = 'post restaurants';
+  article.setAttribute('data-rating', rating || '');
+  article.setAttribute('data-city', location || '');
+  article.setAttribute('data-cuisine', cuisine || '');
+
+  const h2 = document.createElement('h2');
+  h2.textContent = name;
+  article.appendChild(h2);
+
+  const pLocation = document.createElement('p');
+  pLocation.innerHTML = `<strong>Location:</strong> ${location}`;
+  article.appendChild(pLocation);
+
+  const pCuisine = document.createElement('p');
+  pCuisine.innerHTML = `<strong>Cuisine:</strong> ${cuisine}`;
+  article.appendChild(pCuisine);
+
+  if (rating) {
+    const pRating = document.createElement('p');
+    pRating.innerHTML = `<strong>Rating:</strong> ⭐ ${rating}/10`;
+    article.appendChild(pRating);
+  }
+
+  if (price) {
+    const pPrice = document.createElement('p');
+    pPrice.innerHTML = `<strong>Price:</strong> ${'💵'.repeat(Number(price))}`;
+    article.appendChild(pPrice);
+  }
+
+  if (menuLink) {
+    const pMenu = document.createElement('p');
+    pMenu.innerHTML = `<a href="${menuLink}" target="_blank">View Menu</a>`;
+    article.appendChild(pMenu);
+  }
+
+  blogPostsContainer.appendChild(article);
+}
+
+function slugify(text) {
+  return text.toString().toLowerCase().replace(/\s+/g, '-') // Replace spaces with -
+    .replace(/[^\w\-]+/g, '') // Remove all non-word chars
+    .replace(/\-\-+/g, '-')   // Replace multiple - with single -
+    .replace(/^-+/, '')         // Trim - from start of text
+    .replace(/-+$/, '');        // Trim - from end of text
 }

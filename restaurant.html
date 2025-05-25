@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Restaurant Details</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="restaurant-details-container" style="max-width:600px;margin:40px auto;padding:32px;background:#222;color:#fff;border-radius:16px;box-shadow:0 4px 32px rgba(0,0,0,0.2);">
+    <h1 id="restaurantName">Loading...</h1>
+    <p id="restaurantLocation"></p>
+    <p id="restaurantCuisine"></p>
+    <p id="restaurantRating"></p>
+    <p id="restaurantPrice"></p>
+    <p id="restaurantMenuLink"></p>
+    <p id="notFoundMsg" style="color:#ffcc00;display:none;">Restaurant not found.</p>
+    <a href="index.html" style="color:#ffcc00;">&larr; Back to list</a>
+  </div>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyD4-qfOjNKQaQVOMpmOWEyAHGnlXXAI6gA",
+      authDomain: "jayrons-blog.firebaseapp.com",
+      projectId: "jayrons-blog",
+    };
+    if (!window.firebase.apps.length) {
+      window.firebase.initializeApp(firebaseConfig);
+    }
+    const db = window.firebase.firestore();
+    function getQueryParam(param) {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get(param);
+    }
+    async function loadRestaurant() {
+      const slug = getQueryParam('name');
+      if (!slug) return;
+      const snapshot = await db.collection('main_restaurants').where('slug', '==', slug).limit(1).get();
+      if (snapshot.empty) {
+        document.getElementById('notFoundMsg').style.display = '';
+        document.getElementById('restaurantName').textContent = 'Not Found';
+        return;
+      }
+      const data = snapshot.docs[0].data();
+      document.getElementById('restaurantName').textContent = data.name;
+      document.getElementById('restaurantLocation').innerHTML = `<strong>Location:</strong> ${data.location}`;
+      document.getElementById('restaurantCuisine').innerHTML = `<strong>Cuisine:</strong> ${data.cuisine}`;
+      if (data.rating) document.getElementById('restaurantRating').innerHTML = `<strong>Rating:</strong> ⭐ ${data.rating}/10`;
+      if (data.price) document.getElementById('restaurantPrice').innerHTML = `<strong>Price:</strong> ${'💵'.repeat(Number(data.price))}`;
+      if (data.menuLink) document.getElementById('restaurantMenuLink').innerHTML = `<a href="${data.menuLink}" target="_blank" style="color:#ffcc00;">View Menu</a>`;
+    }
+    loadRestaurant();
+  </script>
+</body>
+</html> 
