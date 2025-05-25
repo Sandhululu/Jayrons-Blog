@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Review</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1 class="page-title" id="bookReviewTitle">📖 Book Review</h1>
+        <a class="back-btn" href="index.html">⬅ Back to Blog</a>
+    </header>
+    <div class="review-container">
+        <div class="book-cover" id="bookCoverContainer"></div>
+        <div class="review-content" id="bookReviewContent">
+            <!-- Details and review will be rendered here -->
+        </div>
+    </div>
+    <button class="back-to-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'});">Back to Top</button>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+    <script>
+      const firebaseConfig = {
+        apiKey: "AIzaSyD4-qfOjNKQaQVOMpmOWEyAHGnlXXAI6gA",
+        authDomain: "jayrons-blog.firebaseapp.com",
+        projectId: "jayrons-blog",
+      };
+      if (!window.firebase.apps.length) {
+        window.firebase.initializeApp(firebaseConfig);
+      }
+      const db = window.firebase.firestore();
+      function getQueryParam(param) {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get(param);
+      }
+      function makeField(label, value) {
+        const p = document.createElement('p');
+        p.innerHTML = `<strong>${label}:</strong> ${value}`;
+        return p;
+      }
+      async function loadBookReview() {
+        const id = getQueryParam('id');
+        if (!id) return;
+        const doc = await db.collection('posts').doc(id).get();
+        if (!doc.exists) {
+          document.getElementById('bookReviewTitle').textContent = 'Not Found';
+          document.getElementById('bookReviewContent').innerHTML = '<p style="color:#ffcc00;">Book review not found.</p>';
+          return;
+        }
+        const post = doc.data();
+        // Title
+        document.getElementById('bookReviewTitle').textContent = '📖 Book Review: ' + (post.title || '');
+        // Book Cover
+        if (post.imageUrl) {
+          const img = document.createElement('img');
+          img.src = post.imageUrl;
+          img.alt = post.title || 'Book cover';
+          document.getElementById('bookCoverContainer').appendChild(img);
+        }
+        // Details
+        const contentDiv = document.getElementById('bookReviewContent');
+        contentDiv.innerHTML = '';
+        if (post.author) contentDiv.appendChild(makeField('📚 Author', post.author));
+        if (post.genre) contentDiv.appendChild(makeField('🎭 Genre', post.genre));
+        if (post.readingTime) contentDiv.appendChild(makeField('⏳ Reading Time', post.readingTime));
+        if (post.totalWords) contentDiv.appendChild(makeField('📚 Total Words', post.totalWords));
+        if (post.rating) {
+          const p = document.createElement('p');
+          p.innerHTML = `<strong>⭐ Rating:</strong> <span class=\"rating-bar\"><span style=\"width: ${parseFloat(post.rating) * 10}%\"></span></span> ${post.rating}/10`;
+          contentDiv.appendChild(p);
+        }
+        // Divider
+        const hr = document.createElement('hr');
+        hr.className = 'divider';
+        contentDiv.appendChild(hr);
+        // Review Text
+        if (post.description) {
+          const reviewTextDiv = document.createElement('div');
+          reviewTextDiv.className = 'review-text';
+          post.description.split(/\n+/).forEach(paragraph => {
+            if (paragraph.trim()) {
+              const p = document.createElement('p');
+              p.textContent = paragraph.trim();
+              reviewTextDiv.appendChild(p);
+            }
+          });
+          contentDiv.appendChild(reviewTextDiv);
+        }
+      }
+      loadBookReview();
+    </script>
+</body>
+</html> 

@@ -51,7 +51,7 @@ function updateAuthBtn(user) {
     }
 }
 
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", async function () {
     let searchInput = document.getElementById("searchInput");
     let ratingFilter = document.getElementById("ratingFilter");
     let sortFilter = document.getElementById("sortFilter");
@@ -255,6 +255,125 @@ document.addEventListener("DOMContentLoaded", function () {
         restaurantNewCuisineContainer.style.display = this.value === 'new-cuisine' ? '' : 'none';
       });
     }
+
+    // Add Post Modal logic
+    // Add button to open modal
+    const addPostBtn = document.createElement('button');
+    addPostBtn.id = 'openAddPostModalBtn';
+    addPostBtn.className = 'wishlist-action-btn';
+    addPostBtn.textContent = 'Add Post';
+    const blogPosts = document.getElementById('blog-posts');
+    // Only add the Add Post button if we are NOT in restaurants or wishlists section
+    if (blogPosts && blogPosts.parentNode && !window.location.pathname.includes('restaurants') && !window.location.pathname.includes('wishlist')) {
+      blogPosts.parentNode.insertBefore(addPostBtn, blogPosts);
+    }
+    const addPostModal = document.getElementById('addPostModal');
+    const closeAddPostModal = document.getElementById('closeAddPostModal');
+    addPostBtn.addEventListener('click', () => {
+      addPostModal.classList.add('show');
+    });
+    closeAddPostModal.addEventListener('click', () => {
+      addPostModal.classList.remove('show');
+    });
+    addPostModal.addEventListener('mousedown', (e) => {
+      if (e.target === addPostModal) addPostModal.classList.remove('show');
+    });
+    // Section switching logic
+    const sectionSelect = document.getElementById('postSectionSelect');
+    const sectionFields = {
+      books: document.getElementById('postFieldsBooks'),
+      movies: document.getElementById('postFieldsMovies'),
+      tvshows: document.getElementById('postFieldsTVShows'),
+      games: document.getElementById('postFieldsGames')
+    };
+    sectionSelect.addEventListener('change', function() {
+      Object.keys(sectionFields).forEach(key => {
+        sectionFields[key].style.display = (key === this.value) ? '' : 'none';
+      });
+    });
+    // Cloudinary upload widget
+    const uploadBtn = document.getElementById('uploadPostImageBtn');
+    const imageUrlInput = document.getElementById('postImageUrlInput');
+    const imagePreview = document.getElementById('postImagePreview');
+    uploadBtn.addEventListener('click', function() {
+      if (!window.cloudinary) {
+        alert('Cloudinary widget not loaded.');
+        return;
+      }
+      cloudinary.openUploadWidget({
+        cloudName: 'dultavuvg', // <-- Replace with your Cloudinary cloud name
+        uploadPreset: 'blog_unsigned', // <-- Replace with your unsigned upload preset
+        sources: ['local', 'url', 'camera'],
+        multiple: false,
+        cropping: false
+      }, function(error, result) {
+        if (!error && result && result.event === "success") {
+          imageUrlInput.value = result.info.secure_url;
+          imagePreview.src = result.info.secure_url;
+          imagePreview.style.display = 'block';
+        }
+      });
+    });
+    // Submit logic (now save to Firestore and render post)
+    document.getElementById('submitAddPost').addEventListener('click', async function() {
+      const section = sectionSelect.value;
+      let postData = {
+        section,
+        imageUrl: imageUrlInput.value,
+        description: document.getElementById('postDescription').value.trim(),
+        created: new Date()
+      };
+      if (section === 'books') {
+        postData.title = document.getElementById('postBookTitle').value.trim();
+        postData.author = document.getElementById('postBookAuthor').value.trim();
+        postData.genre = document.getElementById('postBookGenre').value.trim();
+        postData.readingTime = document.getElementById('postBookReadingTime').value.trim();
+        postData.totalWords = document.getElementById('postBookTotalWords').value.trim();
+        postData.rating = document.getElementById('postBookRating').value.trim();
+      } else if (section === 'movies') {
+        postData.title = document.getElementById('postMovieTitle').value.trim();
+        postData.director = document.getElementById('postMovieDirector').value.trim();
+        postData.genre = document.getElementById('postMovieGenre').value.trim();
+        postData.watchedOn = document.getElementById('postMovieWatchedOn').value.trim();
+        postData.rating = document.getElementById('postMovieRating').value.trim();
+      } else if (section === 'tvshows') {
+        postData.title = document.getElementById('postTVShowTitle').value.trim();
+        postData.genre = document.getElementById('postTVShowGenre').value.trim();
+        postData.finishedOn = document.getElementById('postTVShowFinishedOn').value.trim();
+        postData.rating = document.getElementById('postTVShowRating').value.trim();
+      } else if (section === 'games') {
+        postData.title = document.getElementById('postGameTitle').value.trim();
+        postData.developer = document.getElementById('postGameDeveloper').value.trim();
+        postData.genre = document.getElementById('postGameGenre').value.trim();
+        postData.releaseDate = document.getElementById('postGameReleaseDate').value.trim();
+        postData.rating = document.getElementById('postGameRating').value.trim();
+      }
+      try {
+        const docRef = await db.collection('posts').add(postData);
+        postData.id = docRef.id;
+        renderBlogPostCard(postData);
+        alert('Post added successfully!');
+        if (section === 'books') {
+          calculateTotalWordCount();
+        }
+      } catch (e) {
+        alert('Error adding post: ' + e.message);
+      }
+      addPostModal.classList.remove('show');
+      // Optionally reset fields here
+    });
+
+    // Fetch and render all posts from Firestore on page load
+    try {
+      const snapshot = await db.collection('posts').orderBy('created', 'desc').get();
+      snapshot.forEach(doc => {
+        const post = doc.data();
+        post.id = doc.id;
+        renderBlogPostCard(post);
+      });
+    } catch (e) {
+      console.error('Error loading posts:', e);
+    }
 });
 
 // 🎭 **Fix: Category Filtering Now Works Correctly**
@@ -269,6 +388,7 @@ function filterPosts(category) {
     let blogPostsContainer = document.getElementById("blog-posts");
     let filterSortContainer = document.getElementById("filter-sort-container");
     let mainRestaurantListSection = document.getElementById("main-restaurant-list-section");
+    const addPostBtn = document.getElementById('openAddPostModalBtn'); // Get the add post button
 
     // Wishlist mode
     if (category === "wishlist") {
@@ -280,6 +400,7 @@ function filterPosts(category) {
         if (filterSortContainer) filterSortContainer.style.display = "none";
         if (wordCountContainer) wordCountContainer.style.display = "none";
         if (mainRestaurantListSection) mainRestaurantListSection.style.display = "none";
+        if (addPostBtn) addPostBtn.style.display = "none"; // Hide add post button in wishlist
         return;
     } else {
         if (wishlistSection) wishlistSection.classList.remove("show");
@@ -287,6 +408,7 @@ function filterPosts(category) {
         if (ratingFilter) ratingFilter.style.display = "inline-block";
         if (sortFilter) sortFilter.style.display = "inline-block";
         if (filterSortContainer) filterSortContainer.style.display = "block";
+        if (addPostBtn) addPostBtn.style.display = "block"; // Show add post button in main blog view
     }
 
     // Show/hide word count container based on category
@@ -307,6 +429,7 @@ function filterPosts(category) {
         filterRestaurants();
         if (mainRestaurantListSection) mainRestaurantListSection.style.display = "block";
         posts.forEach(post => post.style.display = "none");
+        if (addPostBtn) addPostBtn.style.display = "none"; // Hide add post button in restaurants
     } else {
         restaurantFilters.style.display = "none";
         if (ratingFilter) ratingFilter.style.display = "inline-block";
@@ -324,32 +447,45 @@ function filterPosts(category) {
 // 📚 Calculate total word count for book reviews
 async function calculateTotalWordCount() {
     let totalWords = 0;
+    // 1. Sum static book posts in the DOM
     let bookPosts = document.querySelectorAll(".post.books");
-    
     for (let post of bookPosts) {
-        let link = post.querySelector("a").href;
-        try {
-            const response = await fetch(link);
-            const text = await response.text();
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(text, "text/html");
-            
-            // Look for the word count paragraph
-            const paragraphs = doc.querySelectorAll("p");
-            for (let p of paragraphs) {
-                if (p.textContent.includes("📚 Total Words:")) {
-                    // Extract the number from the text
-                    const wordCountText = p.textContent;
-                    const wordCount = parseInt(wordCountText.replace(/[^0-9]/g, '')) || 0;
-                    totalWords += wordCount;
-                    break;
+        let link = post.querySelector("a") ? post.querySelector("a").href : null;
+        if (link) {
+            try {
+                const response = await fetch(link);
+                const text = await response.text();
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(text, "text/html");
+                // Look for the word count paragraph
+                const paragraphs = doc.querySelectorAll("p");
+                for (let p of paragraphs) {
+                    if (p.textContent.includes("📚 Total Words:")) {
+                        // Extract the number from the text
+                        const wordCountText = p.textContent;
+                        const wordCount = parseInt(wordCountText.replace(/[^0-9]/g, '')) || 0;
+                        totalWords += wordCount;
+                        break;
+                    }
                 }
+            } catch (error) {
+                console.error("Error fetching word count for:", link, error);
             }
-        } catch (error) {
-            console.error("Error fetching word count for:", link, error);
         }
     }
-    
+    // 2. Sum dynamically added book posts from Firestore
+    try {
+        const snapshot = await db.collection('posts').where('section', '==', 'books').get();
+        snapshot.forEach(doc => {
+            const post = doc.data();
+            if (post.totalWords) {
+                const n = parseInt(post.totalWords);
+                if (!isNaN(n)) totalWords += n;
+            }
+        });
+    } catch (e) {
+        console.error('Error fetching dynamic book posts for word count:', e);
+    }
     // Update the display with the total
     const wordCountDisplay = document.getElementById("totalWordCount");
     if (wordCountDisplay) {
@@ -942,4 +1078,71 @@ function slugify(text) {
     .replace(/\-\-+/g, '-')   // Replace multiple - with single -
     .replace(/^-+/, '')         // Trim - from start of text
     .replace(/-+$/, '');        // Trim - from end of text
+}
+
+// Render a blog post card in #blog-posts
+function renderBlogPostCard(post) {
+  const blogPostsContainer = document.getElementById('blog-posts');
+  if (!blogPostsContainer) return;
+
+  // Minimal card: only image (with link) and plain text rating for all main sections
+  let reviewPage = '';
+  if (post.section === 'books') reviewPage = 'book_review.html';
+  else if (post.section === 'movies') reviewPage = 'movie_review.html';
+  else if (post.section === 'tvshows') reviewPage = 'tv_review.html';
+  else if (post.section === 'games') reviewPage = 'game_review.html';
+
+  // --- Fix: Handle Firestore Timestamp for created date ---
+  let createdDate = post.created;
+  if (createdDate && typeof createdDate.toDate === 'function') {
+    createdDate = createdDate.toDate();
+  }
+
+  if (reviewPage) {
+    const article = document.createElement('article');
+    article.className = 'post ' + post.section;
+    if (post.rating) article.setAttribute('data-rating', post.rating);
+    article.setAttribute('data-uploaded', createdDate ? new Date(createdDate).toISOString().split('T')[0] : '');
+
+    // Image with link
+    if (post.imageUrl) {
+      const link = document.createElement('a');
+      link.href = `${reviewPage}?id=${encodeURIComponent(post.id)}`;
+      const img = document.createElement('img');
+      img.src = post.imageUrl;
+      img.alt = post.title || '';
+      img.loading = 'lazy';
+      link.appendChild(img);
+      article.appendChild(link);
+    }
+    // Rating as 'Rating: ⭐ X/10'
+    if (post.rating) {
+      const p = document.createElement('p');
+      p.textContent = `Rating: ⭐ ${post.rating}/10`;
+      article.appendChild(p);
+    }
+    blogPostsContainer.insertBefore(article, blogPostsContainer.firstChild);
+    return;
+  }
+
+  // Default card for other sections
+  const article = document.createElement('article');
+  article.className = 'post ' + post.section;
+  if (post.rating) article.setAttribute('data-rating', post.rating);
+  article.setAttribute('data-uploaded', createdDate ? new Date(createdDate).toISOString().split('T')[0] : '');
+
+  if (post.imageUrl) {
+    const img = document.createElement('img');
+    img.src = post.imageUrl;
+    img.alt = post.section + ' image';
+    img.loading = 'lazy';
+    article.appendChild(img);
+  }
+  blogPostsContainer.insertBefore(article, blogPostsContainer.firstChild);
+}
+
+function makeField(label, value) {
+  const p = document.createElement('p');
+  p.innerHTML = `<strong>${label}:</strong> ${value}`;
+  return p;
 }

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Review</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1 class="page-title" id="gameReviewTitle">🎮 Game Review</h1>
+        <a class="back-btn" href="index.html">⬅ Back to Blog</a>
+    </header>
+    <div class="review-container">
+        <div class="book-cover" id="gameCoverContainer"></div>
+        <div class="review-content" id="gameReviewContent"></div>
+    </div>
+    <button class="back-to-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'});">Back to Top</button>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+    <script>
+      const firebaseConfig = {
+        apiKey: "AIzaSyD4-qfOjNKQaQVOMpmOWEyAHGnlXXAI6gA",
+        authDomain: "jayrons-blog.firebaseapp.com",
+        projectId: "jayrons-blog",
+      };
+      if (!window.firebase.apps.length) {
+        window.firebase.initializeApp(firebaseConfig);
+      }
+      const db = window.firebase.firestore();
+      function getQueryParam(param) {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get(param);
+      }
+      function makeField(label, value) {
+        const p = document.createElement('p');
+        p.innerHTML = `<strong>${label}:</strong> ${value}`;
+        return p;
+      }
+      async function loadGameReview() {
+        const id = getQueryParam('id');
+        if (!id) return;
+        const doc = await db.collection('posts').doc(id).get();
+        if (!doc.exists) {
+          document.getElementById('gameReviewTitle').textContent = 'Not Found';
+          document.getElementById('gameReviewContent').innerHTML = '<p style="color:#ffcc00;">Game review not found.</p>';
+          return;
+        }
+        const post = doc.data();
+        document.getElementById('gameReviewTitle').textContent = '🎮 Game Review: ' + (post.title || '');
+        if (post.imageUrl) {
+          const img = document.createElement('img');
+          img.src = post.imageUrl;
+          img.alt = post.title || 'Game cover';
+          document.getElementById('gameCoverContainer').appendChild(img);
+        }
+        const contentDiv = document.getElementById('gameReviewContent');
+        contentDiv.innerHTML = '';
+        if (post.developer) contentDiv.appendChild(makeField('📚 Developer', post.developer));
+        if (post.genre) contentDiv.appendChild(makeField('🎭 Genre', post.genre));
+        if (post.releaseDate) contentDiv.appendChild(makeField('⏳ Release Date', post.releaseDate));
+        if (post.rating) {
+          const p = document.createElement('p');
+          p.innerHTML = `<strong>⭐ Rating:</strong> <span class="rating-bar"><span style="width: ${parseFloat(post.rating) * 10}%"></span></span> ${post.rating}/10`;
+          contentDiv.appendChild(p);
+        }
+        const hr = document.createElement('hr');
+        hr.className = 'divider';
+        contentDiv.appendChild(hr);
+        if (post.description) {
+          const reviewTextDiv = document.createElement('div');
+          reviewTextDiv.className = 'review-text';
+          post.description.split(/\n+/).forEach(paragraph => {
+            if (paragraph.trim()) {
+              const p = document.createElement('p');
+              p.textContent = paragraph.trim();
+              reviewTextDiv.appendChild(p);
+            }
+          });
+          contentDiv.appendChild(reviewTextDiv);
+        }
+      }
+      loadGameReview();
+    </script>
+</body>
+</html>

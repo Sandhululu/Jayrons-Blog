@@ -1,3 +1,9 @@
+:root {
+  --primary-color: #ffcc00; /* Golden/Yellow */
+  --background-color: #121212; /* Dark background */
+  --primary-color-dark: #e6b800; /* Darker golden for hover */
+}
+
 body {
     font-family: Arial, sans-serif;
     max-width: 800px;
@@ -1051,4 +1057,21 @@ ul, ol {
   margin-left: 0;
   margin-top: 0;
   display: block;
+}
+
+#openAddPostModalBtn {
+  display: block;
+  margin: 20px auto; /* Center the button horizontally and add some vertical space */
+  padding: 10px 20px;
+  font-size: 1em;
+  cursor: pointer;
+  border: none;
+  border-radius: 5px;
+  background-color: var(--primary-color); /* Use a CSS variable for color */
+  color: var(--background-color); /* Use a CSS variable for text color */
+  transition: background-color 0.3s ease;
+}
+
+#openAddPostModalBtn:hover {
+  background-color: var(--primary-color-dark);
 }

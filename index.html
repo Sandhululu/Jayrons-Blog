@@ -576,7 +576,80 @@
       </div>
     </div>
 
+    <!-- Add Post Modal -->
+    <div id="addPostModal" class="wishlist-modal">
+      <div class="wishlist-modal-content" style="max-width: 500px;">
+        <span class="wishlist-modal-close" id="closeAddPostModal">&times;</span>
+        <h2>Add Post</h2>
+        <label for="postSectionSelect">Section:</label>
+        <select id="postSectionSelect">
+          <option value="books">Books</option>
+          <option value="movies">Movies</option>
+          <option value="tvshows">TV Shows</option>
+          <option value="games">Games</option>
+        </select>
+        <div id="postFieldsBooks" class="post-section-fields">
+          <label for="postBookTitle">Book Title:</label>
+          <input type="text" id="postBookTitle" placeholder="Type book title here">
+          <label for="postBookAuthor">Author:</label>
+          <input type="text" id="postBookAuthor" placeholder="Type author name here">
+          <label for="postBookGenre">Genre:</label>
+          <input type="text" id="postBookGenre" placeholder="Type genre here">
+          <label for="postBookReadingTime">Reading Time:</label>
+          <input type="text" id="postBookReadingTime" placeholder="e.g. 5h 30m">
+          <label for="postBookTotalWords">Total Words:</label>
+          <input type="number" id="postBookTotalWords" placeholder="e.g. 120000">
+          <label for="postBookRating">Rating:</label>
+          <input type="text" id="postBookRating" placeholder="e.g. 8.5/10">
+        </div>
+        <div id="postFieldsMovies" class="post-section-fields" style="display:none;">
+          <label for="postMovieTitle">Movie Title:</label>
+          <input type="text" id="postMovieTitle" placeholder="Type movie title here">
+          <label for="postMovieDirector">Director:</label>
+          <input type="text" id="postMovieDirector" placeholder="Type director name here">
+          <label for="postMovieGenre">Genre:</label>
+          <input type="text" id="postMovieGenre" placeholder="Type genre here">
+          <label for="postMovieWatchedOn">Watched On:</label>
+          <input type="text" id="postMovieWatchedOn" placeholder="e.g. Netflix, Cinema">
+          <label for="postMovieRating">Rating:</label>
+          <input type="text" id="postMovieRating" placeholder="e.g. 8.5/10">
+        </div>
+        <div id="postFieldsTVShows" class="post-section-fields" style="display:none;">
+          <label for="postTVShowTitle">TV Show Title:</label>
+          <input type="text" id="postTVShowTitle" placeholder="Type TV show title here">
+          <label for="postTVShowGenre">Genre:</label>
+          <input type="text" id="postTVShowGenre" placeholder="Type genre here">
+          <label for="postTVShowFinishedOn">Finished On:</label>
+          <input type="text" id="postTVShowFinishedOn" placeholder="e.g. Netflix, Amazon Prime">
+          <label for="postTVShowRating">Rating:</label>
+          <input type="text" id="postTVShowRating" placeholder="e.g. 8.5/10">
+        </div>
+        <div id="postFieldsGames" class="post-section-fields" style="display:none;">
+          <label for="postGameTitle">Game Title:</label>
+          <input type="text" id="postGameTitle" placeholder="Type game title here">
+          <label for="postGameDeveloper">Developer:</label>
+          <input type="text" id="postGameDeveloper" placeholder="Type developer name here">
+          <label for="postGameGenre">Genre:</label>
+          <input type="text" id="postGameGenre" placeholder="Type genre here">
+          <label for="postGameReleaseDate">Release Date:</label>
+          <input type="text" id="postGameReleaseDate" placeholder="e.g. 2024-05-01">
+          <label for="postGameRating">Rating:</label>
+          <input type="text" id="postGameRating" placeholder="e.g. 8.5/10">
+        </div>
+        <label for="postImageUpload">Image:</label>
+        <button id="uploadPostImageBtn" type="button">Upload Image</button>
+        <input type="hidden" id="postImageUrlInput">
+        <img id="postImagePreview" style="display:none;max-width:100%;margin-top:10px;">
+        <label for="postDescription">Description:</label>
+        <textarea id="postDescription" rows="6" placeholder="Write your post here..." style="width:100%;"></textarea>
+        <button id="submitAddPost" class="wishlist-action-btn">Submit</button>
+      </div>
+    </div>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
     <script src="script.js"></script>
+    <script src="https://widget.cloudinary.com/v2.0/global/all.js"></script>
 </body>
 </html>
 
