@@ -766,12 +766,16 @@ function attachAllWishlistListeners() {
   wishlistUnsubs = [];
   // Attach new listeners for the current user
   wishlistCategories.forEach(category => {
-    const unsub = getWishlistCollection(category).onSnapshot(snapshot => {
+    const syncKey = getSyncKey(); // Get the sync key *before* attaching listener
+    console.log(`Attaching wishlist listener for category: ${category}, user ID: ${syncKey}`); // Log the path being used
+    const unsub = db.collection('wishlists').doc(syncKey).collection(category).onSnapshot(snapshot => {
       const items = [];
       snapshot.forEach(doc => {
         items.push({ id: doc.id, ...doc.data() });
       });
       renderWishlistCategory(category, items);
+    }, error => { // Add error handling to the snapshot listener
+        console.error(`Firestore snapshot listener error for ${category} (user ${syncKey}):`, error);
     });
     wishlistUnsubs.push(unsub);
   });
@@ -867,23 +871,49 @@ console.log("submitAddMovie loaded", document.getElementById("submitAddMovie"));
 auth.onAuthStateChanged(function(user) {
     currentUser = user;
     updateAuthBtn(user);
+
+    // Detach old listeners before potentially attaching new ones
+    wishlistUnsubs.forEach(unsub => unsub && unsub());
+    wishlistUnsubs = [];
+
     // ===== MIGRATION LOGIC: Copy anonymous wishlist to Google UID on login =====
+    // This should happen AFTER currentUser is set by the auth state change
     if (user && wishlistUserId && user.uid !== wishlistUserId) {
         const categories = ['books', 'movies', 'games', 'restaurants', 'tvshows'];
         categories.forEach(async (cat) => {
             const anonCol = db.collection('wishlists').doc(wishlistUserId).collection(cat);
             const userCol = db.collection('wishlists').doc(user.uid).collection(cat);
-            const snapshot = await anonCol.get();
-            snapshot.forEach(async (doc) => {
-                await userCol.doc(doc.id).set(doc.data());
-            });
-            // Optionally: Delete the anonymous docs after migration
-            // snapshot.forEach(async (doc) => await anonCol.doc(doc.id).delete());
+            try {
+                // Attempt to read anonymous data
+                const snapshot = await anonCol.get();
+                if (!snapshot.empty) {
+                    const batch = db.batch();
+                    snapshot.forEach(doc => {
+                        batch.set(userCol.doc(doc.id), doc.data());
+                    });
+                    await batch.commit();
+                    // Optional: Delete anonymous data after successful migration
+                    // const deleteBatch = db.batch();
+                    // snapshot.forEach(doc => deleteBatch.delete(anonCol.doc(doc.id)));
+                    // await deleteBatch.commit();
+                    console.log(`Successfully migrated ${cat} wishlist for user ${user.uid}`);
+                } else {
+                     console.log(`Anonymous ${cat} wishlist is empty or does not exist, no migration needed for user ${user.uid}`);
+                }
+            } catch (error) {
+                // Catch and specifically handle permission errors for the anonymous read
+                if (error.code === 'permission-denied') {
+                    console.warn(`Permission denied to read anonymous ${cat} wishlist (user ${wishlistUserId}) for authenticated user ${user.uid}. Migration skipped for this category.`);
+                } else {
+                    console.error(`Error migrating ${cat} wishlist:`, error);
+                }
+            }
         });
-        // Optionally: Remove the anonymous wishlistUserId from localStorage
+        // Optional: Remove the anonymous wishlistUserId from localStorage AFTER migration attempt
         // localStorage.removeItem('wishlistUserId');
     }
-    // Re-attach dynamic listeners for the correct sync key
+
+    // Re-attach dynamic listeners for the correct sync key AFTER state is determined
     attachAllWishlistListeners();
 });
 
