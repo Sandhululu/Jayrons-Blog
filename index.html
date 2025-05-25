@@ -7,7 +7,8 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <header>
+    <header style="position: relative;">
+      <button id="authBtn" style="position: absolute; left: 20px; top: 20px; padding: 8px 18px; border-radius: 8px; background: #ffcc00; color: #222; font-weight: bold; cursor: pointer; z-index: 10;">Login with Google</button>
         <h1>Jayron's Blog</h1>
         <nav>
             <button data-category="all">All</button>
@@ -78,336 +79,42 @@
     <!-- ====== WISHLIST SECTION ====== -->
     <section id="wishlist-section">
       <h2>🌟 Wishlist</h2>
-      <div class="wishlist-category">
-        <h3>Books</h3>
-        <ul style="list-style: none; padding-left: 0;">
-          <li class="wishlist-main-item">
-            <div class="wishlist-main-row">
-              <span class="wishlist-heading">GOT</span>
-            </div>
-            <ul>
-              <li><input type="checkbox" class="wishlist-checkbox wishlist-sub-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">A Game of Thrones</span><span class="wishlist-note">George R. R. Martin</span></span></li>
-              <li><input type="checkbox" class="wishlist-checkbox wishlist-sub-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">A Clash of Kings</span><span class="wishlist-note">George R. R. Martin</span></span></li>
-              <li><input type="checkbox" class="wishlist-checkbox wishlist-sub-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">A Storm of Swords</span><span class="wishlist-note">George R. R. Martin</span></span></li>
-              <li><input type="checkbox" class="wishlist-checkbox wishlist-sub-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">A Feast for Crows</span><span class="wishlist-note">George R. R. Martin</span></span></li>
-              <li><input type="checkbox" class="wishlist-checkbox wishlist-sub-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">A Dance with Dragons</span><span class="wishlist-note">George R. R. Martin</span></span></li>
-              <li><input type="checkbox" class="wishlist-checkbox wishlist-sub-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">The Winds of Winter</span><span class="wishlist-note">George R. R. Martin</span></span></li>
-              <li><input type="checkbox" class="wishlist-checkbox wishlist-sub-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">A Dream of Spring</span><span class="wishlist-note">George R. R. Martin</span></span></li>
-              <li><input type="checkbox" class="wishlist-checkbox wishlist-sub-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Fire and Blood</span><span class="wishlist-note">George R. R. Martin</span></span></li>
-              <li><input type="checkbox" class="wishlist-checkbox wishlist-sub-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">A Knight of the Seven Kingdoms</span><span class="wishlist-note">George R. R. Martin</span></span></li>
-            </ul>
-          </li>
-          <li class="wishlist-main-item">
-            <div class="wishlist-main-row">
-              <span class="wishlist-heading">The Lord of the Rings</span>
-            </div>
-            <ul>
-              <li><input type="checkbox" class="wishlist-checkbox wishlist-sub-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">The Fellowship of the Ring</span><span class="wishlist-note">J. R. R. Tolkien</span></span></li>
-              <li><input type="checkbox" class="wishlist-checkbox wishlist-sub-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">The Two Towers</span><span class="wishlist-note">J. R. R. Tolkien</span></span></li>
-              <li><input type="checkbox" class="wishlist-checkbox wishlist-sub-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">The Return of the King</span><span class="wishlist-note">J. R. R. Tolkien</span></span></li>
-            </ul>
-          </li>
-         
-          <li><strong>Dune Books</strong>
-            <ul>
-              <li><input type="checkbox" class="wishlist-checkbox wishlist-sub-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Dune</span><span class="wishlist-note">Frank Herbert</span></span></li>
-              <li><input type="checkbox" class="wishlist-checkbox wishlist-sub-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Dune Messiah</span><span class="wishlist-note">Frank Herbert</span></span></li>
-              <li><input type="checkbox" class="wishlist-checkbox wishlist-sub-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Children of Dune</span><span class="wishlist-note">Frank Herbert</span></span></li>
-              <li><input type="checkbox" class="wishlist-checkbox wishlist-sub-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">God Emperor of Dune</span><span class="wishlist-note">Frank Herbert</span></span></li>
-              <li><input type="checkbox" class="wishlist-checkbox wishlist-sub-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Heretics of Dune</span><span class="wishlist-note">Frank Herbert</span></span></li>
-              <li><input type="checkbox" class="wishlist-checkbox wishlist-sub-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Chapterhouse: Dune</span><span class="wishlist-note">Frank Herbert</span></span></li>
-            </ul>
-          </li>
-          <li><strong>Star Wars Books</strong>
-            <ul>
-              <li><input type="checkbox" class="wishlist-checkbox wishlist-sub-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Star Wars: Thrawn - Heir to the Empire</span><span class="wishlist-note">Timothy Zahn</span></span></li>
-              <li><input type="checkbox" class="wishlist-checkbox wishlist-sub-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Star Wars: Thrawn - Dark Force Rising</span><span class="wishlist-note">Timothy Zahn</span></span></li>
-              <li><input type="checkbox" class="wishlist-checkbox wishlist-sub-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Star Wars: Thrawn - The Last Command</span><span class="wishlist-note">Timothy Zahn</span></span></li>
-              <li><input type="checkbox" class="wishlist-checkbox wishlist-sub-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Star Wars: Darth Plagueis</span><span class="wishlist-note">James Luceno</span></span></li>
-              <li><input type="checkbox" class="wishlist-checkbox wishlist-sub-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Star Wars: Darth Bane - Path of Destruction</span><span class="wishlist-note">Drew Karpyshyn</span></span></li>
-              <li><input type="checkbox" class="wishlist-checkbox wishlist-sub-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Star Wars: Darth Bane - Rule of Two</span><span class="wishlist-note">Drew Karpyshyn</span></span></li>
-              <li><input type="checkbox" class="wishlist-checkbox wishlist-sub-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Star Wars: Darth Bane - Dynasty of Evil</span><span class="wishlist-note">Drew Karpyshyn</span></span></li>
-              <li><input type="checkbox" class="wishlist-checkbox wishlist-sub-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Star Wars: Darth Maul Shadow Hunter</span><span class="wishlist-note">Michael Reaves</span></span></li>
-              <li><input type="checkbox" class="wishlist-checkbox wishlist-sub-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Star Wars: The Rise of Darth Vader</span><span class="wishlist-note">James Luceno</span></span></li>
-              <li><input type="checkbox" class="wishlist-checkbox wishlist-sub-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Star Wars: Shatterpoint</span><span class="wishlist-note">Matthew Stover</span></span></li>
-              <li><input type="checkbox" class="wishlist-checkbox wishlist-sub-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Star Wars: Kenobi</span><span class="wishlist-note">John Jackson Miller</span></span></li>
-            </ul>
-          </li>
-          <li><strong>Shogun Books</strong>
-            <ul>
-              <li><input type="checkbox" class="wishlist-checkbox wishlist-sub-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Shōgun</span><span class="wishlist-note">James Clavell</span></span></li>
-              <li><input type="checkbox" class="wishlist-checkbox wishlist-sub-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Tai-Pan</span><span class="wishlist-note">James Clavell</span></span></li>
-              <li><input type="checkbox" class="wishlist-checkbox wishlist-sub-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Gai-Jin</span><span class="wishlist-note">James Clavell</span></span></li>
-              <li><input type="checkbox" class="wishlist-checkbox wishlist-sub-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">King Rat</span><span class="wishlist-note">James Clavell</span></span></li>
-              <li><input type="checkbox" class="wishlist-checkbox wishlist-sub-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Noble House</span><span class="wishlist-note">James Clavell</span></span></li>
-              <li><input type="checkbox" class="wishlist-checkbox wishlist-sub-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Whirlwind</span><span class="wishlist-note">James Clavell</span></span></li>
-            </ul>
-          </li>
-          <li><strong>Murakami Books</strong>
-            <ul>
-              <li><input type="checkbox" class="wishlist-checkbox wishlist-sub-checkbox" checked> <span class="wishlist-text-wrapper"><span class="wishlist-title">Kafka on the Shore</span><span class="wishlist-note">Haruki Murakami</span></span></li>
-              <li><input type="checkbox" class="wishlist-checkbox wishlist-sub-checkbox" checked> <span class="wishlist-text-wrapper"><span class="wishlist-title">Norwegian Wood</span><span class="wishlist-note">Haruki Murakami</span></span></li>
-              <li><input type="checkbox" class="wishlist-checkbox wishlist-sub-checkbox" checked> <span class="wishlist-text-wrapper"><span class="wishlist-title">Sputnik Sweetheart</span><span class="wishlist-note">Haruki Murakami</span></span></li>
-              <li><input type="checkbox" class="wishlist-checkbox wishlist-sub-checkbox" checked> <span class="wishlist-text-wrapper"><span class="wishlist-title">A Wild Sheep Chase</span><span class="wishlist-note">Haruki Murakami</span></span></li>
-            </ul>
-          </li>
-          <li><strong>Neuromancer Books</strong>
-            <ul>
-              <li><input type="checkbox" class="wishlist-checkbox wishlist-sub-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Neuromancer</span><span class="wishlist-note">William Gibson</span></span></li>
-              <li><input type="checkbox" class="wishlist-checkbox wishlist-sub-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Count Zero</span><span class="wishlist-note">William Gibson</span></span></li>
-              <li><input type="checkbox" class="wishlist-checkbox wishlist-sub-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Mona Lisa Overdrive</span><span class="wishlist-note">William Gibson</span></span></li>
-            </ul>
-          </li>
-          <li><strong>Altered Carbon Books</strong>
-            <ul>
-              <li><input type="checkbox" class="wishlist-checkbox wishlist-sub-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Altered Carbon</span><span class="wishlist-note">Richard K. Morgan</span></span></li>
-              <li><input type="checkbox" class="wishlist-checkbox wishlist-sub-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Broken Angels</span><span class="wishlist-note">Richard K. Morgan</span></span></li>
-              <li><input type="checkbox" class="wishlist-checkbox wishlist-sub-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Woken Furies</span><span class="wishlist-note">Richard K. Morgan</span></span></li>
-            </ul>
-          </li>
-          <li><strong>Cyberpunk</strong>
-            <ul>
-              <li><input type="checkbox" class="wishlist-checkbox wishlist-sub-checkbox" checked> <span class="wishlist-text-wrapper"><span class="wishlist-title">Do androids dream of electric sheep</span><span class="wishlist-note">Philip K. Dick</span></span></li>
-              <li><input type="checkbox" class="wishlist-checkbox wishlist-sub-checkbox" checked> <span class="wishlist-text-wrapper"><span class="wishlist-title">Hothouse</span><span class="wishlist-note">Brian Aldiss</span></span></li>
-              <li><input type="checkbox" class="wishlist-checkbox wishlist-sub-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Non-stop</span><span class="wishlist-note">Brian Aldiss</span></span></li>
-            </ul>
-          </li>
-          <li><strong>Russian History</strong>
-            <ul>
-              <li><input type="checkbox" class="wishlist-checkbox wishlist-sub-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">The Romanovs</span><span class="wishlist-note">Simon Sebag Montefiore</span></span></li>
-              <li><input type="checkbox" class="wishlist-checkbox wishlist-sub-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Young Stalin</span><span class="wishlist-note">Simon Sebag Montefiore</span></span></li>
-              <li><input type="checkbox" class="wishlist-checkbox wishlist-sub-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Stalin: the court of the red tsar</span><span class="wishlist-note">Simon Sebag Montefiore</span></span></li>
-              <li><input type="checkbox" class="wishlist-checkbox wishlist-sub-checkbox" checked> <span class="wishlist-text-wrapper"><span class="wishlist-title">One day in the life of Ivan Denisovich</span><span class="wishlist-note">Aleksandr Solzhenitsyn</span></span></li>
-              <li><input type="checkbox" class="wishlist-checkbox wishlist-sub-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">The Gulag archipelago, 1918-1956 : an experiment in literary investigation</span><span class="wishlist-note">Aleksandr Solzhenitsyn</span></span></li>
-              <li><input type="checkbox" class="wishlist-checkbox wishlist-sub-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">The Children of the Arbat: A Novel</span><span class="wishlist-note">Anatoly Rybakov</span></span></li>
-            </ul>
-          </li>
-          <li><strong>Indian History</strong>
-            <ul>
-              <li><input type="checkbox" class="wishlist-checkbox wishlist-sub-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">The Discovery of India</span><span class="wishlist-note">Jawaharlal Nehru</span></span></li>
-              <li><input type="checkbox" class="wishlist-checkbox wishlist-sub-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">An Era of Darkness: The British Empire in India</span><span class="wishlist-note">Shashi Tharoor</span></span></li>
-              <li><input type="checkbox" class="wishlist-checkbox wishlist-sub-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">The last Mughal : the fall of a dynasty, Delhi, 1857</span><span class="wishlist-note">William Dalrymple</span></span></li>
-              <li><input type="checkbox" class="wishlist-checkbox wishlist-sub-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Savarkar: Echoes from a Forgotten Past, 1883-1924</span><span class="wishlist-note">Vikram Sampath</span></span></li>
-              <li><input type="checkbox" class="wishlist-checkbox wishlist-sub-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Savarkar (Part 2): A Contested Legacy, 1924-1966</span><span class="wishlist-note">Vikram Sampath</span></span></li>
-              <li><input type="checkbox" class="wishlist-checkbox wishlist-sub-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">The great Partition : the making of India and Pakistan</span><span class="wishlist-note">Yasmin Khan</span></span></li>
-              <li><input type="checkbox" class="wishlist-checkbox wishlist-sub-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Inglorious empire : what the British did to India</span><span class="wishlist-note">Shashi Tharoor</span></span></li>
-              <li><input type="checkbox" class="wishlist-checkbox wishlist-sub-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">India after Gandhi : the history of the world's largest democracy</span><span class="wishlist-note">Ramachandra Guha</span></span></li>
-              <li><input type="checkbox" class="wishlist-checkbox wishlist-sub-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">A history of the Sikhs</span><span class="wishlist-note">Khushwant Singh</span></span></li>
-              <li><input type="checkbox" class="wishlist-checkbox wishlist-sub-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">The Paradoxical Prime Minister</span><span class="wishlist-note">Shashi Tharoor</span></span></li>
-              <li><input type="checkbox" class="wishlist-checkbox wishlist-sub-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">India that is Bharat: Coloniality, Civilisation, Constitution</span><span class="wishlist-note">J. Sai Deepak</span></span></li>
-              <li><input type="checkbox" class="wishlist-checkbox wishlist-sub-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">India : a wounded civilization</span><span class="wishlist-note">V.S. Naipaul</span></span></li>
-              <li><input type="checkbox" class="wishlist-checkbox wishlist-sub-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">The argumentative Indian : writings on Indian history, culture and identity</span><span class="wishlist-note">Amartya Sen</span></span></li>
-            </ul>
-          </li>
-          <li><strong>Self help</strong>
-            <ul>
-              <li><input type="checkbox" class="wishlist-checkbox wishlist-sub-checkbox" checked> <span class="wishlist-text-wrapper"><span class="wishlist-title">Atomic habits : an easy and proven way to build good habits and break bad ones : tiny changes, remarkable results</span><span class="wishlist-note">James Clear</span></span></li>
-              <li><input type="checkbox" class="wishlist-checkbox wishlist-sub-checkbox" checked> <span class="wishlist-text-wrapper"><span class="wishlist-title">How to win friends and influence people</span><span class="wishlist-note">Dale Carnegie</span></span></li>
-              <li><input type="checkbox" class="wishlist-checkbox wishlist-sub-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Why we sleep : the new science of sleep and dreams</span><span class="wishlist-note">Matthew Walker</span></span></li>
-              <li><input type="checkbox" class="wishlist-checkbox wishlist-sub-checkbox" checked> <span class="wishlist-text-wrapper"><span class="wishlist-title">Designing the Mind: The Principles of Psychitecture</span><span class="wishlist-note">Ryan A. Bush</span></span></li>
-<li><input type="checkbox" class="wishlist-checkbox wishlist-sub-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Remember: The Science of Memory and the Art of Forgetting</span><span class="wishlist-note">Lisa Genova</span></span></li>
-<li><input type="checkbox" class="wishlist-checkbox wishlist-sub-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Dopamine Nation: Why our Addiction to Pleasure is Causing us Pain</span><span class="wishlist-note">Anna Lembke</span></span></li>
-<li><input type="checkbox" class="wishlist-checkbox wishlist-sub-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Behave: The bestselling exploration of why humans behave as they do</span><span class="wishlist-note">Robert Sapolsky</span></span></li>
-<li><input type="checkbox" class="wishlist-checkbox wishlist-sub-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Authentic Happiness: Using the New Positive Psychology to Realise your Potential for Lasting Fulfilment</span><span class="wishlist-note">Martin E.P. Seligman</span></span></li>
-<li><input type="checkbox" class="wishlist-checkbox wishlist-sub-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Learned Optimism: How to Change Your Mind and Your Life</span><span class="wishlist-note">Martin E.P. Seligman</span></span></li>
-<li><input type="checkbox" class="wishlist-checkbox wishlist-sub-checkbox" checked> <span class="wishlist-text-wrapper"><span class="wishlist-title">The power of boredom</span><span class="wishlist-note">Mark A. Hawkins</span></span></li>
-              <li><input type="checkbox" class="wishlist-checkbox wishlist-sub-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Flourish : a new understanding of happiness and well-being--and how to achieve them</span><span class="wishlist-note">Martin E.P. Seligman</span></span></li>
-            </ul>
-          </li>
-          <li><strong>Economics/Psychology</strong>
-            <ul>
-              <li><input type="checkbox" class="wishlist-checkbox wishlist-sub-checkbox" checked> <span class="wishlist-text-wrapper"><span class="wishlist-title">Misbehaving : how economics became behavioural</span><span class="wishlist-note">Richard H. Thaler</span></span></li>
-              <li><input type="checkbox" class="wishlist-checkbox wishlist-sub-checkbox" checked> <span class="wishlist-text-wrapper"><span class="wishlist-title">Thinking, fast and slow</span><span class="wishlist-note">Daniel Kahneman</span></span></li>
-              <li><input type="checkbox" class="wishlist-checkbox wishlist-sub-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Influence, New and Expanded UK: The Psychology of Persuasion</span><span class="wishlist-note">Robert B. Cialdini</span></span></li>
-              <li><input type="checkbox" class="wishlist-checkbox wishlist-sub-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Stumbling on happiness</span><span class="wishlist-note">Daniel Gilbert</span></span></li>
-              <li><input type="checkbox" class="wishlist-checkbox wishlist-sub-checkbox" checked> <span class="wishlist-text-wrapper"><span class="wishlist-title">The paradox of choice : why more is less</span><span class="wishlist-note">Barry Schwartz</span></span></li>
-              <li><input type="checkbox" class="wishlist-checkbox wishlist-sub-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">The righteous mind : why good people are divided by politics and religion</span><span class="wishlist-note">Jonathan Haidt</span></span></li>
-              <li><input type="checkbox" class="wishlist-checkbox wishlist-sub-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Flow : the psychology of optimal experience</span><span class="wishlist-note">Mihaly Csikszentmihalyi</span></span></li>
-              <li><input type="checkbox" class="wishlist-checkbox wishlist-sub-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Development as freedom</span><span class="wishlist-note">Amartya Sen</span></span></li>
-              <li><input type="checkbox" class="wishlist-checkbox wishlist-sub-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">The Sane Society</span><span class="wishlist-note">Erich Fromm</span></span></li>
-            </ul>
-          </li>
-          <li><strong>F1</strong>
-            <ul>
-                <li><input type="checkbox" class="wishlist-checkbox wishlist-sub-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Surviving to Drive: The No. 1 Sunday Times Bestseller</span><span class="wishlist-note">Guenther Steiner</span></span></li>
-                <li><input type="checkbox" class="wishlist-checkbox wishlist-sub-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">To Hell and Back: An Autobiography</span><span class="wishlist-note">Niki Lauda</span></span></li>
-                <li><input type="checkbox" class="wishlist-checkbox wishlist-sub-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">How to Build a Car: The Autobiography of the World's Greatest Formula 1 Designer</span><span class="wishlist-note">Adrian Newey</span></span></li>
-                <li><input type="checkbox" class="wishlist-checkbox wishlist-sub-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Total Competition: Lessons in Strategy from Formula One</span><span class="wishlist-note">Ross Brawn, Adam Parr</span></span></li>
-                <li><input type="checkbox" class="wishlist-checkbox wishlist-sub-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">High Performance</span><span class="wishlist-note">Jake Humphrey, Damian Hughes</span></span></li>
-            </ul>
-          </li>
-          <li><strong>Others</strong>
-            <ul>
-                <li><input type="checkbox" class="wishlist-checkbox wishlist-sub-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Seven Pillars of Wisdom</span><span class="wishlist-note">T. E. Lawrence</span></span></li>
-                <li><input type="checkbox" class="wishlist-checkbox wishlist-sub-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">The will to change : men, masculinity, and love</span><span class="wishlist-note">bell hooks</span></span></li>
-                <li><input type="checkbox" class="wishlist-checkbox wishlist-sub-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">All Our Broken Idols</span><span class="wishlist-note">Paul M. M. Cooper</span></span></li>
-                <li><input type="checkbox" class="wishlist-checkbox wishlist-sub-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">River of Ink</span><span class="wishlist-note">Paul M. M. Cooper</span></span></li>
-                <li><input type="checkbox" class="wishlist-checkbox wishlist-sub-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Fall of Civilizations: Stories of Greatness and Decline – based on the hit podcast</span><span class="wishlist-note">Paul M. M. Cooper</span></span></li>
-                <li><input type="checkbox" class="wishlist-checkbox wishlist-sub-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Flatline Constructs: Gothic Materialism and Cybernetic Theory-Fiction</span><span class="wishlist-note">Owen Hatherley</span></span></li>
-                <li><input type="checkbox" class="wishlist-checkbox wishlist-sub-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Sun and Steel</span><span class="wishlist-note">Yukio Mishima</span></span></li>
-                <li><input type="checkbox" class="wishlist-checkbox wishlist-sub-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Infinite Jest: David Foster Wallace: a novel</span><span class="wishlist-note">David Foster Wallace</span></span></li>
-                <li><input type="checkbox" class="wishlist-checkbox wishlist-sub-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Crime and Punishment</span><span class="wishlist-note">Fyodor Dostoevsky</span></span></li>
-            </ul>
-          </li>
-        </ul>
+      <div id="wishlist-nav-buttons">
+        <button onclick="document.getElementById('wishlist-books').scrollIntoView({behavior: 'smooth'});">Books</button>
+        <button onclick="document.getElementById('wishlist-movies').scrollIntoView({behavior: 'smooth'});">Movies</button>
+        <button onclick="document.getElementById('wishlist-games').scrollIntoView({behavior: 'smooth'});">Games</button>
+        <button onclick="document.getElementById('wishlist-restaurants').scrollIntoView({behavior: 'smooth'});">Restaurants</button>
+        <button onclick="document.getElementById('wishlist-tvshows').scrollIntoView({behavior: 'smooth'});">TV Shows</button>
+      </div>
+      <div id="wishlist-action-buttons" style="display: flex; gap: 12px; justify-content: center; margin-bottom: 24px;">
+        <button id="addBookBtn" class="wishlist-action-btn">Add Book</button>
+        <button id="addMovieBtn" class="wishlist-action-btn">Add Movie</button>
+        <button id="addGameBtn" class="wishlist-action-btn">Add Game</button>
+        <button id="addRestaurantBtn" class="wishlist-action-btn">Add Restaurant</button>
+        <button id="addTvShowBtn" class="wishlist-action-btn">Add TV Show</button>
       </div>
       <div class="wishlist-category">
-        <h3>Movies</h3>
-        <ul>
-          <li><input type="checkbox" class="wishlist-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Dune: Part Two</span><span class="wishlist-note"></span></span></li>
-          <li><input type="checkbox" class="wishlist-checkbox" checked> <span class="wishlist-text-wrapper"><span class="wishlist-title">Blade Runner 2049</span><span class="wishlist-note"></span></span></li>
-          <li><input type="checkbox" class="wishlist-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">The Godfather</span></span></li>
-          <li><input type="checkbox" class="wishlist-checkbox" checked> <span class="wishlist-text-wrapper"><span class="wishlist-title">Inception</span></span></li>
-          <li><input type="checkbox" class="wishlist-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">The Departed</span></span></li>
-          <li><input type="checkbox" class="wishlist-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">The Hateful Eight</span></span></li>
-          <li><input type="checkbox" class="wishlist-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Lawrence of Arabia</span></span></li>
-          <li><input type="checkbox" class="wishlist-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">The Great Escape</span></span></li>
-          <li><input type="checkbox" class="wishlist-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Se7en</span></span></li>
-          <li><input type="checkbox" class="wishlist-checkbox" checked> <span class="wishlist-text-wrapper"><span class="wishlist-title">Silence of the Lambs</span></span></li>
-          <li><input type="checkbox" class="wishlist-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">The Shining</span></span></li>
-          <li><input type="checkbox" class="wishlist-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Reservoir Dogs</span></span></li>
-          <li><input type="checkbox" class="wishlist-checkbox" checked> <span class="wishlist-text-wrapper"><span class="wishlist-title">Snatch</span></span></li>
-          <li><input type="checkbox" class="wishlist-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Lock, Stock and Two Smoking Barrels</span></span></li>
-          <li><input type="checkbox" class="wishlist-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Taxi Driver</span></span></li>
-          <li><input type="checkbox" class="wishlist-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Killers of the Flower Moon</span></span></li>
-          <li><input type="checkbox" class="wishlist-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Gladiator</span></span></li>
-          <li><input type="checkbox" class="wishlist-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Kingdom of Heaven</span></span></li>
-          <li><input type="checkbox" class="wishlist-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Scarface</span></span></li>
-          <li><input type="checkbox" class="wishlist-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Schindlers List</span></span></li>
-        </ul>
+        <h3 id="wishlist-books">Books</h3>
+        <ul style="list-style: none; padding-left: 0;" id="wishlist-books-list"></ul>
       </div>
       <div class="wishlist-category">
-        <h3>Games</h3>
-        <ul>
-          <li><strong>Games to play over summer 2024</strong></li>
-          <li><input type="checkbox" class="wishlist-checkbox" checked> <span class="wishlist-text-wrapper"><span class="wishlist-title">Zelda BOTW</span></span></li>
-          <li><input type="checkbox" class="wishlist-checkbox" checked> <span class="wishlist-text-wrapper"><span class="wishlist-title">Control</span></span></li>
-          <li><input type="checkbox" class="wishlist-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Alan Wake 2</span></span></li>
-          <li><input type="checkbox" class="wishlist-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Spider Man Miles Morales</span></span></li>
-          <li><input type="checkbox" class="wishlist-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">The last of us</span></span></li>
-          <li><input type="checkbox" class="wishlist-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Cyberpunk 2077</span></span></li>
-          <li><input type="checkbox" class="wishlist-checkbox" checked> <span class="wishlist-text-wrapper"><span class="wishlist-title">Horizon Zero Dawn</span></span></li>
-          <li><input type="checkbox" class="wishlist-checkbox" checked> <span class="wishlist-text-wrapper"><span class="wishlist-title">Horizon Forbidden West</span></span></li>
-          <li><input type="checkbox" class="wishlist-checkbox" checked> <span class="wishlist-text-wrapper"><span class="wishlist-title">Ghost of Tsushima</span></span></li>
-          <li><input type="checkbox" class="wishlist-checkbox" checked> <span class="wishlist-text-wrapper"><span class="wishlist-title">God of War</span></span></li>
-          <li><strong>PS4 Games</strong></li>
-          <li><input type="checkbox" class="wishlist-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Uncharted Nathan Drake Collection</span></span></li>
-          <li><input type="checkbox" class="wishlist-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Shadow of the Colossus</span></span></li>
-          <li><input type="checkbox" class="wishlist-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Ratchet and Clank</span></span></li>
-          <li><input type="checkbox" class="wishlist-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Infamous Second Son</span></span></li>
-          <li><input type="checkbox" class="wishlist-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">God of war 1, 2 + 3 remastered</span></span></li>
-          <li><input type="checkbox" class="wishlist-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Crash Bandicoot N sane trilogy</span></span></li>
-          <li><input type="checkbox" class="wishlist-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Assassins Creed The Ezio Collection</span></span></li>
-          <li><input type="checkbox" class="wishlist-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Simpsons hit n run</span></span></li>
-          <li><input type="checkbox" class="wishlist-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Gta San Andreas</span></span></li>
-          <li><strong>Xbox Games</strong></li>
-          <li><input type="checkbox" class="wishlist-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">GoW</span></span></li>
-          <li><input type="checkbox" class="wishlist-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Fable 2</span></span></li>
-          <li><input type="checkbox" class="wishlist-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Saints row 2 gentlemen of the row mod</span></span></li>
-          <li><input type="checkbox" class="wishlist-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Red Dead Redemption</span></span></li>
-          <li><input type="checkbox" class="wishlist-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Red Dead Redemption Undead Nightmare</span></span></li>
-          <li><strong>Games to play over summer 2025</strong></li>
-          <li><input type="checkbox" class="wishlist-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Red dead Redemption</span></span></li>
-          <li><input type="checkbox" class="wishlist-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Red dead Redemption Undead Nightmare</span></span></li>
-          <li><input type="checkbox" class="wishlist-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Uncharted 4 Legacy of Thieves</span></span></li>
-          <li><input type="checkbox" class="wishlist-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Uncharted Nathan Drake Collection</span></span></li>
-          <li><input type="checkbox" class="wishlist-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Infamous 1+2</span></span></li>
-          <li><input type="checkbox" class="wishlist-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Fallout London</span></span></li>
-          <li><input type="checkbox" class="wishlist-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">The Outer Worlds</span></span></li>
-          <li><input type="checkbox" class="wishlist-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Tainted Grail: The Fall of Avalon</span></span></li>
-          <li><input type="checkbox" class="wishlist-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Life is Strange Remastered</span></span></li>
-          <li><input type="checkbox" class="wishlist-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">The Walking Dead The Telltale Definitive Series</span></span></li>
-          <li><strong>Remedy Games</strong></li>
-          <li><input type="checkbox" class="wishlist-checkbox" checked> <span class="wishlist-text-wrapper"><span class="wishlist-title">Alan Wake</span></span></li>
-          <li><input type="checkbox" class="wishlist-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Quantum Break</span></span></li>
-          <li><input type="checkbox" class="wishlist-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Control</span></span></li>
-          <li><input type="checkbox" class="wishlist-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Alan Wake 2</span></span></li>
-          <li><strong>Rockstar Games</strong></li>
-          <li><input type="checkbox" class="wishlist-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">GTA The Trilogy</span></span></li>
-          <li><input type="checkbox" class="wishlist-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Red Dead Redemption</span></span></li>
-          <li><input type="checkbox" class="wishlist-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Red Dead Redemption Undead Nightmare</span></span></li>
-          <li><input type="checkbox" class="wishlist-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Red Dead Redemption 2</span></span></li>
-          <li><input type="checkbox" class="wishlist-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">L.A Noire</span></span></li>
-          <li><strong>Bioware Games</strong></li>
-          <li><input type="checkbox" class="wishlist-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Mass effect legendary edition</span></span></li>
-          <li><input type="checkbox" class="wishlist-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Dragon age 1</span></span></li>
-          <li><input type="checkbox" class="wishlist-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Star Wars KOTOR</span></span></li>
-          <li><strong>PS Exclusives</strong></li>
-          <li><input type="checkbox" class="wishlist-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Spider Man Miles Morales</span></span></li>
-          <li><input type="checkbox" class="wishlist-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Spider Man 2</span></span></li>
-          <li><input type="checkbox" class="wishlist-checkbox" checked> <span class="wishlist-text-wrapper"><span class="wishlist-title">God of War</span></span></li>
-          <li><input type="checkbox" class="wishlist-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">God of War Eagnarok</span></span></li>
-          <li><input type="checkbox" class="wishlist-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Uncharted 4 Legacy of Thieves</span></span></li>
-          <li><input type="checkbox" class="wishlist-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Uncharted Nathan Drake Collection</span></span></li>
-          <li><input type="checkbox" class="wishlist-checkbox" checked> <span class="wishlist-text-wrapper"><span class="wishlist-title">Horizon Zero Dawn</span></span></li>
-          <li><input type="checkbox" class="wishlist-checkbox" checked> <span class="wishlist-text-wrapper"><span class="wishlist-title">Horizon Forbidden West</span></span></li>
-          <li><input type="checkbox" class="wishlist-checkbox" checked> <span class="wishlist-text-wrapper"><span class="wishlist-title">Ghost of Tsushima</span></span></li>
-          <li><input type="checkbox" class="wishlist-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Infamous 1+2</span></span></li>
-          <li><strong>Bethesda</strong></li>
-          <li><input type="checkbox" class="wishlist-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Morrowind - Skywind</span></span></li>
-          <li><input type="checkbox" class="wishlist-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Oblivion - Skyblivion - Oblivion Remastered?</span></span></li>
-          <li><input type="checkbox" class="wishlist-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Fallout New Vegas</span></span></li>
-          <li><input type="checkbox" class="wishlist-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Fallout 4</span></span></li>
-          <li><input type="checkbox" class="wishlist-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Starfield</span></span></li>
-          <li><strong>ID Software</strong></li>
-          <li><input type="checkbox" class="wishlist-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Doom Eternal</span></span></li>
-          <li><input type="checkbox" class="wishlist-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Wolfenstein 1 and 2</span></span></li>
-          <li><strong>CD Projekt Red</strong></li>
-          <li><input type="checkbox" class="wishlist-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Cyberpunk 2077</span></span></li>
-          <li><input type="checkbox" class="wishlist-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">The Witcher 3</span></span></li>
-          <li><strong>OTHERS</strong></li>
-          <li><input type="checkbox" class="wishlist-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Hellblade Senuas Sacrifice</span></span></li>
-          <li><input type="checkbox" class="wishlist-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">The Stanley Parable</span></span></li>
-          <li><input type="checkbox" class="wishlist-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Dishonoured 1+2</span></span></li>
-          <li><input type="checkbox" class="wishlist-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Bioshock</span></span></li>
-          <li><input type="checkbox" class="wishlist-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Firewatch</span></span></li>
-          <li><input type="checkbox" class="wishlist-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">The Invincible</span></span></li>
-          <li><input type="checkbox" class="wishlist-checkbox" checked> <span class="wishlist-text-wrapper"><span class="wishlist-title">Halo MCC</span></span></li>
-          <li><input type="checkbox" class="wishlist-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Baldurs Gate 3</span></span></li>
-          <li><input type="checkbox" class="wishlist-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Ghostrunner</span></span></li>
-          <li><input type="checkbox" class="wishlist-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Outer Wilds</span></span></li>
-          <li><input type="checkbox" class="wishlist-checkbox" checked> <span class="wishlist-text-wrapper"><span class="wishlist-title">Zelda BOTW</span></span></li>
-          <li><input type="checkbox" class="wishlist-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Citizen Sleeper</span></span></li>
-          <li><input type="checkbox" class="wishlist-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Sekiro Shadows Die Twice</span></span></li>
-          <li><input type="checkbox" class="wishlist-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Black Myth Wukong</span></span></li>
-        </ul>
+        <h3 id="wishlist-movies">Movies</h3>
+        <ul id="wishlist-movies-list"></ul>
       </div>
       <div class="wishlist-category">
-        <h3>Restaurants</h3>
-        <ul>
-          <li><input type="checkbox" class="wishlist-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Bundobust, Leeds</span><span class="wishlist-note">Indian street food</span></span></li>
-          <li><input type="checkbox" class="wishlist-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Skosh, York</span><span class="wishlist-note">Modern British</span></span></li>
-        </ul>
+        <h3 id="wishlist-games">Games</h3>
+        <ul id="wishlist-games-list"></ul>
       </div>
       <div class="wishlist-category">
-        <h3>TV Shows</h3>
-        <ul>
-          <li><strong>Netflix</strong></li>
-          <li><input type="checkbox" class="wishlist-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Blue eye samurai</span></span></li>
-          <li><input type="checkbox" class="wishlist-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Arcane</span></span></li>
-          <li><input type="checkbox" class="wishlist-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Cowboy Bebop</span></span></li>
-          <li><input type="checkbox" class="wishlist-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Breaking Bad</span></span></li>
-          <li><input type="checkbox" class="wishlist-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Narcos Mexico</span></span></li>
-          <li><input type="checkbox" class="wishlist-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">One Piece</span></span></li>
-          <li><input type="checkbox" class="wishlist-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Bojack Horseman</span></span></li>
-          <li><input type="checkbox" class="wishlist-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Kingdom</span></span></li>
-          <li><input type="checkbox" class="wishlist-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Chimp Empire</span></span></li>
-          <li><input type="checkbox" class="wishlist-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">People just do nothing</span></span></li>
-          <li><input type="checkbox" class="wishlist-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Bloodhounds</span></span></li>
-          <li><input type="checkbox" class="wishlist-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Neon Genesis Evangelion</span></span></li>
-          <li><input type="checkbox" class="wishlist-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Rise of empires: Ottoman</span></span></li>
-          <li><input type="checkbox" class="wishlist-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">The diplomat</span></span></li>
-          <li><strong>Others</strong></li>
-          <li><input type="checkbox" class="wishlist-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Atlanta</span></span></li>
-          <li><input type="checkbox" class="wishlist-checkbox" checked> <span class="wishlist-text-wrapper"><span class="wishlist-title">Invincible</span></span></li>
-          <li><input type="checkbox" class="wishlist-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Attack on Titan</span></span></li>
-          <li><input type="checkbox" class="wishlist-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Death Note</span></span></li>
-          <li><input type="checkbox" class="wishlist-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Demon Slayer</span></span></li>
-          <li><input type="checkbox" class="wishlist-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">The last of us</span></span></li>
-          <li><input type="checkbox" class="wishlist-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">Gen V</span></span></li>
-          <li><input type="checkbox" class="wishlist-checkbox" checked> <span class="wishlist-text-wrapper"><span class="wishlist-title">Severance</span></span></li>
-          <li><input type="checkbox" class="wishlist-checkbox"> <span class="wishlist-text-wrapper"><span class="wishlist-title">The Penguin</span></span></li>
-        </ul>
+        <h3 id="wishlist-restaurants">Restaurants</h3>
+        <ul id="wishlist-restaurants-list"></ul>
+      </div>
+      <div class="wishlist-category">
+        <h3 id="wishlist-tvshows">TV Shows</h3>
+        <ul id="wishlist-tvshows-list"></ul>
+      </div>
+      <div style="text-align:center; margin-top: 24px;">
+        <button class="back-to-top" onclick="document.getElementById('wishlist-section').scrollIntoView({behavior: 'smooth'});">Back to Top</button>
       </div>
     </section>
 
@@ -688,6 +395,117 @@
         </article>
     </main>
     
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+
+    <!-- ====== WISHLIST MODALS ====== -->
+    <!-- Add Book Modal -->
+    <div id="addBookModal" class="wishlist-modal">
+      <div class="wishlist-modal-content">
+        <span class="wishlist-modal-close" data-modal="addBookModal">&times;</span>
+        <h2>Add Book</h2>
+        <label for="bookNameInput">Name of Book:</label>
+        <input type="text" id="bookNameInput" placeholder="Type name of book here">
+        <label for="bookAuthorInput">Author:</label>
+        <input type="text" id="bookAuthorInput" placeholder="Type author name here">
+        <label for="bookGenreSelect">Genre/Section:</label>
+        <select id="bookGenreSelect">
+          <option value="GOT">GOT</option>
+          <option value="The Lord of the Rings">The Lord of the Rings</option>
+          <option value="Dune Books">Dune Books</option>
+          <option value="Star Wars Books">Star Wars Books</option>
+          <option value="Shogun Books">Shogun Books</option>
+          <option value="Murakami Books">Murakami Books</option>
+          <option value="Neuromancer Books">Neuromancer Books</option>
+          <option value="Altered Carbon Books">Altered Carbon Books</option>
+          <option value="Cyberpunk">Cyberpunk</option>
+          <option value="Russian History">Russian History</option>
+          <option value="Indian History">Indian History</option>
+          <option value="Self help">Self help</option>
+          <option value="Economics/Psychology">Economics/Psychology</option>
+          <option value="F1">F1</option>
+          <option value="Others">Others</option>
+          <option value="new-section">New Section</option>
+        </select>
+        <div id="bookOtherSectionContainer" style="display:none;">
+          <label for="bookOtherSectionInput">New Section:</label>
+          <input type="text" id="bookOtherSectionInput" placeholder="Enter new section name">
+        </div>
+        <button id="submitAddBook" class="wishlist-action-btn">Submit</button>
+      </div>
+    </div>
+
+    <!-- Add Movie Modal -->
+    <div id="addMovieModal" class="wishlist-modal">
+      <div class="wishlist-modal-content">
+        <span class="wishlist-modal-close" data-modal="addMovieModal">&times;</span>
+        <h2>Add Movie</h2>
+        <label for="movieNameInput">Name of Movie:</label>
+        <input type="text" id="movieNameInput" placeholder="Type name of movie here">
+        <button id="submitAddMovie" class="wishlist-action-btn">Submit</button>
+      </div>
+    </div>
+
+    <!-- Add Game Modal -->
+    <div id="addGameModal" class="wishlist-modal">
+      <div class="wishlist-modal-content">
+        <span class="wishlist-modal-close" data-modal="addGameModal">&times;</span>
+        <h2>Add Game</h2>
+        <label for="gameNameInput">Name of Game:</label>
+        <input type="text" id="gameNameInput" placeholder="Type name of game here">
+        <label for="gameGenreSelect">Genre/Section:</label>
+        <select id="gameGenreSelect">
+          <option value="Games to play over summer 2024">Games to play over summer 2024</option>
+          <option value="PS4 Games">PS4 Games</option>
+          <option value="Xbox Games">Xbox Games</option>
+          <option value="Games to play over summer 2025">Games to play over summer 2025</option>
+          <option value="Remedy Games">Remedy Games</option>
+          <option value="Rockstar Games">Rockstar Games</option>
+          <option value="Bioware Games">Bioware Games</option>
+          <option value="PS Exclusives">PS Exclusives</option>
+          <option value="Bethesda">Bethesda</option>
+          <option value="ID Software">ID Software</option>
+          <option value="CD Projekt Red">CD Projekt Red</option>
+          <option value="OTHERS">OTHERS</option>
+          <option value="new-section">New Section</option>
+        </select>
+        <div id="gameOtherSectionContainer" style="display:none;">
+          <label for="gameOtherSectionInput">New Section:</label>
+          <input type="text" id="gameOtherSectionInput" placeholder="Enter new section name">
+        </div>
+        <button id="submitAddGame" class="wishlist-action-btn">Submit</button>
+      </div>
+    </div>
+
+    <!-- Add Restaurant Modal -->
+    <div id="addRestaurantModal" class="wishlist-modal">
+      <div class="wishlist-modal-content">
+        <span class="wishlist-modal-close" data-modal="addRestaurantModal">&times;</span>
+        <h2>Add Restaurant</h2>
+        <label for="restaurantNameInput">Name of Restaurant:</label>
+        <input type="text" id="restaurantNameInput" placeholder="Type name of restaurant here">
+        <label for="restaurantLocationInput">Location:</label>
+        <input type="text" id="restaurantLocationInput" placeholder="Type location here">
+        <label for="restaurantCuisineInput">Cuisine:</label>
+        <input type="text" id="restaurantCuisineInput" placeholder="Type cuisine here">
+        <button id="submitAddRestaurant" class="wishlist-action-btn">Submit</button>
+      </div>
+    </div>
+
+    <!-- Add TV Show Modal -->
+    <div id="addTvShowModal" class="wishlist-modal">
+      <div class="wishlist-modal-content">
+        <span class="wishlist-modal-close" data-modal="addTvShowModal">&times;</span>
+        <h2>Add TV Show</h2>
+        <label for="tvShowNameInput">Name of Show:</label>
+        <input type="text" id="tvShowNameInput" placeholder="Type name of show here">
+        <label for="tvShowServiceInput">Streaming Service:</label>
+        <input type="text" id="tvShowServiceInput" placeholder="Type streaming service here">
+        <button id="submitAddTvShow" class="wishlist-action-btn">Submit</button>
+      </div>
+    </div>
+
     <script src="script.js"></script>
 </body>
 </html>
