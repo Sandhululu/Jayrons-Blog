@@ -456,6 +456,25 @@ function getWishlistCollection(category) {
   return db.collection('wishlists').doc(getSyncKey()).collection(category);
 }
 
+// Section order for books
+const sectionOrder = {
+  "GOT": 1,
+  "The Lord of the Rings": 2,
+  "Dune Books": 3,
+  "Star Wars Books": 4,
+  "Shogun Books": 5,
+  "Murakami Books": 6,
+  "Neuromancer Books": 7,
+  "Altered Carbon Books": 8,
+  "Cyberpunk": 9,
+  "Russian History": 10,
+  "Indian History": 11,
+  "Self help": 12,
+  "Economics/Psychology": 13,
+  "F1": 14,
+  "Others": 15
+};
+
 // 2. Render functions for each category
 function renderWishlistCategory(category, items) {
   const ul = document.getElementById(`wishlist-${category}-list`);
@@ -471,7 +490,13 @@ function renderWishlistCategory(category, items) {
       sectionMap[section].push(item);
     });
 
-    Object.keys(sectionMap).forEach(section => {
+    // Sort section keys for books by sectionOrder
+    let sectionKeys = Object.keys(sectionMap);
+    if (category === 'books') {
+      sectionKeys = sectionKeys.sort((a, b) => (sectionOrder[a] || 999) - (sectionOrder[b] || 999));
+    }
+
+    sectionKeys.forEach(section => {
       // Sort items in section by 'order' field if present
       sectionMap[section].sort((a, b) => (a.order || 0) - (b.order || 0));
       // Section heading
