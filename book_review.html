@@ -4,105 +4,106 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title id="bookReviewTitle">Book Review</title>
-    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="styles.css">
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
 </head>
 <body>
     <header>
-        <h1><a href="/Jayrons-Blog/">Jayron's Blog</a></h1>
+        <h1 class="page-title" id="reviewPageTitle">📚 Book Review: Loading...</h1>
+        <a class="back-btn" href="/Jayrons-Blog/">⬅ Back to Blog</a>
     </header>
-    <main>
-        <a class="back-btn" href="/Jayrons-Blog/">← Back to Blog</a>
-        <h2 class="page-title" id="reviewPageTitle">📖 Book Review: Loading...</h2>
-    
-        <div class="review-container" id="bookReviewContainer">
-            <div class="book-cover" id="bookCoverContainer"></div>
-            <div class="review-content" id="bookReviewContent">
-                <p id="bookAuthor"></p>
-                <p id="bookGenre"></p>
-                <p id="bookReadingTime"></p>
-                <p id="bookTotalWords"></p>
-                <p id="bookRating" class="post p"></p>
-                <hr class="divider">
-                <div id="bookReviewText" class="review-text"></div>
-            </div>
+
+    <div class="review-container" id="reviewContainer">
+        <!-- Book Cover -->
+        <div class="book-cover">
+            <img id="bookImage" src="" alt="Book Image" loading="lazy">
         </div>
-    </main>
-    <footer>
-        <p>&copy; 2025 Jayron's Blog</p>
-    </footer>
+
+        <!-- Review Content -->
+        <div class="review-content">
+            <p id="bookAuthor"></p>
+            <p id="bookGenre"></p>
+            <p id="bookReadingTime"></p>
+            <p id="bookTotalWords"></p>
+            <p id="bookFinishedOn"></p>
+            <p id="bookRating" class="post p"></p>
+
+            <hr class="divider">
+
+            <div id="bookReviewText" class="review-text"></div>
+        </div>
+    </div>
+
+    <button class="back-to-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'});">Back to Top</button>
+
     <script>
-      const firebaseConfig = {
-        apiKey: "AIzaSyD4-qfOjNKQaQVOMpmOWEyAHGnlXXAI6gA",
-        authDomain: "jayrons-blog.firebaseapp.com",
-        projectId: "jayrons-blog",
-      };
-      if (!window.firebase.apps.length) {
-        window.firebase.initializeApp(firebaseConfig);
-      }
-      const db = window.firebase.firestore();
-
-      async function loadBookReview() {
-        const urlParams = new URLSearchParams(window.location.search);
-        const id = urlParams.get('id');
-
-        if (!id) {
-          document.getElementById('reviewPageTitle').textContent = 'No Book ID provided.';
-          document.getElementById('bookReviewContainer').style.display = 'none';
-          return;
+        const firebaseConfig = {
+            apiKey: "AIzaSyD4-qfOjNKQaQVOMpmOWEyAHGnlXXAI6gA",
+            authDomain: "jayrons-blog.firebaseapp.com",
+            projectId: "jayrons-blog",
+            storageBucket: "jayrons-blog.firebasestorage.app",
+            messagingSenderId: "415462374722",
+            appId: "1:415462374722:web:2463285dcb962b2df95cdb",
+            measurementId: "G-6NENJFX1YY"
+        };
+        if (!window.firebase.apps.length) {
+            window.firebase.initializeApp(firebaseConfig);
         }
+        const db = window.firebase.firestore();
 
-        try {
-          const docRef = db.collection('posts').doc(id);
-          const doc = await docRef.get();
+        document.addEventListener('DOMContentLoaded', async () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const postId = urlParams.get('id');
 
-          if (!doc.exists) {
-            document.getElementById('reviewPageTitle').textContent = 'Book not found.';
-            document.getElementById('bookReviewContainer').style.display = 'none';
-            return;
-          }
+            if (postId) {
+                try {
+                    const docRef = db.collection('posts').doc(postId);
+                    const doc = await docRef.get();
 
-          const post = doc.data();
+                    if (doc.exists) {
+                        const post = doc.data();
+                        // Update page title
+                        document.getElementById('bookReviewTitle').textContent = `Book Review: ${post.title}`;
+                        document.getElementById('reviewPageTitle').textContent = `📚 Book Review: ${post.title}`;
 
-          document.getElementById('bookReviewTitle').textContent = '📖 Book Review: ' + (post.title || '');
-          document.getElementById('reviewPageTitle').textContent = '📖 Book Review: ' + (post.title || '');
+                        // Render Book details
+                        document.getElementById('bookImage').src = post.imageUrl || '';
+                        document.getElementById('bookImage').alt = post.title || 'Book Image';
+                        document.getElementById('bookAuthor').innerHTML = `<strong>✍️ Author:</strong> ${post.author || 'N/A'}`;
+                        document.getElementById('bookGenre').innerHTML = `<strong>🎭 Genre:</strong> ${post.genre || 'N/A'}`;
+                        document.getElementById('bookReadingTime').innerHTML = `<strong>⏳ Reading Time:</strong> ${post.readingTime || 'N/A'}`;
+                        document.getElementById('bookTotalWords').innerHTML = `<strong>📚 Total Words:</strong> ${post.totalWords || 'N/A'}`;
+                        document.getElementById('bookFinishedOn').innerHTML = `<strong>📅 Finished On:</strong> ${post.finishedOn || 'N/A'}`;
+                        document.getElementById('bookRating').innerHTML = `<strong>⭐ Rating:</strong> <span class="rating-bar"><span style="width: ${parseFloat(post.rating) * 10}%"></span></span> ${post.rating}/10`;
 
-          document.getElementById('bookCoverContainer').innerHTML = '';
-          if (post.imageUrl) {
-            const img = document.createElement('img');
-            img.src = post.imageUrl;
-            img.alt = post.title || 'Book cover';
-            document.getElementById('bookCoverContainer').appendChild(img);
-          }
+                        // Render review text with proper paragraph formatting
+                        const reviewTextDiv = document.getElementById('bookReviewText');
+                        reviewTextDiv.innerHTML = '';
+                        if (post.description) {
+                            post.description.split(/\n+/).forEach(paragraph => {
+                                if (paragraph.trim()) {
+                                    const p = document.createElement('p');
+                                    p.textContent = paragraph.trim();
+                                    reviewTextDiv.appendChild(p);
+                                }
+                            });
+                        }
 
-          document.getElementById('bookAuthor').innerHTML = `<strong>📚 Author:</strong> ${post.author || 'N/A'}`;
-          document.getElementById('bookGenre').innerHTML = `<strong>🎭 Genre:</strong> ${post.genre || 'N/A'}`;
-          document.getElementById('bookReadingTime').innerHTML = `<strong>⏳ Reading Time:</strong> ${post.readingTime || 'N/A'}`;
-          document.getElementById('bookTotalWords').innerHTML = `<strong>📚 Total Words:</strong> ${post.totalWords || 'N/A'}`;
-          document.getElementById('bookRating').innerHTML = `<strong>⭐ Rating:</strong> ${post.rating || 'N/A'}/10`;
-
-          const reviewTextDiv = document.getElementById('bookReviewText');
-          reviewTextDiv.innerHTML = '';
-          if (post.description) {
-            post.description.split(/\n+/).forEach(paragraph => {
-              if (paragraph.trim()) {
-                const p = document.createElement('p');
-                p.textContent = paragraph.trim();
-                reviewTextDiv.appendChild(p);
-              }
-            });
-          }
-
-        } catch (error) {
-          console.error('Error fetching book post:', error);
-          document.getElementById('reviewPageTitle').textContent = 'Error loading book review.';
-          document.getElementById('bookReviewContainer').style.display = 'none';
-        }
-      }
-
-      document.addEventListener('DOMContentLoaded', loadBookReview);
-
+                    } else {
+                        document.getElementById('reviewPageTitle').textContent = 'Book not found.';
+                        document.getElementById('reviewContainer').style.display = 'none';
+                    }
+                } catch (error) {
+                    console.error('Error fetching book post:', error);
+                    document.getElementById('reviewPageTitle').textContent = 'Error loading book review.';
+                    document.getElementById('reviewContainer').style.display = 'none';
+                }
+            } else {
+                document.getElementById('reviewPageTitle').textContent = 'No Book ID provided.';
+                document.getElementById('reviewContainer').style.display = 'none';
+            }
+        });
     </script>
 </body>
 </html> 

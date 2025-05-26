@@ -363,16 +363,10 @@ document.addEventListener("DOMContentLoaded", async function () {
       // Optionally reset fields here
     });
 
-    // Fetch and render all posts from Firestore on page load
-    try {
-      const snapshot = await db.collection('posts').orderBy('created', 'desc').get();
-      snapshot.forEach(doc => {
-        const post = doc.data();
-        post.id = doc.id;
-        renderBlogPostCard(post);
-      });
-    } catch (e) {
-      console.error('Error loading posts:', e);
+    // Initialize Firestore listener only once
+    if (!window.postsListenerInitialized) {
+      window.postsListenerInitialized = true;
+      initializePostsListener();
     }
 });
 
@@ -436,10 +430,10 @@ function filterPosts(category) {
         if (sortFilter) sortFilter.style.display = "inline-block";
         if (filterSortContainer) filterSortContainer.style.display = "block";
         if (mainRestaurantListSection) mainRestaurantListSection.style.display = "none";
-        posts.forEach(post => {
-            let belongsToCategory = post.classList.contains(category) || category === "all";
+    posts.forEach(post => {
+        let belongsToCategory = post.classList.contains(category) || category === "all";
             post.style.display = belongsToCategory ? "" : "none";
-        });
+    });
         if (category !== "restaurants") filterByRating();
     }
 }
@@ -869,6 +863,7 @@ document.getElementById('submitAddTvShow').addEventListener('click', function() 
 auth.onAuthStateChanged(function(user) {
     currentUser = user;
     updateAuthBtn(user);
+    initializePostsListener();
 
     // Detach old listeners before potentially attaching new ones
     wishlistUnsubs.forEach(unsub => unsub && unsub());
@@ -1114,11 +1109,8 @@ function slugify(text) {
     .replace(/-+$/, '');        // Trim - from end of text
 }
 
-// Render a blog post card in #blog-posts
-function renderBlogPostCard(post) {
-  const blogPostsContainer = document.getElementById('blog-posts');
-  if (!blogPostsContainer) return;
-
+// Helper function to create a blog post card
+function createBlogPostCard(post) {
   // Minimal card: only image (with link) and plain text rating for all main sections
   let reviewPage = '';
   if (post.section === 'books') reviewPage = 'book_review.html';
@@ -1137,6 +1129,7 @@ function renderBlogPostCard(post) {
     article.className = 'post ' + post.section;
     if (post.rating) article.setAttribute('data-rating', post.rating);
     article.setAttribute('data-uploaded', createdDate ? new Date(createdDate).toISOString().split('T')[0] : '');
+    article.setAttribute('data-firestore', 'true'); // Mark as Firestore post
 
     // Image with link
     if (post.imageUrl) {
@@ -1155,8 +1148,8 @@ function renderBlogPostCard(post) {
       p.textContent = `Rating: ⭐ ${post.rating}/10`;
       article.appendChild(p);
     }
-    blogPostsContainer.insertBefore(article, blogPostsContainer.firstChild);
-    return;
+
+    return article;
   }
 
   // Default card for other sections
@@ -1164,6 +1157,7 @@ function renderBlogPostCard(post) {
   article.className = 'post ' + post.section;
   if (post.rating) article.setAttribute('data-rating', post.rating);
   article.setAttribute('data-uploaded', createdDate ? new Date(createdDate).toISOString().split('T')[0] : '');
+  article.setAttribute('data-firestore', 'true'); // Mark as Firestore post
 
   if (post.imageUrl) {
     const img = document.createElement('img');
@@ -1172,7 +1166,32 @@ function renderBlogPostCard(post) {
     img.loading = 'lazy';
     article.appendChild(img);
   }
-  blogPostsContainer.insertBefore(article, blogPostsContainer.firstChild);
+
+  return article;
+}
+
+// Update renderBlogPostCard to use the new helper function
+function renderBlogPostCard(post) {
+  const blogPostsContainer = document.getElementById('blog-posts');
+  if (!blogPostsContainer) return;
+
+  const article = createBlogPostCard(post);
+  if (!article) return;
+
+  // Find the correct section to insert the post
+  let targetSection = blogPostsContainer;
+  if (post.section === 'books') {
+    targetSection = document.querySelector('.books-section') || blogPostsContainer;
+  } else if (post.section === 'movies') {
+    targetSection = document.querySelector('.movies-section') || blogPostsContainer;
+  } else if (post.section === 'tvshows') {
+    targetSection = document.querySelector('.tvshows-section') || blogPostsContainer;
+  } else if (post.section === 'games') {
+    targetSection = document.querySelector('.games-section') || blogPostsContainer;
+  }
+
+  // Insert at the beginning of the section
+  targetSection.insertBefore(article, targetSection.firstChild);
 }
 
 function makeField(label, value) {
@@ -1180,3 +1199,57 @@ function makeField(label, value) {
   p.innerHTML = `<strong>${label}:</strong> ${value}`;
   return p;
 }
+
+// Initialize Firestore listener
+let postsUnsubscribe = null;
+function initializePostsListener() {
+    if (postsUnsubscribe) {
+        postsUnsubscribe();
+        postsUnsubscribe = null;
+    }
+
+    try {
+        postsUnsubscribe = db.collection('posts')
+            .orderBy('created', 'desc')
+            .onSnapshot(snapshot => {
+                const blogPostsContainer = document.getElementById('blog-posts');
+                if (!blogPostsContainer) return;
+
+                // Remove old dynamic posts
+                const dynamicPosts = blogPostsContainer.querySelectorAll('.post[data-firestore="true"]');
+                dynamicPosts.forEach(post => post.remove());
+
+                // Add new dynamic posts
+                snapshot.forEach(doc => {
+                    const post = doc.data();
+                    post.id = doc.id;
+                    const article = createBlogPostCard(post);
+                    if (article) {
+                        // Find the first post of the same category
+                        const category = post.section;
+                        const firstPostOfCategory = blogPostsContainer.querySelector(`.post.${category}`);
+                        
+                        if (firstPostOfCategory) {
+                            // Insert before the first post of this category
+                            blogPostsContainer.insertBefore(article, firstPostOfCategory);
+                        } else {
+                            // If no posts of this category exist, add to the beginning
+                            blogPostsContainer.insertBefore(article, blogPostsContainer.firstChild);
+                        }
+                    }
+                });
+            }, error => {
+                console.error('Error loading posts:', error);
+            });
+    } catch (e) {
+        console.error('Error setting up posts listener:', e);
+    }
+}
+
+// Cleanup listener when page unloads
+window.addEventListener('unload', () => {
+    if (postsUnsubscribe) {
+        postsUnsubscribe();
+        postsUnsubscribe = null;
+    }
+});

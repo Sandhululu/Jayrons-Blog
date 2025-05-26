@@ -4,49 +4,37 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title id="tvShowReviewTitle">TV Show Review</title>
-    <link rel="stylesheet" href="../styles.css">
-    <!-- Add Firebase SDKs -->
+    <link rel="stylesheet" href="styles.css">
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
-    <!-- You might need auth if you want to restrict access to review pages -->
-    <!-- <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script> -->
 </head>
 <body>
     <header>
-        <h1><a href="/Jayrons-Blog/">Jayron's Blog</a></h1>
+        <h1 class="page-title" id="reviewPageTitle">📺 TV Review: Loading...</h1>
+        <a class="back-btn" href="/Jayrons-Blog/">⬅ Back to Blog</a>
     </header>
 
-    <main>
-        <a href="/Jayrons-Blog/" class="back-btn">← Back to Blog</a>
-        <h2 id="reviewPageTitle">Loading TV Show Review...</h2>
-
-        <div id="reviewContainer" class="review-container">
-            <!-- TV Show Image -->
-            <div class="book-cover">
-                <img id="tvShowImage" src="" alt="TV Show Image" loading="lazy">
-            </div>
-
-            <div class="review-content">
-                <!-- TV Show Details -->
-                <p id="tvShowGenre"></p>
-                <p id="tvShowFinishedOn"></p>
-
-                <!-- Rating -->
-                <p id="tvShowRating" class="post p"></p>
-
-                <!-- Review Text -->
-                <div id="tvShowReviewText" class="review-text"></div>
-            </div>
+    <div class="review-container" id="reviewContainer">
+        <!-- TV Show Cover -->
+        <div class="book-cover">
+            <img id="tvShowImage" src="" alt="TV Show Image" loading="lazy">
         </div>
 
-    </main>
+        <!-- Review Content -->
+        <div class="review-content">
+            <p id="tvShowGenre"></p>
+            <p id="tvShowFinishedOn"></p>
+            <p id="tvShowRating"></p>
 
-    <footer>
-        <p>&copy; 2025 Jayron's Blog</p>
-    </footer>
+            <hr class="divider">
+
+            <div id="tvShowReviewText" class="review-text"></div>
+        </div>
+    </div>
+
+    <button class="back-to-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'});">Back to Top</button>
 
     <script>
-        // Initialize Firebase (use your config)
         const firebaseConfig = {
             apiKey: "AIzaSyD4-qfOjNKQaQVOMpmOWEyAHGnlXXAI6gA",
             authDomain: "jayrons-blog.firebaseapp.com",
@@ -74,15 +62,27 @@
                         const post = doc.data();
                         // Update page title
                         document.getElementById('tvShowReviewTitle').textContent = `TV Show Review: ${post.title}`;
-                        document.getElementById('reviewPageTitle').textContent = post.title;
+                        document.getElementById('reviewPageTitle').textContent = `📺 TV Review: ${post.title}`;
 
                         // Render TV Show details
                         document.getElementById('tvShowImage').src = post.imageUrl || '';
                         document.getElementById('tvShowImage').alt = post.title || 'TV Show Image';
-                        document.getElementById('tvShowGenre').innerHTML = `<strong>Genre:</strong> ${post.genre || 'N/A'}`;
-                        document.getElementById('tvShowFinishedOn').innerHTML = `<strong>Finished On:</strong> ${post.finishedOn || 'N/A'}`;
-                        document.getElementById('tvShowRating').innerHTML = `<strong>Rating:</strong> ⭐ ${post.rating || 'N/A'}/10`;
-                        document.getElementById('tvShowReviewText').innerHTML = post.description || '';
+                        document.getElementById('tvShowGenre').innerHTML = `<strong>🎭 Genre:</strong> ${post.genre || 'N/A'}`;
+                        document.getElementById('tvShowFinishedOn').innerHTML = `<strong>📅 Finished On:</strong> ${post.finishedOn || 'N/A'}`;
+                        document.getElementById('tvShowRating').innerHTML = `<strong>⭐ Rating:</strong> <span class="rating-bar"><span style="width: ${parseFloat(post.rating) * 10}%"></span></span> ${post.rating}/10`;
+
+                        // Render review text with proper paragraph formatting
+                        const reviewTextDiv = document.getElementById('tvShowReviewText');
+                        reviewTextDiv.innerHTML = '';
+                        if (post.description) {
+                            post.description.split(/\n+/).forEach(paragraph => {
+                                if (paragraph.trim()) {
+                                    const p = document.createElement('p');
+                                    p.textContent = paragraph.trim();
+                                    reviewTextDiv.appendChild(p);
+                                }
+                            });
+                        }
 
                     } else {
                         document.getElementById('reviewPageTitle').textContent = 'TV Show not found.';
