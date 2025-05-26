@@ -885,8 +885,17 @@ auth.onAuthStateChanged(function(user) {
             const userCol = db.collection('wishlists').doc(user.uid).collection(cat);
             try {
                 // Attempt to read anonymous data
-                const snapshot = await anonCol.get();
-                if (!snapshot.empty) {
+                const snapshot = await anonCol.get().catch(error => {
+                    // Handle potential errors during the read, including permission denied
+                    if (error.code === 'permission-denied') {
+                         console.warn(`Permission denied to read anonymous ${cat} wishlist (user ${wishlistUserId}) for authenticated user ${user.uid}. Migration skipped for this category.`);
+                    } else {
+                         console.error(`Error reading anonymous ${cat} wishlist for migration:`, error);
+                    }
+                    return null; // Return null on error so the rest of the logic doesn't run
+                });
+
+                if (snapshot && !snapshot.empty) {
                     const batch = db.batch();
                     snapshot.forEach(doc => {
                         batch.set(userCol.doc(doc.id), doc.data());
@@ -897,16 +906,13 @@ auth.onAuthStateChanged(function(user) {
                     // snapshot.forEach(doc => deleteBatch.delete(anonCol.doc(doc.id)));
                     // await deleteBatch.commit();
                     console.log(`Successfully migrated ${cat} wishlist for user ${user.uid}`);
-                } else {
+                } else if (snapshot) {
                      console.log(`Anonymous ${cat} wishlist is empty or does not exist, no migration needed for user ${user.uid}`);
-                }
+                } // If snapshot is null, error was already handled and logged in catch
+
             } catch (error) {
-                // Catch and specifically handle permission errors for the anonymous read
-                if (error.code === 'permission-denied') {
-                    console.warn(`Permission denied to read anonymous ${cat} wishlist (user ${wishlistUserId}) for authenticated user ${user.uid}. Migration skipped for this category.`);
-                } else {
-                    console.error(`Error migrating ${cat} wishlist:`, error);
-                }
+                // This outer catch is less likely to be hit now, but keep for safety
+                console.error(`Unexpected error during ${cat} wishlist migration:`, error);
             }
         });
         // Optional: Remove the anonymous wishlistUserId from localStorage AFTER migration attempt
