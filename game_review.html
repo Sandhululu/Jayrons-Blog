@@ -3,21 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Game Review</title>
-    <link rel="stylesheet" href="styles.css">
+    <title id="gameReviewTitle">Game Review</title>
+    <link rel="stylesheet" href="../styles.css">
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
 </head>
 <body>
     <header>
-        <h1 class="page-title" id="gameReviewTitle">🎮 Game Review</h1>
-        <a class="back-btn" href="index.html">⬅ Back to Blog</a>
+        <h1><a href="/Jayrons-Blog/">Jayron's Blog</a></h1>
     </header>
-    <div class="review-container">
-        <div class="book-cover" id="gameCoverContainer"></div>
-        <div class="review-content" id="gameReviewContent"></div>
-    </div>
-    <button class="back-to-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'});">Back to Top</button>
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+    <main>
+        <a class="back-btn" href="/Jayrons-Blog/">← Back to Blog</a>
+        <h2 class="page-title" id="reviewPageTitle">🎮 Game Review: Loading...</h2>
+    
+        <div class="review-container" id="gameReviewContainer">
+            <div class="book-cover" id="gameCoverContainer"></div>
+            <div class="review-content" id="gameReviewContent">
+                <p id="gameDeveloper"></p>
+                <p id="gameGenre"></p>
+                <p id="gameReleaseDate"></p>
+                <p id="gameRating" class="post p"></p>
+                <hr class="divider">
+                <div id="gameReviewText" class="review-text"></div>
+            </div>
+        </div>
+
+    </main>
+    <footer>
+        <p>&copy; 2025 Jayron's Blog</p>
+    </footer>
     <script>
       const firebaseConfig = {
         apiKey: "AIzaSyD4-qfOjNKQaQVOMpmOWEyAHGnlXXAI6gA",
@@ -28,59 +42,66 @@
         window.firebase.initializeApp(firebaseConfig);
       }
       const db = window.firebase.firestore();
-      function getQueryParam(param) {
-        const urlParams = new URLSearchParams(window.location.search);
-        return urlParams.get(param);
-      }
-      function makeField(label, value) {
-        const p = document.createElement('p');
-        p.innerHTML = `<strong>${label}:</strong> ${value}`;
-        return p;
-      }
+
       async function loadGameReview() {
-        const id = getQueryParam('id');
-        if (!id) return;
-        const doc = await db.collection('posts').doc(id).get();
-        if (!doc.exists) {
-          document.getElementById('gameReviewTitle').textContent = 'Not Found';
-          document.getElementById('gameReviewContent').innerHTML = '<p style="color:#ffcc00;">Game review not found.</p>';
+        const urlParams = new URLSearchParams(window.location.search);
+        const id = urlParams.get('id');
+
+        if (!id) {
+          document.getElementById('reviewPageTitle').textContent = 'No Game ID provided.';
+          document.getElementById('gameReviewContainer').style.display = 'none';
           return;
         }
-        const post = doc.data();
-        document.getElementById('gameReviewTitle').textContent = '🎮 Game Review: ' + (post.title || '');
-        if (post.imageUrl) {
-          const img = document.createElement('img');
-          img.src = post.imageUrl;
-          img.alt = post.title || 'Game cover';
-          document.getElementById('gameCoverContainer').appendChild(img);
-        }
-        const contentDiv = document.getElementById('gameReviewContent');
-        contentDiv.innerHTML = '';
-        if (post.developer) contentDiv.appendChild(makeField('📚 Developer', post.developer));
-        if (post.genre) contentDiv.appendChild(makeField('🎭 Genre', post.genre));
-        if (post.releaseDate) contentDiv.appendChild(makeField('⏳ Release Date', post.releaseDate));
-        if (post.rating) {
-          const p = document.createElement('p');
-          p.innerHTML = `<strong>⭐ Rating:</strong> <span class="rating-bar"><span style="width: ${parseFloat(post.rating) * 10}%"></span></span> ${post.rating}/10`;
-          contentDiv.appendChild(p);
-        }
-        const hr = document.createElement('hr');
-        hr.className = 'divider';
-        contentDiv.appendChild(hr);
-        if (post.description) {
-          const reviewTextDiv = document.createElement('div');
-          reviewTextDiv.className = 'review-text';
-          post.description.split(/\n+/).forEach(paragraph => {
-            if (paragraph.trim()) {
-              const p = document.createElement('p');
-              p.textContent = paragraph.trim();
-              reviewTextDiv.appendChild(p);
-            }
-          });
-          contentDiv.appendChild(reviewTextDiv);
+
+        try {
+          const docRef = db.collection('posts').doc(id);
+          const doc = await docRef.get();
+
+          if (!doc.exists) {
+            document.getElementById('reviewPageTitle').textContent = 'Game not found.';
+            document.getElementById('gameReviewContainer').style.display = 'none';
+            return;
+          }
+
+          const post = doc.data();
+
+          document.getElementById('gameReviewTitle').textContent = '🎮 Game Review: ' + (post.title || '');
+          document.getElementById('reviewPageTitle').textContent = '🎮 Game Review: ' + (post.title || '');
+
+          document.getElementById('gameCoverContainer').innerHTML = '';
+          if (post.imageUrl) {
+            const img = document.createElement('img');
+            img.src = post.imageUrl;
+            img.alt = post.title || 'Game cover';
+            document.getElementById('gameCoverContainer').appendChild(img);
+          }
+
+          document.getElementById('gameDeveloper').innerHTML = `<strong>📚 Developer:</strong> ${post.developer || 'N/A'}`;
+          document.getElementById('gameGenre').innerHTML = `<strong>🎭 Genre:</strong> ${post.genre || 'N/A'}`;
+          document.getElementById('gameReleaseDate').innerHTML = `<strong>⏳ Release Date:</strong> ${post.releaseDate || 'N/A'}`;
+          document.getElementById('gameRating').innerHTML = `<strong>⭐ Rating:</strong> ${post.rating || 'N/A'}/10`;
+
+          const reviewTextDiv = document.getElementById('gameReviewText');
+          reviewTextDiv.innerHTML = '';
+          if (post.description) {
+            post.description.split(/\n+/).forEach(paragraph => {
+              if (paragraph.trim()) {
+                const p = document.createElement('p');
+                p.textContent = paragraph.trim();
+                reviewTextDiv.appendChild(p);
+              }
+            });
+          }
+
+        } catch (error) {
+          console.error('Error fetching game post:', error);
+          document.getElementById('reviewPageTitle').textContent = 'Error loading game review.';
+          document.getElementById('gameReviewContainer').style.display = 'none';
         }
       }
-      loadGameReview();
+
+      document.addEventListener('DOMContentLoaded', loadGameReview);
+
     </script>
 </body>
 </html>

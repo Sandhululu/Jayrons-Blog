@@ -3,21 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Movie Review</title>
+    <title id="movieReviewTitle">Movie Review</title>
     <link rel="stylesheet" href="styles.css">
+    <!-- Add Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+    <!-- You might need auth if you want to restrict access to review pages -->
+    <!-- <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script> -->
 </head>
 <body>
     <header>
-        <h1 class="page-title" id="movieReviewTitle">🎬 Movie Review</h1>
-        <a class="back-btn" href="index.html">⬅ Back to Blog</a>
+        <h1><a href="/Jayrons-Blog/">Jayron's Blog</a></h1>
     </header>
-    <div class="review-container">
-        <div class="book-cover" id="movieCoverContainer"></div>
-        <div class="review-content" id="movieReviewContent"></div>
-    </div>
-    <button class="back-to-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'});">Back to Top</button>
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+    <main>
+        <a class="back-btn" href="/Jayrons-Blog/">← Back to Blog</a>
+        <h2 class="page-title" id="reviewPageTitle">🎬 Movie Review: Loading...</h2>
+    
+        <div class="review-container" id="movieReviewContainer">
+            <div class="book-cover" id="movieCoverContainer"></div>
+            <div class="review-content" id="movieReviewContent">
+                <!-- Details and review will be rendered here -->
+                 <p id="movieDirector"></p>
+                 <p id="movieGenre"></p>
+                 <p id="movieWatchedOn"></p>
+                 <p id="movieRating" class="post p"></p> <!-- Added classes -->
+                 <hr class="divider">
+                 <div id="movieReviewText" class="review-text"></div>
+            </div>
+        </div>
+
+    </main>
+    <footer>
+        <p>&copy; 2025 Jayron's Blog</p>
+    </footer>
     <script>
       const firebaseConfig = {
         apiKey: "AIzaSyD4-qfOjNKQaQVOMpmOWEyAHGnlXXAI6gA",
@@ -28,59 +46,69 @@
         window.firebase.initializeApp(firebaseConfig);
       }
       const db = window.firebase.firestore();
-      function getQueryParam(param) {
-        const urlParams = new URLSearchParams(window.location.search);
-        return urlParams.get(param);
-      }
-      function makeField(label, value) {
-        const p = document.createElement('p');
-        p.innerHTML = `<strong>${label}:</strong> ${value}`;
-        return p;
-      }
+
       async function loadMovieReview() {
-        const id = getQueryParam('id');
-        if (!id) return;
-        const doc = await db.collection('posts').doc(id).get();
-        if (!doc.exists) {
-          document.getElementById('movieReviewTitle').textContent = 'Not Found';
-          document.getElementById('movieReviewContent').innerHTML = '<p style="color:#ffcc00;">Movie review not found.</p>';
+        const urlParams = new URLSearchParams(window.location.search);
+        const id = urlParams.get('id');
+
+        if (!id) {
+          document.getElementById('reviewPageTitle').textContent = 'No Movie ID provided.';
+          document.getElementById('movieReviewContainer').style.display = 'none';
           return;
         }
-        const post = doc.data();
-        document.getElementById('movieReviewTitle').textContent = '🎬 Movie Review: ' + (post.title || '');
-        if (post.imageUrl) {
-          const img = document.createElement('img');
-          img.src = post.imageUrl;
-          img.alt = post.title || 'Movie poster';
-          document.getElementById('movieCoverContainer').appendChild(img);
-        }
-        const contentDiv = document.getElementById('movieReviewContent');
-        contentDiv.innerHTML = '';
-        if (post.director) contentDiv.appendChild(makeField('🎬 Director', post.director));
-        if (post.genre) contentDiv.appendChild(makeField('🎭 Genre', post.genre));
-        if (post.watchedOn) contentDiv.appendChild(makeField('📅 Watched On', post.watchedOn));
-        if (post.rating) {
-          const p = document.createElement('p');
-          p.innerHTML = `<strong>⭐ Rating:</strong> <span class="rating-bar"><span style="width: ${parseFloat(post.rating) * 10}%"></span></span> ${post.rating}/10`;
-          contentDiv.appendChild(p);
-        }
-        const hr = document.createElement('hr');
-        hr.className = 'divider';
-        contentDiv.appendChild(hr);
-        if (post.description) {
-          const reviewTextDiv = document.createElement('div');
-          reviewTextDiv.className = 'review-text';
-          post.description.split(/\n+/).forEach(paragraph => {
-            if (paragraph.trim()) {
-              const p = document.createElement('p');
-              p.textContent = paragraph.trim();
-              reviewTextDiv.appendChild(p);
-            }
-          });
-          contentDiv.appendChild(reviewTextDiv);
+
+        try {
+          const docRef = db.collection('posts').doc(id);
+          const doc = await docRef.get();
+
+          if (!doc.exists) {
+            document.getElementById('reviewPageTitle').textContent = 'Movie not found.';
+            document.getElementById('movieReviewContainer').style.display = 'none';
+            return;
+          }
+
+          const post = doc.data();
+
+          // Update page title and main title
+          document.getElementById('movieReviewTitle').textContent = '🎬 Movie Review: ' + (post.title || '');
+          document.getElementById('reviewPageTitle').textContent = '🎬 Movie Review: ' + (post.title || '');
+
+          // Render details
+          document.getElementById('movieCoverContainer').innerHTML = ''; // Clear existing content
+          if (post.imageUrl) {
+            const img = document.createElement('img');
+            img.src = post.imageUrl;
+            img.alt = post.title || 'Movie poster';
+            document.getElementById('movieCoverContainer').appendChild(img);
+          }
+
+          document.getElementById('movieDirector').innerHTML = `<strong>🎬 Director:</strong> ${post.director || 'N/A'}`;
+          document.getElementById('movieGenre').innerHTML = `<strong>🎭 Genre:</strong> ${post.genre || 'N/A'}`;
+          document.getElementById('movieWatchedOn').innerHTML = `<strong>📅 Watched On:</strong> ${post.watchedOn || 'N/A'}`;
+          document.getElementById('movieRating').innerHTML = `<strong>⭐ Rating:</strong> ${post.rating || 'N/A'}/10`; // Use simplified rating text
+
+          // Render review text
+          const reviewTextDiv = document.getElementById('movieReviewText');
+          reviewTextDiv.innerHTML = ''; // Clear existing content
+          if (post.description) {
+            post.description.split(/\n+/).forEach(paragraph => {
+              if (paragraph.trim()) {
+                const p = document.createElement('p');
+                p.textContent = paragraph.trim();
+                reviewTextDiv.appendChild(p);
+              }
+            });
+          }
+
+        } catch (error) {
+          console.error('Error fetching movie post:', error);
+          document.getElementById('reviewPageTitle').textContent = 'Error loading movie review.';
+          document.getElementById('movieReviewContainer').style.display = 'none';
         }
       }
-      loadMovieReview();
+
+      document.addEventListener('DOMContentLoaded', loadMovieReview);
+
     </script>
 </body>
 </html>
