@@ -767,7 +767,6 @@ function attachAllWishlistListeners() {
   // Attach new listeners for the current user
   wishlistCategories.forEach(category => {
     const syncKey = getSyncKey(); // Get the sync key *before* attaching listener
-    console.log(`Attaching wishlist listener for category: ${category}, user ID: ${syncKey}`); // Log the path being used
     const unsub = db.collection('wishlists').doc(syncKey).collection(category).onSnapshot(snapshot => {
       const items = [];
       snapshot.forEach(doc => {
@@ -866,7 +865,6 @@ document.getElementById('submitAddTvShow').addEventListener('click', function() 
   document.getElementById('addTvShowModal').classList.remove('show');
 });
 
-console.log("submitAddMovie loaded", document.getElementById("submitAddMovie"));
 
 auth.onAuthStateChanged(function(user) {
     currentUser = user;
