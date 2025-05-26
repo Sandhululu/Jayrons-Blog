@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="tvShowReviewTitle">TV Show Review</title>
+    <link rel="stylesheet" href="../styles.css">
+    <!-- Add Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+    <!-- You might need auth if you want to restrict access to review pages -->
+    <!-- <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script> -->
+</head>
+<body>
+    <header>
+        <h1><a href="/">Jayron's Blog</a></h1>
+    </header>
+
+    <main>
+        <a href="/" class="back-btn">← Back to Blog</a>
+        <h2 id="reviewPageTitle">Loading TV Show Review...</h2>
+
+        <div id="reviewContainer" class="review-container">
+            <!-- TV Show Image -->
+            <div class="tv-show-cover">
+                <img id="tvShowImage" src="" alt="TV Show Image" loading="lazy">
+            </div>
+
+            <div class="review-content">
+                <!-- TV Show Details -->
+                <p id="tvShowGenre"></p>
+                <p id="tvShowFinishedOn"></p>
+
+                <!-- Rating -->
+                <p id="tvShowRating"></p>
+
+                <!-- Review Text -->
+                <div id="tvShowReviewText" class="review-text"></div>
+            </div>
+        </div>
+
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Jayron's Blog</p>
+    </footer>
+
+    <script>
+        // Initialize Firebase (use your config)
+        const firebaseConfig = {
+            apiKey: "AIzaSyD4-qfOjNKQaQVOMpmOWEyAHGnlXXAI6gA",
+            authDomain: "jayrons-blog.firebaseapp.com",
+            projectId: "jayrons-blog",
+            storageBucket: "jayrons-blog.firebasestorage.app",
+            messagingSenderId: "415462374722",
+            appId: "1:415462374722:web:2463285dcb962b2df95cdb",
+            measurementId: "G-6NENJFX1YY"
+        };
+        if (!window.firebase.apps.length) {
+            window.firebase.initializeApp(firebaseConfig);
+        }
+        const db = window.firebase.firestore();
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const postId = urlParams.get('id');
+
+            if (postId) {
+                try {
+                    const docRef = db.collection('posts').doc(postId);
+                    const doc = await docRef.get();
+
+                    if (doc.exists) {
+                        const post = doc.data();
+                        // Update page title
+                        document.getElementById('tvShowReviewTitle').textContent = `TV Show Review: ${post.title}`;
+                        document.getElementById('reviewPageTitle').textContent = post.title;
+
+                        // Render TV Show details
+                        document.getElementById('tvShowImage').src = post.imageUrl || '';
+                        document.getElementById('tvShowImage').alt = post.title || 'TV Show Image';
+                        document.getElementById('tvShowGenre').innerHTML = `<strong>Genre:</strong> ${post.genre || 'N/A'}`;
+                        document.getElementById('tvShowFinishedOn').innerHTML = `<strong>Finished On:</strong> ${post.finishedOn || 'N/A'}`;
+                        document.getElementById('tvShowRating').innerHTML = `<strong>Rating:</strong> ⭐ ${post.rating || 'N/A'}/10`;
+                        document.getElementById('tvShowReviewText').innerHTML = post.description || '';
+
+                    } else {
+                        document.getElementById('reviewPageTitle').textContent = 'TV Show not found.';
+                        document.getElementById('reviewContainer').style.display = 'none';
+                    }
+                } catch (error) {
+                    console.error('Error fetching TV show post:', error);
+                    document.getElementById('reviewPageTitle').textContent = 'Error loading TV show review.';
+                    document.getElementById('reviewContainer').style.display = 'none';
+                }
+            } else {
+                document.getElementById('reviewPageTitle').textContent = 'No TV Show ID provided.';
+                document.getElementById('reviewContainer').style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
