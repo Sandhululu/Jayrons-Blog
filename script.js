@@ -74,6 +74,9 @@ let hasMorePosts = true;
 let postsUnsubscribe = null;
 let isInitialLoad = true; // Add flag to track initial load again
 
+// Initialize word count cache
+const wordCountCache = new Map();
+
 // Function to sort all posts by upload date
 function sortAllPostsByDate() {
     const blogPostsContainer = document.getElementById('blog-posts');
@@ -521,7 +524,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         postData.title = document.getElementById('postMovieTitle').value.trim();
         postData.director = document.getElementById('postMovieDirector').value.trim();
         postData.genre = document.getElementById('postMovieGenre').value.trim();
-        postData.releaseDate = document.getElementById('postMovieWatchedOn').value.trim();
+        postData.releaseDate = document.getElementById('postMovieReleaseDate').value.trim();
         postData.rating = document.getElementById('postMovieRating').value.trim();
       } else if (section === 'tvshows') {
         postData.title = document.getElementById('postTVShowTitle').value.trim();
