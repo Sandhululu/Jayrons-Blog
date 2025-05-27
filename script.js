@@ -474,11 +474,14 @@ document.addEventListener("DOMContentLoaded", async function () {
       books: document.getElementById('postFieldsBooks'),
       movies: document.getElementById('postFieldsMovies'),
       tvshows: document.getElementById('postFieldsTVShows'),
-      games: document.getElementById('postFieldsGames')
+      games: document.getElementById('postFieldsGames'),
+      food: document.getElementById('postFieldsFood')
     };
     sectionSelect.addEventListener('change', function() {
       Object.keys(sectionFields).forEach(key => {
-        sectionFields[key].style.display = (key === this.value) ? '' : 'none';
+        if (sectionFields[key]) {
+          sectionFields[key].style.display = (key === this.value) ? '' : 'none';
+        }
       });
     });
     // Cloudinary upload widget
@@ -510,9 +513,9 @@ document.addEventListener("DOMContentLoaded", async function () {
       let postData = {
         section,
         imageUrl: imageUrlInput.value,
-        description: document.getElementById('postDescription').value.trim(),
         created: new Date()
       };
+
       if (section === 'books') {
         postData.title = document.getElementById('postBookTitle').value.trim();
         postData.author = document.getElementById('postBookAuthor').value.trim();
@@ -537,20 +540,46 @@ document.addEventListener("DOMContentLoaded", async function () {
         postData.genre = document.getElementById('postGameGenre').value.trim();
         postData.releaseDate = document.getElementById('postGameReleaseDate').value.trim();
         postData.rating = document.getElementById('postGameRating').value.trim();
+      } else if (section === 'food') {
+        postData.title = document.getElementById('postFoodTitle').value.trim();
+        postData.cuisine = document.getElementById('postFoodCuisine').value.trim();
+        postData.cookingTime = document.getElementById('postFoodCookingTime').value.trim();
+        postData.difficulty = document.getElementById('postFoodDifficulty').value;
+        postData.rating = document.getElementById('postFoodRating').value.trim();
+        postData.summary = document.getElementById('postFoodSummary').value.trim();
+        postData.ingredients = document.getElementById('postFoodIngredients').value.trim();
+        postData.instructions = document.getElementById('postFoodInstructions').value.trim();
+        postData.finalThoughts = document.getElementById('postFoodFinalThoughts').value.trim();
       }
+
       try {
+        console.log('Adding post to Firestore:', postData); // Debug log
         const docRef = await db.collection('posts').add(postData);
         postData.id = docRef.id;
-        renderBlogPostCard(postData);
+        console.log('Post added successfully with ID:', docRef.id); // Debug log
+        const article = createBlogPostCard(postData);
+        if (article) {
+          const blogPostsContainer = document.getElementById('blog-posts');
+          blogPostsContainer.insertBefore(article, blogPostsContainer.firstChild);
+        }
         alert('Post added successfully!');
         if (section === 'books') {
           calculateTotalWordCount();
         }
       } catch (e) {
+        console.error('Error adding post:', e); // Debug log
         alert('Error adding post: ' + e.message);
       }
       addPostModal.classList.remove('show');
-      // Optionally reset fields here
+      // Reset form fields
+      Object.values(sectionFields).forEach(field => {
+        if (field) {
+          const inputs = field.querySelectorAll('input, textarea, select');
+          inputs.forEach(input => input.value = '');
+        }
+      });
+      imageUrlInput.value = '';
+      imagePreview.style.display = 'none';
     });
 
     // Initialize Firestore listener only once
@@ -1322,6 +1351,7 @@ function createBlogPostCard(post) {
     else if (post.section === 'movies') reviewPage = 'movie_review.html';
     else if (post.section === 'tvshows') reviewPage = 'tv_review.html';
     else if (post.section === 'games') reviewPage = 'game_review.html';
+    else if (post.section === 'food') reviewPage = 'reviews/food_review.html';
 
     // --- Fix: Handle Firestore Timestamp for created date ---
     let createdDate = post.created;
@@ -1331,8 +1361,7 @@ function createBlogPostCard(post) {
 
     if (reviewPage) {
         const article = document.createElement('article');
-        // Use 'tv' class for TV shows to match existing HTML
-        article.className = 'post ' + (post.section === 'tvshows' ? 'tv' : post.section);
+        article.className = 'post ' + post.section;
         if (post.rating) article.setAttribute('data-rating', post.rating);
         article.setAttribute('data-uploaded', createdDate ? createdDate.toISOString() : new Date().toISOString());
         article.setAttribute('data-firestore', 'true');
@@ -1349,6 +1378,20 @@ function createBlogPostCard(post) {
             link.appendChild(img);
             article.appendChild(link);
         }
+
+        // Add clickable title only for food posts
+        if (post.section === 'food' && post.title) {
+            const titleLink = document.createElement('a');
+            titleLink.href = `${reviewPage}?id=${encodeURIComponent(post.id)}`;
+            titleLink.style.color = 'white';
+            titleLink.style.textDecoration = 'none';
+            titleLink.style.visited = 'white';
+            const h2 = document.createElement('h2');
+            h2.textContent = post.title;
+            titleLink.appendChild(h2);
+            article.appendChild(titleLink);
+        }
+
         // Rating as plain text for all sections
         if (post.rating) {
             const p = document.createElement('p');

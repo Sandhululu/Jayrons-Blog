@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Food Review</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <header>
+        <h1 class="page-title" id="dishName">Loading...</h1>
+        <a class="back-btn" href="../index.html">⬅ Back to Blog</a>
+    </header>
+
+    <div class="review-container">
+        <!-- Food Image -->
+        <div class="book-cover">
+            <img id="dishImage" src="" alt="Loading...">
+        </div>
+
+        <!-- Review Content -->
+        <div class="review-content">
+            <p><strong>🍽 Cuisine:</strong> <span id="cuisine">Loading...</span></p>
+            <p><strong>🕒 Cooking Time:</strong> <span id="cookingTime">Loading...</span></p>
+            <p><strong>🌟 Difficulty:</strong> <span id="difficulty">Loading...</span></p>
+
+            <!-- Styled Rating Bar -->
+            <p><strong>⭐ Taste Rating:</strong> <span class="rating-bar"><span id="ratingBar"></span></span> <span id="rating">Loading...</span></p>
+
+            <hr class="divider">
+
+            <h3>📜 Recipe Summary</h3>
+            <p class="review-text" id="summary">Loading...</p>
+
+            <h3>🍽 Ingredients</h3>
+            <ul id="ingredients">Loading...</ul>
+
+            <h3>👨‍🍳 Instructions</h3>
+            <ol id="instructions">Loading...</ol>
+
+            <h3>📌 Final Thoughts</h3>
+            <p class="review-text" id="finalThoughts">Loading...</p>
+        </div>
+    </div>
+    <button class="back-to-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'});">Back to Top</button>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyD4-qfOjNKQaQVOMpmOWEyAHGnlXXAI6gA",
+            authDomain: "jayrons-blog.firebaseapp.com",
+            projectId: "jayrons-blog",
+            storageBucket: "jayrons-blog.firebasestorage.app",
+            messagingSenderId: "415462374722",
+            appId: "1:415462374722:web:2463285dcb962b2df95cdb",
+            measurementId: "G-6NENJFX1YY"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        async function loadReview() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const postId = urlParams.get('id');
+
+            if (!postId) {
+                document.body.innerHTML = '<div class="error">No post ID provided</div>';
+                return;
+            }
+
+            try {
+                const postDoc = await getDoc(doc(db, 'posts', postId));
+                if (!postDoc.exists()) {
+                    document.body.innerHTML = '<div class="error">Post not found</div>';
+                    return;
+                }
+
+                const post = postDoc.data();
+                document.title = `🍝 Recipe Review: ${post.title}`;
+                document.querySelector('.page-title').textContent = `🍝 Recipe Review: ${post.title}`;
+                document.getElementById('cuisine').textContent = post.cuisine;
+                document.getElementById('cookingTime').textContent = post.cookingTime;
+                document.getElementById('difficulty').textContent = post.difficulty;
+                document.getElementById('rating').textContent = `${post.rating}/10`;
+                document.getElementById('ratingBar').style.width = `${post.rating * 10}%`;
+                document.getElementById('dishImage').src = post.imageUrl;
+                document.getElementById('dishImage').alt = post.title;
+                document.getElementById('summary').textContent = post.summary;
+                document.getElementById('ingredients').innerHTML = post.ingredients.split('\n')
+                    .filter(item => item.trim()) // Remove empty lines
+                    .map(item => `<li>${item.trim()}</li>`)
+                    .join('');
+                document.getElementById('instructions').innerHTML = post.instructions.split('\n')
+                    .filter(step => step.trim()) // Remove empty lines
+                    .map((step, index) => `<li>${step.trim()}</li>`)
+                    .join('');
+                document.getElementById('finalThoughts').textContent = post.finalThoughts;
+            } catch (error) {
+                console.error('Error loading review:', error);
+                document.body.innerHTML = '<div class="error">Error loading review</div>';
+            }
+        }
+
+        loadReview();
+    </script>
+</body>
+</html> 

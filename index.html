@@ -582,6 +582,7 @@
           <option value="movies">Movies</option>
           <option value="tvshows">TV Shows</option>
           <option value="games">Games</option>
+          <option value="food">Food</option>
         </select>
         <div id="postFieldsBooks" class="post-section-fields">
           <label for="postBookTitle">Book Title:</label>
@@ -631,12 +632,42 @@
           <label for="postGameRating">Rating:</label>
           <input type="text" id="postGameRating" placeholder="e.g. 8.5/10">
         </div>
+        <div id="postFieldsFood" class="post-section-fields" style="display:none;">
+          <label for="postFoodTitle">Name of Dish:</label>
+          <input type="text" id="postFoodTitle" placeholder="Type dish name here" style="width: 100%; margin-bottom: 15px;">
+          
+          <label for="postFoodCuisine">Cuisine:</label>
+          <input type="text" id="postFoodCuisine" placeholder="Type cuisine here" style="width: 100%; margin-bottom: 15px;">
+          
+          <label for="postFoodCookingTime">Cooking Time:</label>
+          <input type="text" id="postFoodCookingTime" placeholder="e.g. 30 minutes" style="width: 100%; margin-bottom: 15px;">
+          
+          <label for="postFoodDifficulty">Difficulty:</label>
+          <select id="postFoodDifficulty" style="width: 100%; margin-bottom: 15px;">
+            <option value="Easy">Easy</option>
+            <option value="Medium">Medium</option>
+            <option value="Hard">Hard</option>
+          </select>
+          
+          <label for="postFoodRating">Taste Rating:</label>
+          <input type="text" id="postFoodRating" placeholder="e.g. 8.5/10" style="width: 100%; margin-bottom: 15px;">
+          
+          <label for="postFoodSummary">Recipe Summary:</label>
+          <textarea id="postFoodSummary" rows="3" placeholder="Brief summary of the recipe..." style="width: 100%; margin-bottom: 15px; resize: vertical;"></textarea>
+          
+          <label for="postFoodIngredients">Ingredients:</label>
+          <textarea id="postFoodIngredients" rows="5" placeholder="List all ingredients..." style="width: 100%; margin-bottom: 15px; resize: vertical;"></textarea>
+          
+          <label for="postFoodInstructions">Instructions:</label>
+          <textarea id="postFoodInstructions" rows="8" placeholder="Step by step instructions..." style="width: 100%; margin-bottom: 15px; resize: vertical;"></textarea>
+          
+          <label for="postFoodFinalThoughts">Final Thoughts:</label>
+          <textarea id="postFoodFinalThoughts" rows="4" placeholder="Your thoughts on the recipe..." style="width: 100%; margin-bottom: 15px; resize: vertical;"></textarea>
+        </div>
         <label for="postImageUpload">Image:</label>
         <button id="uploadPostImageBtn" type="button">Upload Image</button>
         <input type="hidden" id="postImageUrlInput">
         <img id="postImagePreview" style="display:none;max-width:100%;margin-top:10px;">
-        <label for="postDescription">Description:</label>
-        <textarea id="postDescription" rows="6" placeholder="Write your post here..." style="width:100%;"></textarea>
         <button id="submitAddPost" class="wishlist-action-btn">Submit</button>
       </div>
     </div>
