@@ -9,9 +9,21 @@ const firebaseConfig = {
     appId: "1:415462374722:web:2463285dcb962b2df95cdb",
     measurementId: "G-6NENJFX1YY"
 };
+// Initialize Firebase app only once
 if (!window.firebase.apps.length) {
     window.firebase.initializeApp(firebaseConfig);
 }
+
+// Enable offline persistence - do this AFTER initializing the app
+window.firebase.firestore().enablePersistence()
+    .catch((err) => {
+        if (err.code === 'failed-precondition') {
+            console.warn('Multiple tabs open, persistence can only be enabled in one tab at a time.');
+        } else if (err.code === 'unimplemented') {
+            console.warn('The current browser does not support persistence.');
+        }
+    });
+
 const db = window.firebase.firestore();
 
 // Auth instance
@@ -51,12 +63,186 @@ function updateAuthBtn(user) {
     }
 }
 
+// Add cache for posts and restaurants with pagination
+let postsCache = null;
+let restaurantsCache = null;
+const POSTS_PER_PAGE = 10;
+let lastVisiblePost = null;
+let hasMorePosts = true;
+
+// Initialize Firestore listener with pagination
+let postsUnsubscribe = null;
+let isInitialLoad = true; // Add flag to track initial load again
+
+// Function to sort all posts by upload date
+function sortAllPostsByDate() {
+    const blogPostsContainer = document.getElementById('blog-posts');
+    if (!blogPostsContainer) return;
+
+    // Get all posts (both static and dynamic)
+    const posts = Array.from(blogPostsContainer.children);
+    
+    // Sort posts by upload date (newest first)
+    posts.sort((a, b) => {
+        const dateA = a.getAttribute('data-uploaded');
+        const dateB = b.getAttribute('data-uploaded');
+        return dateB.localeCompare(dateA); // This will sort newest first
+    });
+
+    // Reorder the posts in the DOM
+    posts.forEach(post => {
+        blogPostsContainer.appendChild(post);
+    });
+}
+
+function initializePostsListener() {
+    console.log('initializePostsListener called');
+    if (postsUnsubscribe) {
+        console.log('Listener already initialized, returning.');
+        return;
+    }
+
+    // Hide the blog posts container initially
+    const blogPostsContainer = document.getElementById('blog-posts');
+    if (blogPostsContainer) {
+        blogPostsContainer.style.display = 'none';
+    }
+
+    try {
+        // Initial query with pagination (already ordered by created desc)
+        const initialQuery = db.collection('posts')
+            .orderBy('created', 'desc')
+            .limit(POSTS_PER_PAGE);
+
+        postsUnsubscribe = initialQuery.onSnapshot(snapshot => {
+            console.log('onSnapshot received snapshot. Doc changes:', snapshot.docChanges().length);
+            if (!blogPostsContainer) return;
+
+            // Update cache (optional, but good practice if cache is used elsewhere)
+            postsCache = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+            // Process each change individually
+            snapshot.docChanges().forEach(change => {
+                const post = change.doc.data();
+                post.id = change.doc.id;
+                const existingPostElement = blogPostsContainer.querySelector(`[data-firestore="true"][data-id="${post.id}"]`);
+                console.log(`Processing change: ${change.type} for post ${post.id}`);
+
+                if (change.type === 'added') {
+                    // Add the new post element to the DOM. Prepend to show newest first.
+                    if (!existingPostElement) {
+                        const article = createBlogPostCard(post);
+                        if (article) {
+                             blogPostsContainer.insertBefore(article, blogPostsContainer.firstChild);
+                             console.log('Prepended added post:', post.id);
+                        }
+                    } else {
+                         console.log('Post already exists, not adding again:', post.id);
+                    }
+                } else if (change.type === 'modified') {
+                    // Replace the existing post element with the updated one
+                    if (existingPostElement) {
+                        const newArticle = createBlogPostCard(post);
+                        if (newArticle) {
+                             blogPostsContainer.replaceChild(newArticle, existingPostElement);
+                             console.log('Replaced modified post:', post.id);
+                        }
+                    }
+                } else if (change.type === 'removed') {
+                    // Remove the post element from the DOM
+                    if (existingPostElement) {
+                        existingPostElement.remove();
+                        console.log('Removed post:', post.id);
+                    }
+                }
+            });
+
+            // Update pagination state and button visibility after processing changes
+            lastVisiblePost = snapshot.docs[snapshot.docs.length - 1];
+            hasMorePosts = snapshot.docs.length === POSTS_PER_PAGE;
+            updateLoadMoreButton();
+
+            // Show the container after initial content is loaded and processed
+            if (isInitialLoad) {
+                console.log('Initial load complete, showing container.');
+                isInitialLoad = false;
+                blogPostsContainer.style.display = '';
+                // Sort all posts after initial load
+                sortAllPostsByDate();
+            } else {
+                // Sort all posts after any changes
+                sortAllPostsByDate();
+            }
+        }, error => {
+            console.error('Error loading posts:', error);
+            // Show the container even if there's an error
+            if (blogPostsContainer) {
+                blogPostsContainer.style.display = '';
+            }
+        });
+    } catch (e) {
+        console.error('Error setting up posts listener:', e);
+        // Show the container even if there's an error
+        if (blogPostsContainer) {
+            blogPostsContainer.style.display = '';
+        }
+    }
+}
+
+// Load more posts function
+async function loadMorePosts() {
+    if (!hasMorePosts || !lastVisiblePost) return;
+
+    try {
+        const nextQuery = db.collection('posts')
+            .orderBy('created', 'desc')
+            .startAfter(lastVisiblePost)
+            .limit(POSTS_PER_PAGE);
+
+        const snapshot = await nextQuery.get();
+        const blogPostsContainer = document.getElementById('blog-posts');
+        if (!blogPostsContainer) return;
+
+        // Update cache
+        const newPosts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        postsCache = [...postsCache, ...newPosts];
+        lastVisiblePost = snapshot.docs[snapshot.docs.length - 1];
+        hasMorePosts = snapshot.docs.length === POSTS_PER_PAGE;
+
+        // Add new posts
+        newPosts.forEach(post => {
+            const article = createBlogPostCard(post);
+            if (article) {
+                blogPostsContainer.appendChild(article);
+            }
+        });
+
+        // Update load more button
+        updateLoadMoreButton();
+    } catch (e) {
+        console.error('Error loading more posts:', e);
+    }
+}
+
+// Update load more button visibility
+function updateLoadMoreButton() {
+    const loadMoreBtn = document.getElementById('loadMoreBtn');
+    if (loadMoreBtn) {
+        loadMoreBtn.style.display = hasMorePosts ? 'block' : 'none';
+    }
+}
+
 document.addEventListener("DOMContentLoaded", async function () {
+    // Hide the blog posts container initially
+    const blogPostsContainer = document.getElementById('blog-posts');
+    if (blogPostsContainer) {
+        blogPostsContainer.style.display = 'none';
+    }
+
     let searchInput = document.getElementById("searchInput");
     let ratingFilter = document.getElementById("ratingFilter");
     let sortFilter = document.getElementById("sortFilter");
     let filterButtons = document.querySelectorAll("nav button");
-    let blogPostsContainer = document.getElementById("blog-posts");
     let darkModeToggle = document.getElementById("darkModeToggle");
 
     // ✅ Ensure category buttons apply filtering
@@ -74,10 +260,11 @@ document.addEventListener("DOMContentLoaded", async function () {
     if (ratingFilter) ratingFilter.addEventListener("change", filterByRating);
 
     // ✅ Sorting event listener
-    if (sortFilter) sortFilter.addEventListener("change", sortPostsByDate);
-
-    // ✅ Apply initial sorting
-    sortPostsByDate();
+    if (sortFilter) {
+        // The sort filter change listener is now attached inside initializePostsListener
+        // This ensures it's only active after initial data is loaded.
+        // The listener attachment was moved inside the isInitialLoad block in initializePostsListener.
+    }
 
     // ✅ Load Dark Mode from `localStorage`
     if (localStorage.getItem("darkMode") === "enabled") {
@@ -334,7 +521,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         postData.title = document.getElementById('postMovieTitle').value.trim();
         postData.director = document.getElementById('postMovieDirector').value.trim();
         postData.genre = document.getElementById('postMovieGenre').value.trim();
-        postData.watchedOn = document.getElementById('postMovieWatchedOn').value.trim();
+        postData.releaseDate = document.getElementById('postMovieWatchedOn').value.trim();
         postData.rating = document.getElementById('postMovieRating').value.trim();
       } else if (section === 'tvshows') {
         postData.title = document.getElementById('postTVShowTitle').value.trim();
@@ -441,46 +628,49 @@ function filterPosts(category) {
 // 📚 Calculate total word count for book reviews
 async function calculateTotalWordCount() {
     let totalWords = 0;
-    // 1. Sum static book posts in the DOM
+    
+    // 1. Sum static book posts in the DOM with caching
     let bookPosts = document.querySelectorAll(".post.books");
     for (let post of bookPosts) {
-        let link = post.querySelector("a") ? post.querySelector("a").href : null;
-        if (link) {
-            try {
-                const response = await fetch(link);
-                const text = await response.text();
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(text, "text/html");
-                // Look for the word count paragraph
-                const paragraphs = doc.querySelectorAll("p");
-                for (let p of paragraphs) {
-                    if (p.textContent.includes("📚 Total Words:")) {
-                        // Extract the number from the text
-                        const wordCountText = p.textContent;
-                        const wordCount = parseInt(wordCountText.replace(/[^0-9]/g, '')) || 0;
-                        totalWords += wordCount;
-                        break;
-                    }
+        let link = post.querySelector("a")?.href;
+        if (!link) continue;
+
+        // Check cache first
+        if (wordCountCache.has(link)) {
+            totalWords += wordCountCache.get(link);
+            continue;
+        }
+
+        try {
+            const response = await fetch(link);
+            const text = await response.text();
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(text, "text/html");
+            const paragraphs = doc.querySelectorAll("p");
+            for (let p of paragraphs) {
+                if (p.textContent.includes("📚 Total Words:")) {
+                    const wordCount = parseInt(p.textContent.replace(/[^0-9]/g, '')) || 0;
+                    wordCountCache.set(link, wordCount);
+                    totalWords += wordCount;
+                    break;
                 }
-            } catch (error) {
-                console.error("Error fetching word count for:", link, error);
             }
+        } catch (error) {
+            console.error("Error fetching word count for:", link, error);
         }
     }
-    // 2. Sum dynamically added book posts from Firestore
-    try {
-        const snapshot = await db.collection('posts').where('section', '==', 'books').get();
-        snapshot.forEach(doc => {
-            const post = doc.data();
-            if (post.totalWords) {
+
+    // 2. Sum dynamic book posts from cache
+    if (postsCache) {
+        postsCache.forEach(post => {
+            if (post.section === 'books' && post.totalWords) {
                 const n = parseInt(post.totalWords);
                 if (!isNaN(n)) totalWords += n;
             }
         });
-    } catch (e) {
-        console.error('Error fetching dynamic book posts for word count:', e);
     }
-    // Update the display with the total
+
+    // Update display
     const wordCountDisplay = document.getElementById("totalWordCount");
     if (wordCountDisplay) {
         wordCountDisplay.textContent = totalWords.toLocaleString();
@@ -520,21 +710,6 @@ function filterByRating() {
             post.style.display = selectedRating === "all" || rating >= parseFloat(selectedRating) ? "" : "none";
         }
     });
-}
-
-// 📅 **Fix: Sorting Works Correctly After Filtering**
-function sortPostsByDate() {
-    let sortOrder = document.getElementById("sortFilter").value;
-    let blogPostsContainer = document.getElementById("blog-posts");
-    let posts = Array.from(blogPostsContainer.children);
-
-    posts.sort((a, b) => {
-        let dateA = new Date(a.getAttribute("data-uploaded"));
-        let dateB = new Date(b.getAttribute("data-uploaded"));
-        return sortOrder === "newest" ? dateB - dateA : dateA - dateB;
-    });
-
-    posts.forEach(post => blogPostsContainer.appendChild(post));
 }
 
 // ⭐ **Update Star Rating Display**
@@ -863,7 +1038,11 @@ document.getElementById('submitAddTvShow').addEventListener('click', function() 
 auth.onAuthStateChanged(function(user) {
     currentUser = user;
     updateAuthBtn(user);
-    initializePostsListener();
+    
+    // Only initialize posts listener if it hasn't been initialized yet
+    if (!postsUnsubscribe) {
+        initializePostsListener();
+    }
 
     // Detach old listeners before potentially attaching new ones
     wishlistUnsubs.forEach(unsub => unsub && unsub());
@@ -1007,99 +1186,97 @@ async function populateMainRestaurantDropdowns() {
   const locationSelect = document.getElementById('mainRestaurantLocationSelect');
   const cuisineSelect = document.getElementById('mainRestaurantCuisineSelect');
   if (!locationSelect || !cuisineSelect) return;
-  // Gather from Firestore
-  const snapshot = await db.collection('main_restaurants').get();
+
+  // Use cache if available, otherwise fetch from Firestore
+  if (!restaurantsCache) {
+    const snapshot = await db.collection('main_restaurants')
+        .orderBy('name')
+        .get();
+    restaurantsCache = snapshot.docs.map(doc => doc.data());
+  }
+
   const locations = new Set();
   const cuisines = new Set();
-  snapshot.forEach(doc => {
-    const data = doc.data();
+
+  // Add from cache
+  restaurantsCache.forEach(data => {
     if (data.location) locations.add(data.location);
     if (data.cuisine) cuisines.add(data.cuisine);
   });
+
   // Also gather from current DOM
-  document.querySelectorAll('#main-restaurant-list-section .restaurant-meta').forEach(el => locations.add(el.textContent.trim()));
-  document.querySelectorAll('#main-restaurant-list-section .restaurant-cuisine').forEach(el => cuisines.add(el.textContent.trim()));
-  // Populate location dropdown
-  locationSelect.innerHTML = '';
-  Array.from(locations).sort().forEach(loc => {
-    if (loc) locationSelect.innerHTML += `<option value="${loc}">${loc}</option>`;
-  });
-  locationSelect.innerHTML += '<option value="new-location">Add new location...</option>';
-  // Populate cuisine dropdown
-  cuisineSelect.innerHTML = '';
-  Array.from(cuisines).sort().forEach(cui => {
-    if (cui) cuisineSelect.innerHTML += `<option value="${cui}">${cui}</option>`;
-  });
-  cuisineSelect.innerHTML += '<option value="new-cuisine">Add new cuisine...</option>';
+  document.querySelectorAll('#main-restaurant-list-section .restaurant-meta').forEach(el => 
+      locations.add(el.textContent.trim()));
+  document.querySelectorAll('#main-restaurant-list-section .restaurant-cuisine').forEach(el => 
+      cuisines.add(el.textContent.trim()));
+
+  // Populate dropdowns
+  updateDropdown(locationSelect, locations, 'new-location');
+  updateDropdown(cuisineSelect, cuisines, 'new-cuisine');
 }
 
-// Append new restaurant to the bottom of the list
-function appendMainRestaurantToList({ name, location, cuisine, rating, price, menuLink, slug }) {
-  const ul = document.querySelector('#main-restaurant-list-section .restaurant-list');
-  if (!ul) return;
-  const li = document.createElement('li');
-  li.className = 'restaurant-list-item';
-  // Name as link
-  const link = document.createElement('a');
-  link.className = 'restaurant-link';
-  link.href = `restaurant.html?name=${encodeURIComponent(slug)}`;
-  link.textContent = name;
-  li.appendChild(link);
-  // City
-  const citySpan = document.createElement('span');
-  citySpan.className = 'restaurant-meta';
-  citySpan.textContent = location;
-  li.appendChild(citySpan);
-  // Cuisine
-  const cuisineSpan = document.createElement('span');
-  cuisineSpan.className = 'restaurant-cuisine';
-  cuisineSpan.textContent = cuisine;
-  li.appendChild(cuisineSpan);
-  ul.appendChild(li);
+// Helper function to update dropdowns
+function updateDropdown(select, values, newOptionValue) {
+    select.innerHTML = '';
+    Array.from(values).sort().forEach(value => {
+        if (value) select.innerHTML += `<option value="${value}">${value}</option>`;
+    });
+    select.innerHTML += `<option value="${newOptionValue}">Add new ${newOptionValue.replace('new-', '')}...</option>`;
 }
 
-// Function to append a new restaurant blog post
-function appendRestaurantBlogPost({ name, location, cuisine, rating, price, menuLink }) {
-  const blogPostsContainer = document.getElementById('blog-posts');
-  if (!blogPostsContainer) return;
-  const article = document.createElement('article');
-  article.className = 'post restaurants';
-  article.setAttribute('data-rating', rating || '');
-  article.setAttribute('data-city', location || '');
-  article.setAttribute('data-cuisine', cuisine || '');
+// Batch operations for restaurant updates
+async function appendMainRestaurantToList({ name, location, cuisine, rating, price, menuLink, slug }) {
+    const ul = document.querySelector('#main-restaurant-list-section .restaurant-list');
+    if (!ul) return;
 
-  const h2 = document.createElement('h2');
-  h2.textContent = name;
-  article.appendChild(h2);
+    // Add to cache
+    if (!restaurantsCache) restaurantsCache = [];
+    restaurantsCache.push({ name, location, cuisine, rating, price, menuLink, slug });
 
-  const pLocation = document.createElement('p');
-  pLocation.innerHTML = `<strong>Location:</strong> ${location}`;
-  article.appendChild(pLocation);
+    // Create DOM element
+    const li = createRestaurantListItem({ name, location, cuisine, slug });
+    ul.appendChild(li);
 
-  const pCuisine = document.createElement('p');
-  pCuisine.innerHTML = `<strong>Cuisine:</strong> ${cuisine}`;
-  article.appendChild(pCuisine);
-
-  if (rating) {
-    const pRating = document.createElement('p');
-    pRating.innerHTML = `<strong>Rating:</strong> ⭐ ${rating}/10`;
-    article.appendChild(pRating);
-  }
-
-  if (price) {
-    const pPrice = document.createElement('p');
-    pPrice.innerHTML = `<strong>Price:</strong> ${'💵'.repeat(Number(price))}`;
-    article.appendChild(pPrice);
-  }
-
-  if (menuLink) {
-    const pMenu = document.createElement('p');
-    pMenu.innerHTML = `<a href="${menuLink}" target="_blank">View Menu</a>`;
-    article.appendChild(pMenu);
-  }
-
-  blogPostsContainer.appendChild(article);
+    // Update dropdowns
+    populateMainRestaurantDropdowns();
 }
+
+// Helper function to create restaurant list item
+function createRestaurantListItem({ name, location, cuisine, slug }) {
+    const li = document.createElement('li');
+    li.className = 'restaurant-list-item';
+    
+    const link = document.createElement('a');
+    link.className = 'restaurant-link';
+    link.href = `restaurant.html?name=${encodeURIComponent(slug)}`;
+    link.textContent = name;
+    li.appendChild(link);
+
+    const citySpan = document.createElement('span');
+    citySpan.className = 'restaurant-meta';
+    citySpan.textContent = location;
+    li.appendChild(citySpan);
+
+    const cuisineSpan = document.createElement('span');
+    cuisineSpan.className = 'restaurant-cuisine';
+    cuisineSpan.textContent = cuisine;
+    li.appendChild(cuisineSpan);
+
+    return li;
+}
+
+// Add load more button to DOM
+document.addEventListener('DOMContentLoaded', function() {
+    const blogPostsContainer = document.getElementById('blog-posts');
+    if (blogPostsContainer) {
+        const loadMoreBtn = document.createElement('button');
+        loadMoreBtn.id = 'loadMoreBtn';
+        loadMoreBtn.textContent = 'Load More';
+        loadMoreBtn.style.display = 'none';
+        loadMoreBtn.addEventListener('click', loadMorePosts);
+        blogPostsContainer.parentNode.insertBefore(loadMoreBtn, blogPostsContainer.nextSibling);
+    }
+});
 
 function slugify(text) {
   return text.toString().toLowerCase().replace(/\s+/g, '-') // Replace spaces with -
@@ -1109,141 +1286,100 @@ function slugify(text) {
     .replace(/-+$/, '');        // Trim - from end of text
 }
 
+// Update renderBlogPostCard to use the new helper function
+function renderBlogPostCard(post) {
+    const blogPostsContainer = document.getElementById('blog-posts');
+    if (!blogPostsContainer) return;
+
+    const article = createBlogPostCard(post);
+    if (!article) return;
+
+    // Find the correct section to insert the post
+    let targetSection = blogPostsContainer;
+    if (post.section === 'books') {
+        targetSection = document.querySelector('.books-section') || blogPostsContainer;
+    } else if (post.section === 'movies') {
+        targetSection = document.querySelector('.movies-section') || blogPostsContainer;
+    } else if (post.section === 'tvshows') {
+        // Look for both tv and tvshows sections
+        targetSection = document.querySelector('.tvshows-section, .tv-section') || blogPostsContainer;
+    } else if (post.section === 'games') {
+        targetSection = document.querySelector('.games-section') || blogPostsContainer;
+    }
+
+    // Insert at the beginning of the section
+    targetSection.insertBefore(article, targetSection.firstChild);
+}
+
 // Helper function to create a blog post card
 function createBlogPostCard(post) {
-  // Minimal card: only image (with link) and plain text rating for all main sections
-  let reviewPage = '';
-  if (post.section === 'books') reviewPage = 'book_review.html';
-  else if (post.section === 'movies') reviewPage = 'movie_review.html';
-  else if (post.section === 'tvshows') reviewPage = 'tv_review.html';
-  else if (post.section === 'games') reviewPage = 'game_review.html';
+    // Minimal card: only image (with link) and plain text rating for all main sections
+    let reviewPage = '';
+    if (post.section === 'books') reviewPage = 'book_review.html';
+    else if (post.section === 'movies') reviewPage = 'movie_review.html';
+    else if (post.section === 'tvshows') reviewPage = 'tv_review.html';
+    else if (post.section === 'games') reviewPage = 'game_review.html';
 
-  // --- Fix: Handle Firestore Timestamp for created date ---
-  let createdDate = post.created;
-  if (createdDate && typeof createdDate.toDate === 'function') {
-    createdDate = createdDate.toDate();
-  }
-
-  if (reviewPage) {
-    const article = document.createElement('article');
-    article.className = 'post ' + post.section;
-    if (post.rating) article.setAttribute('data-rating', post.rating);
-    article.setAttribute('data-uploaded', createdDate ? new Date(createdDate).toISOString().split('T')[0] : '');
-    article.setAttribute('data-firestore', 'true'); // Mark as Firestore post
-
-    // Image with link
-    if (post.imageUrl) {
-      const link = document.createElement('a');
-      link.href = `${reviewPage}?id=${encodeURIComponent(post.id)}`;
-      const img = document.createElement('img');
-      img.src = post.imageUrl;
-      img.alt = post.title || '';
-      img.loading = 'lazy';
-      link.appendChild(img);
-      article.appendChild(link);
+    // --- Fix: Handle Firestore Timestamp for created date ---
+    let createdDate = post.created;
+    if (createdDate && typeof createdDate.toDate === 'function') {
+        createdDate = createdDate.toDate();
     }
-    // Rating as 'Rating: ⭐ X/10'
-    if (post.rating) {
-      const p = document.createElement('p');
-      p.textContent = `Rating: ⭐ ${post.rating}/10`;
-      article.appendChild(p);
+
+    if (reviewPage) {
+        const article = document.createElement('article');
+        // Use 'tv' class for TV shows to match existing HTML
+        article.className = 'post ' + (post.section === 'tvshows' ? 'tv' : post.section);
+        if (post.rating) article.setAttribute('data-rating', post.rating);
+        article.setAttribute('data-uploaded', createdDate ? createdDate.toISOString() : new Date().toISOString());
+        article.setAttribute('data-firestore', 'true');
+        article.setAttribute('data-id', post.id);
+
+        // Image with link
+        if (post.imageUrl) {
+            const link = document.createElement('a');
+            link.href = `${reviewPage}?id=${encodeURIComponent(post.id)}`;
+            const img = document.createElement('img');
+            img.src = post.imageUrl;
+            img.alt = post.title || '';
+            img.loading = 'lazy';
+            link.appendChild(img);
+            article.appendChild(link);
+        }
+        // Rating as plain text for all sections
+        if (post.rating) {
+            const p = document.createElement('p');
+            p.textContent = `Rating: ⭐ ${post.rating}/10`;
+            article.appendChild(p);
+        }
+
+        return article;
+    }
+
+    // Default card for other sections
+    const article = document.createElement('article');
+    // Use 'tv' class for TV shows to match existing HTML
+    article.className = 'post ' + (post.section === 'tvshows' ? 'tv' : post.section);
+    if (post.rating) article.setAttribute('data-rating', post.rating);
+    article.setAttribute('data-uploaded', createdDate ? createdDate.toISOString() : new Date().toISOString());
+    article.setAttribute('data-firestore', 'true');
+    article.setAttribute('data-id', post.id);
+
+    if (post.imageUrl) {
+        const img = document.createElement('img');
+        img.src = post.imageUrl;
+        img.alt = post.section + ' image';
+        img.loading = 'lazy';
+        article.appendChild(img);
     }
 
     return article;
-  }
-
-  // Default card for other sections
-  const article = document.createElement('article');
-  article.className = 'post ' + post.section;
-  if (post.rating) article.setAttribute('data-rating', post.rating);
-  article.setAttribute('data-uploaded', createdDate ? new Date(createdDate).toISOString().split('T')[0] : '');
-  article.setAttribute('data-firestore', 'true'); // Mark as Firestore post
-
-  if (post.imageUrl) {
-    const img = document.createElement('img');
-    img.src = post.imageUrl;
-    img.alt = post.section + ' image';
-    img.loading = 'lazy';
-    article.appendChild(img);
-  }
-
-  return article;
-}
-
-// Update renderBlogPostCard to use the new helper function
-function renderBlogPostCard(post) {
-  const blogPostsContainer = document.getElementById('blog-posts');
-  if (!blogPostsContainer) return;
-
-  const article = createBlogPostCard(post);
-  if (!article) return;
-
-  // Find the correct section to insert the post
-  let targetSection = blogPostsContainer;
-  if (post.section === 'books') {
-    targetSection = document.querySelector('.books-section') || blogPostsContainer;
-  } else if (post.section === 'movies') {
-    targetSection = document.querySelector('.movies-section') || blogPostsContainer;
-  } else if (post.section === 'tvshows') {
-    targetSection = document.querySelector('.tvshows-section') || blogPostsContainer;
-  } else if (post.section === 'games') {
-    targetSection = document.querySelector('.games-section') || blogPostsContainer;
-  }
-
-  // Insert at the beginning of the section
-  targetSection.insertBefore(article, targetSection.firstChild);
 }
 
 function makeField(label, value) {
-  const p = document.createElement('p');
-  p.innerHTML = `<strong>${label}:</strong> ${value}`;
-  return p;
-}
-
-// Initialize Firestore listener
-let postsUnsubscribe = null;
-function initializePostsListener() {
-    if (postsUnsubscribe) {
-        postsUnsubscribe();
-        postsUnsubscribe = null;
-    }
-
-    try {
-        postsUnsubscribe = db.collection('posts')
-            .orderBy('created', 'desc')
-            .onSnapshot(snapshot => {
-                const blogPostsContainer = document.getElementById('blog-posts');
-                if (!blogPostsContainer) return;
-
-                // Remove old dynamic posts
-                const dynamicPosts = blogPostsContainer.querySelectorAll('.post[data-firestore="true"]');
-                dynamicPosts.forEach(post => post.remove());
-
-                // Add new dynamic posts
-                snapshot.forEach(doc => {
-                    const post = doc.data();
-                    post.id = doc.id;
-                    const article = createBlogPostCard(post);
-                    if (article) {
-                        // Find the first post of the same category
-                        const category = post.section;
-                        const firstPostOfCategory = blogPostsContainer.querySelector(`.post.${category}`);
-                        
-                        if (firstPostOfCategory) {
-                            // Insert before the first post of this category
-                            blogPostsContainer.insertBefore(article, firstPostOfCategory);
-                        } else {
-                            // If no posts of this category exist, add to the beginning
-                            blogPostsContainer.insertBefore(article, blogPostsContainer.firstChild);
-                        }
-                    }
-                });
-            }, error => {
-                console.error('Error loading posts:', error);
-            });
-    } catch (e) {
-        console.error('Error setting up posts listener:', e);
-    }
+    const p = document.createElement('p');
+    p.innerHTML = `<strong>${label}:</strong> ${value}`;
+    return p;
 }
 
 // Cleanup listener when page unloads

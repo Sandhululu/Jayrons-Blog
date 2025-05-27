@@ -25,7 +25,7 @@
             <p id="gameDeveloper"></p>
             <p id="gameGenre"></p>
             <p id="gameReleaseDate"></p>
-            <p id="gameRating" class="post p"></p>
+            <p id="gameRating"></p>
 
             <hr class="divider">
 
@@ -68,9 +68,9 @@
                         // Render Game details
                         document.getElementById('gameImage').src = post.imageUrl || '';
                         document.getElementById('gameImage').alt = post.title || 'Game Image';
-                        document.getElementById('gameDeveloper').innerHTML = `<strong>📚 Developer:</strong> ${post.developer || 'N/A'}`;
+                        document.getElementById('gameDeveloper').innerHTML = `<strong>🎮 Developer:</strong> ${post.developer || 'N/A'}`;
                         document.getElementById('gameGenre').innerHTML = `<strong>🎭 Genre:</strong> ${post.genre || 'N/A'}`;
-                        document.getElementById('gameReleaseDate').innerHTML = `<strong>⏳ Release Date:</strong> ${post.releaseDate || 'N/A'}`;
+                        document.getElementById('gameReleaseDate').innerHTML = `<strong>📅 Release Date:</strong> ${post.releaseDate || 'N/A'}`;
                         document.getElementById('gameRating').innerHTML = `<strong>⭐ Rating:</strong> <span class="rating-bar"><span style="width: ${parseFloat(post.rating) * 10}%"></span></span> ${post.rating}/10`;
 
                         // Render review text with proper paragraph formatting

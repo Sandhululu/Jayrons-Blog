@@ -265,7 +265,7 @@ body {
     justify-content: space-between; /* Ensures rating stays at the bottom */
     background: #222;
     padding: 15px;
-    height: 500px; /* Fixed height for card layout */
+    height: 500px; /* Restore fixed height */
     text-align: center;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
@@ -346,10 +346,10 @@ ul, ol {
     background: #222;
     padding: 15px;
     width: 260px; /* Fixed width */
-    height: 500px; /* Fixed height for uniform size */
+    height: 500px; /* Restore fixed height */
     display: flex;
     flex-direction: column;
-    justify-content: space-between; /* Ensures spacing between elements */
+    justify-content: flex-start; /* Aligns content to the top */
     align-items: center;
     text-align: center;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
@@ -383,7 +383,7 @@ ul, ol {
     background: #222;
     padding: 15px;
     width: 260px; /* Fixed width */
-    height: 500px; /* Fixed height for uniform size */
+    height: 500px; /* Restore fixed height */
     display: flex;
     flex-direction: column;
     justify-content: flex-start; /* Aligns content to the top */
@@ -438,6 +438,7 @@ ul, ol {
     min-width: 250px; /* Ensures posts don't shrink too much */
     background: #222;
     padding: 15px;
+    height: 500px; /* Restore fixed height */
     text-align: center;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
@@ -535,7 +536,7 @@ ul, ol {
     background: #222;
     padding: 15px;
     width: 260px; /* Fixed width */
-    height: 500px; /* Fixed height */
+    height: 500px; /* Restore fixed height */
     text-align: center;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);

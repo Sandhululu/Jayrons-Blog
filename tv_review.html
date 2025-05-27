@@ -3,32 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title id="tvShowReviewTitle">TV Show Review</title>
+    <title id="tvReviewTitle">TV Show Review</title>
     <link rel="stylesheet" href="styles.css">
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
 </head>
 <body>
     <header>
-        <h1 class="page-title" id="reviewPageTitle">📺 TV Review: Loading...</h1>
+        <h1 class="page-title" id="reviewPageTitle">📺 TV Show Review: Loading...</h1>
         <a class="back-btn" href="/Jayrons-Blog/">⬅ Back to Blog</a>
     </header>
 
     <div class="review-container" id="reviewContainer">
         <!-- TV Show Cover -->
         <div class="book-cover">
-            <img id="tvShowImage" src="" alt="TV Show Image" loading="lazy">
+            <img id="tvImage" src="" alt="TV Show Image" loading="lazy">
         </div>
 
         <!-- Review Content -->
         <div class="review-content">
-            <p id="tvShowGenre"></p>
-            <p id="tvShowFinishedOn"></p>
-            <p id="tvShowRating"></p>
+            <p id="tvGenre"></p>
+            <p id="tvFinishedOn"></p>
+            <p id="tvRating"></p>
 
             <hr class="divider">
 
-            <div id="tvShowReviewText" class="review-text"></div>
+            <div id="tvReviewText" class="review-text"></div>
         </div>
     </div>
 
@@ -49,7 +49,7 @@
         }
         const db = window.firebase.firestore();
 
-        document.addEventListener('DOMContentLoaded', async () => {
+        document.addEventListener('DOMContentLoaded', async function() {
             const urlParams = new URLSearchParams(window.location.search);
             const postId = urlParams.get('id');
 
@@ -61,18 +61,18 @@
                     if (doc.exists) {
                         const post = doc.data();
                         // Update page title
-                        document.getElementById('tvShowReviewTitle').textContent = `TV Show Review: ${post.title}`;
-                        document.getElementById('reviewPageTitle').textContent = `📺 TV Review: ${post.title}`;
+                        document.getElementById('tvReviewTitle').textContent = `TV Show Review: ${post.title}`;
+                        document.getElementById('reviewPageTitle').textContent = `📺 TV Show Review: ${post.title}`;
 
                         // Render TV Show details
-                        document.getElementById('tvShowImage').src = post.imageUrl || '';
-                        document.getElementById('tvShowImage').alt = post.title || 'TV Show Image';
-                        document.getElementById('tvShowGenre').innerHTML = `<strong>🎭 Genre:</strong> ${post.genre || 'N/A'}`;
-                        document.getElementById('tvShowFinishedOn').innerHTML = `<strong>📅 Finished On:</strong> ${post.finishedOn || 'N/A'}`;
-                        document.getElementById('tvShowRating').innerHTML = `<strong>⭐ Rating:</strong> <span class="rating-bar"><span style="width: ${parseFloat(post.rating) * 10}%"></span></span> ${post.rating}/10`;
+                        document.getElementById('tvImage').src = post.imageUrl || '';
+                        document.getElementById('tvImage').alt = post.title || 'TV Show Image';
+                        document.getElementById('tvGenre').innerHTML = `<strong>🎭 Genre:</strong> ${post.genre || 'N/A'}`;
+                        document.getElementById('tvFinishedOn').innerHTML = `<strong>📅 Finished On:</strong> ${post.finishedOn || 'N/A'}`;
+                        document.getElementById('tvRating').innerHTML = `<strong>⭐ Rating:</strong> <span class="rating-bar"><span style="width: ${parseFloat(post.rating) * 10}%"></span></span> ${post.rating}/10`;
 
                         // Render review text with proper paragraph formatting
-                        const reviewTextDiv = document.getElementById('tvShowReviewText');
+                        const reviewTextDiv = document.getElementById('tvReviewText');
                         reviewTextDiv.innerHTML = '';
                         if (post.description) {
                             post.description.split(/\n+/).forEach(paragraph => {
