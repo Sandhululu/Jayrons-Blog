@@ -1361,7 +1361,8 @@ function createBlogPostCard(post) {
 
     if (reviewPage) {
         const article = document.createElement('article');
-        article.className = 'post ' + post.section;
+        // Use 'tv' class for TV shows to match existing HTML
+        article.className = 'post ' + (post.section === 'tvshows' ? 'tv' : post.section);
         if (post.rating) article.setAttribute('data-rating', post.rating);
         article.setAttribute('data-uploaded', createdDate ? createdDate.toISOString() : new Date().toISOString());
         article.setAttribute('data-firestore', 'true');
