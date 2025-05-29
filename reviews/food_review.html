@@ -13,12 +13,20 @@
         <a class="back-btn" href="../index.html">⬅ Back to Blog</a>
     </header>
 
-    <div class="review-container">
+    <!-- Media Container -->
+    <div class="media-container" style="display: flex; gap: 20px; justify-content: center; margin: 20px 0;">
         <!-- Food Image -->
-        <div class="book-cover">
-            <img id="dishImage" src="" alt="Loading...">
+        <div class="book-cover" style="flex: 1; max-width: 50%;">
+            <img id="dishImage" src="" alt="Loading..." style="width: 100%; height: 100%; object-fit: cover;">
         </div>
 
+        <!-- YouTube Video Container -->
+        <div id="youtubeVideoEmbed" class="video-container" style="flex: 1; max-width: 50%;">
+            <iframe style="width: 100%; height: 100%; aspect-ratio: 16/9;" frameborder="0" allowfullscreen></iframe>
+        </div>
+    </div>
+
+    <div class="review-container">
         <!-- Review Content -->
         <div class="review-content">
             <p><strong>🍽 Cuisine:</strong> <span id="cuisine">Loading...</span></p>
@@ -97,10 +105,37 @@
                     .map((step, index) => `<li>${step.trim()}</li>`)
                     .join('');
                 document.getElementById('finalThoughts').textContent = post.finalThoughts;
+
+                // Embed YouTube video using direct iframe if URL is provided
+                if (post.youtubeUrl) {
+                    const videoId = getYoutubeVideoId(post.youtubeUrl);
+                    if (videoId) {
+                        const videoContainer = document.getElementById('youtubeVideoEmbed');
+                        if (videoContainer) {
+                             videoContainer.innerHTML = `
+                                <iframe
+                                    src="https://www.youtube.com/embed/${videoId}"
+                                    frameborder="0"
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                    allowfullscreen
+                                ></iframe>
+                            `;
+                            videoContainer.style.display = 'block'; // Ensure container is visible
+                        }
+                    }
+                }
+
             } catch (error) {
                 console.error('Error loading review:', error);
                 document.body.innerHTML = '<div class="error">Error loading review</div>';
             }
+        }
+
+        // Helper function to extract YouTube video ID
+        function getYoutubeVideoId(url) {
+            const regex = /(?:youtube\.com\/(?:[^\/]+\/\/(?:www\.)?|watch\?v=)|youtu\.be\/)([^&]+)/;
+            const match = url.match(regex);
+            return match ? match[1] : null;
         }
 
         loadReview();

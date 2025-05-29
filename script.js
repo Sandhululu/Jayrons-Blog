@@ -486,24 +486,23 @@ document.addEventListener("DOMContentLoaded", async function () {
     });
     // Cloudinary upload widget
     const uploadBtn = document.getElementById('uploadPostImageBtn');
-    const imageUrlInput = document.getElementById('postImageUrlInput');
     const imagePreview = document.getElementById('postImagePreview');
+    const imagePreviewContainer = document.getElementById('imagePreviewContainer');
     uploadBtn.addEventListener('click', function() {
       if (!window.cloudinary) {
         alert('Cloudinary widget not loaded.');
         return;
       }
       cloudinary.openUploadWidget({
-        cloudName: 'dultavuvg', // <-- Replace with your Cloudinary cloud name
-        uploadPreset: 'blog_unsigned', // <-- Replace with your unsigned upload preset
+        cloudName: 'dultavuvg',
+        uploadPreset: 'blog_unsigned',
         sources: ['local', 'url', 'camera'],
         multiple: false,
         cropping: false
       }, function(error, result) {
         if (!error && result && result.event === "success") {
-          imageUrlInput.value = result.info.secure_url;
           imagePreview.src = result.info.secure_url;
-          imagePreview.style.display = 'block';
+          imagePreviewContainer.style.display = 'flex';
         }
       });
     });
@@ -512,9 +511,15 @@ document.addEventListener("DOMContentLoaded", async function () {
       const section = sectionSelect.value;
       let postData = {
         section,
-        imageUrl: imageUrlInput.value,
+        imageUrl: imagePreview.src, // Get URL from the preview image
         created: new Date()
       };
+
+      // Check if an image has been uploaded
+      if (!postData.imageUrl || postData.imageUrl === '') {
+          alert('Please upload an image for the post.');
+          return; // Stop the function if no image is uploaded
+      }
 
       if (section === 'books') {
         postData.title = document.getElementById('postBookTitle').value.trim();
@@ -550,6 +555,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         postData.ingredients = document.getElementById('postFoodIngredients').value.trim();
         postData.instructions = document.getElementById('postFoodInstructions').value.trim();
         postData.finalThoughts = document.getElementById('postFoodFinalThoughts').value.trim();
+        postData.youtubeUrl = document.getElementById('postFoodYoutubeUrl').value.trim();
       }
 
       try {
@@ -578,7 +584,6 @@ document.addEventListener("DOMContentLoaded", async function () {
           inputs.forEach(input => input.value = '');
         }
       });
-      imageUrlInput.value = '';
       imagePreview.style.display = 'none';
     });
 

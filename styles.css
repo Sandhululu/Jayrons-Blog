@@ -148,21 +148,117 @@ body {
 /* Review Container */
 .review-container {
     display: flex;
-    flex-direction: column;
-    align-items: center;
+    flex-direction: column; /* Always column layout */
+    align-items: center; /* Center contents horizontally */
     margin-top: 20px;
+    gap: 30px; /* Add gap between media container and review content */
+    width: 100%; /* Ensure it takes full width to allow centering */
 }
 
-/* Book Cover Styling */
+.media-container {
+    display: flex; /* Ensure Flexbox is applied for internal side-by-side layout */
+    flex-direction: row; /* Image and video side by side on all screen sizes */
+    align-items: flex-start; /* Align items to the top */
+    gap: 20px; /* Space between image and video */
+    flex-grow: 0; /* Don't grow in the main flex container */
+    flex-shrink: 0; /* Don't shrink in the main flex container */
+    flex-basis: auto; /* Size based on content */
+    max-width: 800px; /* Set a max-width for the media container */
+    width: 100%; /* Take full width up to max-width */
+    justify-content: center; /* Center content if total width is less than container */
+}
+
+@media (min-width: 768px) {
+    .review-container {
+        /* Review container remains column, items centered */
+        flex-direction: column;
+        align-items: center;
+        gap: 40px;
+    }
+
+    .book-cover {
+         flex: 1; /* Allow to grow and take equal space */
+         max-width: none; /* Remove max width */
+         width: auto; /* Allow width to adjust */
+         position: relative; /* Needed for absolute positioning of image */
+         padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+         height: 0; /* Set height to 0 to use padding for aspect ratio */
+         overflow: hidden;
+    }
+
+    .video-container {
+        flex: 1; /* Allow to grow and take equal space */
+        position: relative;
+        width: 100%; /* Take 100% of its flex item width */
+        max-width: none; /* Remove max width */
+        padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+        height: 0;
+        overflow: hidden;
+        border-radius: 10px;
+    }
+
+     .video-container iframe {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+     }
+
+    .review-content {
+        flex-grow: 0; /* Don't grow in the main flex container */
+        flex-shrink: 0; /* Don't shrink in the main flex container */
+        flex-basis: auto; /* Size based on content */
+        max-width: 800px; /* Set a max-width for the review content */
+        width: 100%; /* Take full width up to max-width */
+    }
+}
+
+/* Book Cover Styling (adjust for all screens) */
+.book-cover {
+    position: relative; /* Needed for absolute positioning of image */
+    padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+    height: 0; /* Set height to 0 to use padding for aspect ratio */
+    overflow: hidden;
+    flex: 1; /* Ensure it participates in flex layout for side-by-side */
+}
+
 .book-cover img {
-    width: 200px;
-    border-radius: 10px;
-    box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.2);
+    display: block; /* Ensure image behaves like a block element for width/height */
+    position: absolute; /* Position absolutely within the book-cover container */
+    top: 0;
+    left: 0;
+    width: 100%; /* Make image fill the container */
+    height: 100%; /* Make image fill the container */
+    max-width: none; /* Remove max width */
+    object-fit: cover; /* Ensure image covers the area */
+    border-radius: 15px;
+    box-shadow: 0px 0px 10px rgba(255, 165, 0, 0.4);
     transition: transform 0.3s ease;
 }
 
 .book-cover img:hover {
     transform: scale(1.05);
+}
+
+/* Video Container (adjust for all screens) */
+.video-container {
+    flex: 1; /* Ensure flex property for side-by-side */
+    position: relative;
+    width: 100%; /* Take 100% of its flex item width */
+    max-width: none; /* Remove max width */
+    padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+    height: 0;
+    overflow: hidden;
+    border-radius: 10px;
+}
+
+.video-container iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
 }
 
 /* Review Content */
@@ -1075,4 +1171,142 @@ ul, ol {
 
 #openAddPostModalBtn:hover {
   background-color: var(--primary-color-dark);
+}
+
+/* Add Post Modal Styles */
+.wishlist-modal-content {
+    max-width: 600px; /* Reverted back to 600px */
+    padding: 20px;
+}
+
+.modal-field {
+    margin-bottom: 15px;
+}
+
+.modal-field label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #ffcc00;
+}
+
+.modal-field input[type="text"],
+.modal-field select,
+.modal-field textarea {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #444;
+    background: #181818;
+    color: #fff;
+    margin-bottom: 8px;
+    font-size: 1em;
+}
+
+.modal-field textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+/* Increase size for specific description text areas */
+#postBookDescription,
+#postMovieDescription,
+#postTVShowDescription,
+#postGameDescription {
+    min-height: 150px; /* Adjust height as needed */
+}
+
+/* Make description text areas wider */
+.modal-field.description-field textarea {
+    width: calc(100% + 100px); /* Increased from 60px to 100px */
+    max-width: calc(100% + 100px); /* Ensure max-width also reflects this */
+    margin-left: -50px; /* Adjusted from -30px to -50px */
+    margin-right: -50px; /* Adjusted from -30px to -50px */
+}
+
+.modal-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+#imagePreviewContainer {
+    display: flex;
+    justify-content: center;
+    margin: 20px 0;
+}
+
+#postImagePreview {
+    max-width: 200px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+#submitAddPost {
+    display: block;
+    margin: 20px auto 0;
+    width: 100%;
+    max-width: 200px;
+}
+
+.upload-btn {
+    background: #ffcc00;
+    color: #222;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 18px;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+    font-size: 1em;
+    transition: background 0.2s, color 0.2s, transform 0.2s;
+}
+
+.upload-btn:hover {
+    background: #ffd84d;
+    color: #111;
+    transform: translateY(-2px) scale(1.05);
+}
+
+#postSectionSelect {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 2px;
+    border: 1px solid #444;
+    border-radius: 8px;
+    background: #181818;
+    color: #fff;
+    font-size: 1em;
+}
+
+.post-fields {
+    margin-top: 2px;
+}
+
+/* Dark mode styles for modal elements */
+.dark-mode .modal-field input[type="text"],
+.dark-mode .modal-field select,
+.dark-mode .modal-field textarea {
+    background: #181818;
+    color: #fff;
+    border-color: #444;
+}
+
+.dark-mode .upload-btn {
+    background: #ffcc00;
+    color: #222;
+}
+
+.dark-mode .upload-btn:hover {
+    background: #ffd84d;
+    color: #111;
+}
+
+/* Style for the Section: heading in the modal */
+.modal-section-heading {
+    color: #ffcc00; /* Golden color */
+    font-size: 1.2em; /* Slightly larger than default text */
+    margin-bottom: 5px; /* Small margin below */
+    margin-top: 15px; /* Space above */
 }
