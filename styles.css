@@ -150,10 +150,10 @@ body {
 /* Review Container */
 .review-container {
     display: flex;
-    flex-direction: column; /* Always column layout */
+    flex-direction: column; /* Always column layout for stacking */
     align-items: center; /* Center contents horizontally */
     margin-top: 20px;
-    gap: 30px; /* Add gap between media container and review content */
+    gap: 30px; /* Add gap between image container and review content */
     width: 100%; /* Ensure it takes full width to allow centering */
 }
 
@@ -172,7 +172,7 @@ body {
 
 @media (min-width: 768px) {
     .review-container {
-        /* Review container should remain column, items centered */
+        /* Ensure column layout and centering on larger screens too */
         flex-direction: column;
         align-items: center;
         gap: 40px;
@@ -202,7 +202,7 @@ body {
     }
 }
 
-/* Book Cover Styling (adjust for all screens) */
+/* Book Cover Styling (adjust for all screens) - Primary Rule */
 .book-cover {
     position: relative;
     /* Maintain Aspect Ratio */
@@ -303,7 +303,7 @@ body {
 }
 
 /* Movie Poster */
-/* Removed conflicting .book-cover img { width: 250px; } rule here */
+/* Removed conflicting .book-cover img { width: 250px; } rule here if present */
 
 /* Movie Review Title */
 .page-title {
@@ -381,7 +381,7 @@ body {
 }
 
 /* Food Image Styling */
-/* Removed conflicting .book-cover img { width: 250px; } rule here */
+/* Removed conflicting .book-cover img { width: 250px; } rule here if present */
 
 /* Recipe List Styling */
 ul, ol {
