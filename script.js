@@ -1,7 +1,7 @@
 // === Firebase Anonymous Wishlist Sync ===
 // Assumes firebase-app-compat.js and firebase-firestore-compat.js are loaded in index.html
 const firebaseConfig = {
-    apiKey: "AIzaSyD4-qfOjNKQaQVOMpmOWEyAHGnlXXAI6gA",
+    apiKey: "YOUR_API_KEY",
     authDomain: "jayrons-blog.firebaseapp.com",
     projectId: "jayrons-blog",
     storageBucket: "jayrons-blog.firebasestorage.app",
@@ -76,6 +76,120 @@ let isInitialLoad = true; // Add flag to track initial load again
 
 // Initialize word count cache
 const wordCountCache = new Map();
+
+// FatSecret API Credentials (Replace with your actual keys)
+// WARNING: Storing API keys directly in client-side code is not secure for production.
+const FATSECRET_CLIENT_ID = "26cb118cdb474f4da2c8937c43793e19";
+const FATSECRET_CLIENT_SECRET = "f1ce5b7d36ee4d13801405f0125c70e7";
+
+// FatSecret OAuth Token Endpoint
+const FATSECRET_TOKEN_URL = 'https://oauth.fatsecret.com/connect/token';
+// FatSecret API Base URL for method-based calls (common for free tier)
+const FATSECRET_API_URL = 'https://platform.fatsecret.com/rest/server.api';
+
+let fatsecretAccessToken = null;
+let fatsecretTokenExpiry = 0; // Unix timestamp of token expiry
+
+// Function to get or refresh FatSecret access token
+async function getFatsecretAccessToken() {
+    const now = Date.now() / 1000; // Current time in seconds
+
+    // If we have a valid token, return it
+    if (fatsecretAccessToken && fatsecretTokenExpiry > now + 60) { // Refresh 60 seconds before expiry
+        console.log('Using cached FatSecret access token.');
+        return fatsecretAccessToken;
+    }
+
+    console.log('Fetching new FatSecret access token...');
+    try {
+        const response = await fetch(FATSECRET_TOKEN_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'Authorization': 'Basic ' + btoa(FATSECRET_CLIENT_ID + ':' + FATSECRET_CLIENT_SECRET),
+            },
+            body: 'grant_type=client_credentials&scope=basic',
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`FatSecret OAuth error: ${response.status} ${response.statusText} - ${errorText}`);
+        }
+
+        const data = await response.json();
+        fatsecretAccessToken = data.access_token;
+        fatsecretTokenExpiry = Date.now() / 1000 + data.expires_in; // Calculate expiry time
+        console.log('Successfully fetched new FatSecret access token.', fatsecretAccessToken);
+        return fatsecretAccessToken;
+
+    } catch (error) {
+        console.error('Error getting FatSecret access token:', error);
+        fatsecretAccessToken = null; // Clear token on error
+        fatsecretTokenExpiry = 0;
+        return null;
+    }
+}
+
+// Function to get macro data from FatSecret API (using Recipe Search)
+async function getMacroData(dishTitle, ingredients) {
+    if (!dishTitle) {
+        console.warn("No dish title provided for macro analysis search.");
+        return null;
+    }
+
+    const accessToken = await getFatsecretAccessToken();
+    if (!accessToken) {
+        console.error('Failed to get FatSecret access token, cannot perform macro analysis.');
+        return null;
+    }
+
+    try {
+        // Using method-based call for 'recipes.search'
+        const response = await fetch(FATSECRET_API_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'Authorization': 'Bearer ' + accessToken,
+            },
+            body: new URLSearchParams({
+                method: 'recipes.search',
+                search_expression: dishTitle, // Search using the dish title
+                format: 'json',
+                max_results: 1 // Only need the top result
+            }).toString(),
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`FatSecret API (recipes.search) error: ${response.status} ${response.statusText} - ${errorText}`);
+        }
+
+        const data = await response.json();
+
+        console.log('FatSecret API Recipe Search Response:', data);
+
+        // Extract macro data from the first recipe found (if any)
+        const recipe = data.recipes && data.recipes.recipe ? (Array.isArray(data.recipes.recipe) ? data.recipes.recipe[0] : data.recipes.recipe) : null;
+
+        if (recipe && recipe.recipe_nutrition) {
+            const macroData = {
+                calories: parseFloat(recipe.recipe_nutrition.calories) || 0,
+                protein: parseFloat(recipe.recipe_nutrition.protein) || 0,
+                carbs: parseFloat(recipe.recipe_nutrition.carbohydrate) || 0,
+                fat: parseFloat(recipe.recipe_nutrition.fat) || 0,
+            };
+            console.log('Extracted Macro Data from Recipe Search:', macroData);
+            return macroData;
+        } else {
+            console.log('No relevant recipe found or no nutrition data in search results.');
+            return null; // No macro data if no recipe or nutrition found
+        }
+
+    } catch (error) {
+        console.error('Error fetching macro data from FatSecret (recipes.search):', error);
+        return null; // Return null on error
+    }
+}
 
 // Function to sort all posts by upload date
 function sortAllPostsByDate() {
@@ -556,6 +670,13 @@ document.addEventListener("DOMContentLoaded", async function () {
         postData.instructions = document.getElementById('postFoodInstructions').value.trim();
         postData.finalThoughts = document.getElementById('postFoodFinalThoughts').value.trim();
         postData.youtubeUrl = document.getElementById('postFoodYoutubeUrl').value.trim();
+
+        // *** Get Macro Data for Food Posts using Dish Title ***
+        const dishTitle = postData.title;
+        const macroData = await getMacroData(dishTitle, postData.ingredients); // Pass title and ingredients
+        if (macroData) {
+            postData.macros = macroData; // Add macro data to the post data
+        }
       }
 
       try {
@@ -1308,136 +1429,4 @@ document.addEventListener('DOMContentLoaded', function() {
     if (blogPostsContainer) {
         const loadMoreBtn = document.createElement('button');
         loadMoreBtn.id = 'loadMoreBtn';
-        loadMoreBtn.textContent = 'Load More';
-        loadMoreBtn.style.display = 'none';
-        loadMoreBtn.addEventListener('click', loadMorePosts);
-        blogPostsContainer.parentNode.insertBefore(loadMoreBtn, blogPostsContainer.nextSibling);
-    }
-});
-
-function slugify(text) {
-  return text.toString().toLowerCase().replace(/\s+/g, '-') // Replace spaces with -
-    .replace(/[^\w\-]+/g, '') // Remove all non-word chars
-    .replace(/\-\-+/g, '-')   // Replace multiple - with single -
-    .replace(/^-+/, '')         // Trim - from start of text
-    .replace(/-+$/, '');        // Trim - from end of text
-}
-
-// Update renderBlogPostCard to use the new helper function
-function renderBlogPostCard(post) {
-    const blogPostsContainer = document.getElementById('blog-posts');
-    if (!blogPostsContainer) return;
-
-    const article = createBlogPostCard(post);
-    if (!article) return;
-
-    // Find the correct section to insert the post
-    let targetSection = blogPostsContainer;
-    if (post.section === 'books') {
-        targetSection = document.querySelector('.books-section') || blogPostsContainer;
-    } else if (post.section === 'movies') {
-        targetSection = document.querySelector('.movies-section') || blogPostsContainer;
-    } else if (post.section === 'tvshows') {
-        // Look for both tv and tvshows sections
-        targetSection = document.querySelector('.tvshows-section, .tv-section') || blogPostsContainer;
-    } else if (post.section === 'games') {
-        targetSection = document.querySelector('.games-section') || blogPostsContainer;
-    }
-
-    // Insert at the beginning of the section
-    targetSection.insertBefore(article, targetSection.firstChild);
-}
-
-// Helper function to create a blog post card
-function createBlogPostCard(post) {
-    // Minimal card: only image (with link) and plain text rating for all main sections
-    let reviewPage = '';
-    if (post.section === 'books') reviewPage = 'book_review.html';
-    else if (post.section === 'movies') reviewPage = 'movie_review.html';
-    else if (post.section === 'tvshows') reviewPage = 'tv_review.html';
-    else if (post.section === 'games') reviewPage = 'game_review.html';
-    else if (post.section === 'food') reviewPage = 'reviews/food_review.html';
-
-    // --- Fix: Handle Firestore Timestamp for created date ---
-    let createdDate = post.created;
-    if (createdDate && typeof createdDate.toDate === 'function') {
-        createdDate = createdDate.toDate();
-    }
-
-    if (reviewPage) {
-        const article = document.createElement('article');
-        // Use 'tv' class for TV shows to match existing HTML
-        article.className = 'post ' + (post.section === 'tvshows' ? 'tv' : post.section);
-        if (post.rating) article.setAttribute('data-rating', post.rating);
-        article.setAttribute('data-uploaded', createdDate ? createdDate.toISOString() : new Date().toISOString());
-        article.setAttribute('data-firestore', 'true');
-        article.setAttribute('data-id', post.id);
-
-        // Image with link
-        if (post.imageUrl) {
-            const link = document.createElement('a');
-            link.href = `${reviewPage}?id=${encodeURIComponent(post.id)}`;
-            const img = document.createElement('img');
-            img.src = post.imageUrl;
-            img.alt = post.title || '';
-            img.loading = 'lazy';
-            link.appendChild(img);
-            article.appendChild(link);
-        }
-
-        // Add clickable title only for food posts
-        if (post.section === 'food' && post.title) {
-            const titleLink = document.createElement('a');
-            titleLink.href = `${reviewPage}?id=${encodeURIComponent(post.id)}`;
-            titleLink.style.color = 'white';
-            titleLink.style.textDecoration = 'none';
-            titleLink.style.visited = 'white';
-            const h2 = document.createElement('h2');
-            h2.textContent = post.title;
-            titleLink.appendChild(h2);
-            article.appendChild(titleLink);
-        }
-
-        // Rating as plain text for all sections
-        if (post.rating) {
-            const p = document.createElement('p');
-            p.textContent = `Rating: ⭐ ${post.rating}/10`;
-            article.appendChild(p);
-        }
-
-        return article;
-    }
-
-    // Default card for other sections
-    const article = document.createElement('article');
-    // Use 'tv' class for TV shows to match existing HTML
-    article.className = 'post ' + (post.section === 'tvshows' ? 'tv' : post.section);
-    if (post.rating) article.setAttribute('data-rating', post.rating);
-    article.setAttribute('data-uploaded', createdDate ? createdDate.toISOString() : new Date().toISOString());
-    article.setAttribute('data-firestore', 'true');
-    article.setAttribute('data-id', post.id);
-
-    if (post.imageUrl) {
-        const img = document.createElement('img');
-        img.src = post.imageUrl;
-        img.alt = post.section + ' image';
-        img.loading = 'lazy';
-        article.appendChild(img);
-    }
-
-    return article;
-}
-
-function makeField(label, value) {
-    const p = document.createElement('p');
-    p.innerHTML = `<strong>${label}:</strong> ${value}`;
-    return p;
-}
-
-// Cleanup listener when page unloads
-window.addEventListener('unload', () => {
-    if (postsUnsubscribe) {
-        postsUnsubscribe();
-        postsUnsubscribe = null;
-    }
-});
+        loadMoreBtn.textContent = 'Load More
