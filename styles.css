@@ -172,45 +172,48 @@ body {
 
 @media (min-width: 768px) {
     .review-container {
-        flex-direction: row; /* Side-by-side layout */
-        align-items: flex-start; /* Align items to the top */
+        /* Review container should remain column, items centered */
+        flex-direction: column;
+        align-items: center;
         gap: 40px;
     }
 
     .book-cover {
-        flex: 0 0 300px; /* Fixed base size for image container */
-        max-width: 300px; /* Max width for image container */
-        width: 100%; /* Ensure it respects max-width */
-        /* Aspect ratio and positioning handled by general rule */
-        margin: 0; /* Remove margin in row layout */
-    }
-
-    .review-content {
-        flex: 1; /* Review content takes remaining space */
-        flex-grow: 1;
-        flex-shrink: 1;
-        flex-basis: auto;
-        max-width: 800px; /* Keep a max-width if desired */
-        width: 100%; /* Take full width up to max-width */
+         /* Size and centering handled by general rule below */
+         flex: none; /* Remove flex property in media query */
+         width: auto; /* Allow width to be determined by general rule */
+         max-width: none; /* Remove max width override */
+         margin: 0 auto; /* Center */
     }
 
     .video-container {
-        flex: 1; /* Video container takes remaining space */
+        flex: none; /* Remove flex property in media query */
+        width: 100%;
+        max-width: 800px; /* Limit video container width */
+        margin: 0 auto; /* Center video container */
         /* Aspect ratio and positioning handled by general rule */
+    }
+
+    .review-content {
+        flex: none; /* Remove flex property in media query */
+        max-width: 800px; /* Limit review content width */
+        width: 100%;
+        margin: 0 auto; /* Center review content */
     }
 }
 
 /* Book Cover Styling (adjust for all screens) */
 .book-cover {
     position: relative;
-    /* Maintain 16:9 Aspect Ratio */
-    padding-bottom: 56.25%;
+    /* Maintain Aspect Ratio */
+    padding-bottom: 56.25%; /* 16:9 is a common aspect ratio, adjust if needed */
     height: 0;
     overflow: hidden;
-    width: 100%; /* Take full width on smaller screens */
-    max-width: 400px; /* Limit width on smaller screens */
-    margin: 20px auto; /* Center when in column layout */
-    flex-shrink: 0; /* Prevent shrinking in flex row */
+    width: 100%; /* Take full width up to max-width */
+    max-width: 500px; /* Adjust max-width as needed for the image size */
+    margin: 20px auto; /* Center the block element and add space below */
+    flex-shrink: 0; /* Prevent shrinking */
+    flex-grow: 0; /* Prevent growing */
 }
 
 .book-cover img {
@@ -252,12 +255,13 @@ body {
 
 /* Review Content */
 .review-content {
-    max-width: 600px;
+    max-width: 600px; /* Adjust max-width as needed */
     text-align: left;
     background-color: #222;
     padding: 20px;
     border-radius: 10px;
-    margin-top: 20px;
+    margin: 20px auto; /* Center and add margin top/bottom */
+    width: 100%; /* Take full width up to max-width */
 }
 
 /* Divider Line */
