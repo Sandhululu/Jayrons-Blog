@@ -101,4 +101,44 @@
                     .map(item => `<li>${item.trim()}</li>`)
                     .join('');
                 document.getElementById('instructions').innerHTML = post.instructions.split('\n')
-                   
+                    .filter(step => step.trim()) // Remove empty lines
+                    .map((step, index) => `<li>${step.trim()}</li>`)
+                    .join('');
+                document.getElementById('finalThoughts').textContent = post.finalThoughts;
+
+                // Embed YouTube video using direct iframe if URL is provided
+                if (post.youtubeUrl) {
+                    const videoId = getYoutubeVideoId(post.youtubeUrl);
+                    if (videoId) {
+                        const videoContainer = document.getElementById('youtubeVideoEmbed');
+                        if (videoContainer) {
+                             videoContainer.innerHTML = `
+                                <iframe
+                                    src="https://www.youtube.com/embed/${videoId}"
+                                    frameborder="0"
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                    allowfullscreen
+                                ></iframe>
+                            `;
+                            videoContainer.style.display = 'block'; // Ensure container is visible
+                        }
+                    }
+                }
+
+            } catch (error) {
+                console.error('Error loading review:', error);
+                document.body.innerHTML = '<div class="error">Error loading review</div>';
+            }
+        }
+
+        // Helper function to extract YouTube video ID
+        function getYoutubeVideoId(url) {
+            const regex = /(?:youtube\.com\/(?:[^\/]+\/\/(?:www\.)?|watch\?v=)|youtu\.be\/)([^&]+)/;
+            const match = url.match(regex);
+            return match ? match[1] : null;
+        }
+
+        loadReview();
+    </script>
+</body>
+</html> 

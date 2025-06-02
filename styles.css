@@ -216,21 +216,21 @@ body {
 
 /* Book Cover Styling (adjust for all screens) */
 .book-cover {
-    position: relative; /* Needed for absolute positioning of image */
-    padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
-    height: 0; /* Set height to 0 to use padding for aspect ratio */
+    position: relative;
+    width: 100%; /* Ensure it takes available width */
+    max-width: 400px; /* Add a max-width for control */
+    height: 400px; /* Set a fixed height for testing */
     overflow: hidden;
-    flex: 1; /* Ensure it participates in flex layout for side-by-side */
+    flex: 1;
+    margin: 0 auto; /* Center the block element */
 }
 
 .book-cover img {
-    display: block; /* Ensure image behaves like a block element for width/height */
-    position: absolute; /* Position absolutely within the book-cover container */
+    display: block;
     top: 0;
     left: 0;
     width: 100%; /* Make image fill the container */
     height: 100%; /* Make image fill the container */
-    max-width: none; /* Remove max width */
     object-fit: cover; /* Ensure image covers the area */
     border-radius: 15px;
     box-shadow: 0px 0px 10px rgba(255, 165, 0, 0.4);

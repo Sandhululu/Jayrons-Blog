@@ -1429,4 +1429,136 @@ document.addEventListener('DOMContentLoaded', function() {
     if (blogPostsContainer) {
         const loadMoreBtn = document.createElement('button');
         loadMoreBtn.id = 'loadMoreBtn';
-        loadMoreBtn.textContent = 'Load More
+        loadMoreBtn.textContent = 'Load More';
+        loadMoreBtn.style.display = 'none';
+        loadMoreBtn.addEventListener('click', loadMorePosts);
+        blogPostsContainer.parentNode.insertBefore(loadMoreBtn, blogPostsContainer.nextSibling);
+    }
+});
+
+function slugify(text) {
+  return text.toString().toLowerCase().replace(/\s+/g, '-') // Replace spaces with -
+    .replace(/[^\w\-]+/g, '') // Remove all non-word chars
+    .replace(/\-\-+/g, '-')   // Replace multiple - with single -
+    .replace(/^-+/, '')         // Trim - from start of text
+    .replace(/-+$/, '');        // Trim - from end of text
+}
+
+// Update renderBlogPostCard to use the new helper function
+function renderBlogPostCard(post) {
+    const blogPostsContainer = document.getElementById('blog-posts');
+    if (!blogPostsContainer) return;
+
+    const article = createBlogPostCard(post);
+    if (!article) return;
+
+    // Find the correct section to insert the post
+    let targetSection = blogPostsContainer;
+    if (post.section === 'books') {
+        targetSection = document.querySelector('.books-section') || blogPostsContainer;
+    } else if (post.section === 'movies') {
+        targetSection = document.querySelector('.movies-section') || blogPostsContainer;
+    } else if (post.section === 'tvshows') {
+        // Look for both tv and tvshows sections
+        targetSection = document.querySelector('.tvshows-section, .tv-section') || blogPostsContainer;
+    } else if (post.section === 'games') {
+        targetSection = document.querySelector('.games-section') || blogPostsContainer;
+    }
+
+    // Insert at the beginning of the section
+    targetSection.insertBefore(article, targetSection.firstChild);
+}
+
+// Helper function to create a blog post card
+function createBlogPostCard(post) {
+    // Minimal card: only image (with link) and plain text rating for all main sections
+    let reviewPage = '';
+    if (post.section === 'books') reviewPage = 'book_review.html';
+    else if (post.section === 'movies') reviewPage = 'movie_review.html';
+    else if (post.section === 'tvshows') reviewPage = 'tv_review.html';
+    else if (post.section === 'games') reviewPage = 'game_review.html';
+    else if (post.section === 'food') reviewPage = 'reviews/food_review.html';
+
+    // --- Fix: Handle Firestore Timestamp for created date ---
+    let createdDate = post.created;
+    if (createdDate && typeof createdDate.toDate === 'function') {
+        createdDate = createdDate.toDate();
+    }
+
+    if (reviewPage) {
+        const article = document.createElement('article');
+        // Use 'tv' class for TV shows to match existing HTML
+        article.className = 'post ' + (post.section === 'tvshows' ? 'tv' : post.section);
+        if (post.rating) article.setAttribute('data-rating', post.rating);
+        article.setAttribute('data-uploaded', createdDate ? createdDate.toISOString() : new Date().toISOString());
+        article.setAttribute('data-firestore', 'true');
+        article.setAttribute('data-id', post.id);
+
+        // Image with link
+        if (post.imageUrl) {
+            const link = document.createElement('a');
+            link.href = `${reviewPage}?id=${encodeURIComponent(post.id)}`;
+            const img = document.createElement('img');
+            img.src = post.imageUrl;
+            img.alt = post.title || '';
+            img.loading = 'lazy';
+            link.appendChild(img);
+            article.appendChild(link);
+        }
+
+        // Add clickable title only for food posts
+        if (post.section === 'food' && post.title) {
+            const titleLink = document.createElement('a');
+            titleLink.href = `${reviewPage}?id=${encodeURIComponent(post.id)}`;
+            titleLink.style.color = 'white';
+            titleLink.style.textDecoration = 'none';
+            titleLink.style.visited = 'white';
+            const h2 = document.createElement('h2');
+            h2.textContent = post.title;
+            titleLink.appendChild(h2);
+            article.appendChild(titleLink);
+        }
+
+        // Rating as plain text for all sections
+        if (post.rating) {
+            const p = document.createElement('p');
+            p.textContent = `Rating: ⭐ ${post.rating}/10`;
+            article.appendChild(p);
+        }
+
+        return article;
+    }
+
+    // Default card for other sections
+    const article = document.createElement('article');
+    // Use 'tv' class for TV shows to match existing HTML
+    article.className = 'post ' + (post.section === 'tvshows' ? 'tv' : post.section);
+    if (post.rating) article.setAttribute('data-rating', post.rating);
+    article.setAttribute('data-uploaded', createdDate ? createdDate.toISOString() : new Date().toISOString());
+    article.setAttribute('data-firestore', 'true');
+    article.setAttribute('data-id', post.id);
+
+    if (post.imageUrl) {
+        const img = document.createElement('img');
+        img.src = post.imageUrl;
+        img.alt = post.section + ' image';
+        img.loading = 'lazy';
+        article.appendChild(img);
+    }
+
+    return article;
+}
+
+function makeField(label, value) {
+    const p = document.createElement('p');
+    p.innerHTML = `<strong>${label}:</strong> ${value}`;
+    return p;
+}
+
+// Cleanup listener when page unloads
+window.addEventListener('unload', () => {
+    if (postsUnsubscribe) {
+        postsUnsubscribe();
+        postsUnsubscribe = null;
+    }
+});
