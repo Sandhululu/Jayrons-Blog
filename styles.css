@@ -205,12 +205,12 @@ body {
 /* Book Cover Styling (adjust for all screens) - Primary Rule */
 .book-cover {
     position: relative;
-    /* Maintain Aspect Ratio */
-    padding-bottom: 56.25%; /* 16:9 is a common aspect ratio, adjust if needed */
+    /* Maintain Aspect Ratio (e.g., 16:9 is 56.25%, adjust as needed) */
+    padding-bottom: 150%; /* Example: Adjust for a taller image */
     height: 0;
     overflow: hidden;
     width: 100%; /* Take full width up to max-width */
-    max-width: 500px; /* Adjust max-width as needed for the image size */
+    max-width: 300px; /* Adjust max-width as needed for the image size */
     margin: 20px auto; /* Center the block element and add space below */
     flex-shrink: 0; /* Prevent shrinking */
     flex-grow: 0; /* Prevent growing */
@@ -255,13 +255,12 @@ body {
 
 /* Review Content */
 .review-content {
-    max-width: 600px; /* Adjust max-width as needed */
+    max-width: 600px;
     text-align: left;
     background-color: #222;
     padding: 20px;
     border-radius: 10px;
-    margin: 20px auto; /* Center and add margin top/bottom */
-    width: 100%; /* Take full width up to max-width */
+    margin-top: 20px;
 }
 
 /* Divider Line */
