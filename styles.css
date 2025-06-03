@@ -211,9 +211,7 @@ body {
     overflow: hidden;
     width: 100%; /* Take full width up to max-width */
     max-width: 300px; /* Adjust max-width as needed for the image size */
-    margin: 20px auto; /* Center the block element and add space below */
-    flex-shrink: 0; /* Prevent shrinking */
-    flex-grow: 0; /* Prevent growing */
+
 }
 
 .book-cover img {
