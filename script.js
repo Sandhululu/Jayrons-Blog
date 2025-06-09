@@ -77,6 +77,74 @@ let isInitialLoad = true; // Add flag to track initial load again
 // Initialize word count cache
 const wordCountCache = new Map();
 
+// Add debounce function at the top of the file
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+
+// Create debounced versions of the update functions
+const debouncedUpdatePosts = debounce((snapshot, blogPostsContainer) => {
+    console.log('onSnapshot received snapshot. Doc changes:', snapshot.docChanges().length);
+    if (!blogPostsContainer) return;
+
+    // Update cache (optional, but good practice if cache is used elsewhere)
+    postsCache = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+    // Process each change individually
+    snapshot.docChanges().forEach(change => {
+        const post = change.doc.data();
+        post.id = change.doc.id;
+        const existingPostElement = blogPostsContainer.querySelector(`[data-firestore="true"][data-id="${post.id}"]`);
+        console.log(`Processing change: ${change.type} for post ${post.id}`);
+
+        if (change.type === 'added') {
+            if (!existingPostElement) {
+                const article = createBlogPostCard(post);
+                if (article) {
+                    blogPostsContainer.insertBefore(article, blogPostsContainer.firstChild);
+                    console.log('Prepended added post:', post.id);
+                }
+            }
+        } else if (change.type === 'modified') {
+            if (existingPostElement) {
+                const newArticle = createBlogPostCard(post);
+                if (newArticle) {
+                    blogPostsContainer.replaceChild(newArticle, existingPostElement);
+                    console.log('Replaced modified post:', post.id);
+                }
+            }
+        } else if (change.type === 'removed') {
+            if (existingPostElement) {
+                existingPostElement.remove();
+                console.log('Removed post:', post.id);
+            }
+        }
+    });
+
+    // Update pagination state and button visibility
+    lastVisiblePost = snapshot.docs[snapshot.docs.length - 1];
+    hasMorePosts = snapshot.docs.length === POSTS_PER_PAGE;
+    updateLoadMoreButton();
+
+    // Show the container after initial content is loaded
+    if (isInitialLoad) {
+        console.log('Initial load complete, showing container.');
+        isInitialLoad = false;
+        blogPostsContainer.style.display = '';
+        sortAllPostsByDate();
+    } else {
+        sortAllPostsByDate();
+    }
+}, 1000);
+
 // Function to sort all posts by upload date
 function sortAllPostsByDate() {
     const blogPostsContainer = document.getElementById('blog-posts');
@@ -117,75 +185,23 @@ function initializePostsListener() {
             .orderBy('created', 'desc')
             .limit(POSTS_PER_PAGE);
 
+        let lastSnapshot = null;
         postsUnsubscribe = initialQuery.onSnapshot(snapshot => {
-            console.log('onSnapshot received snapshot. Doc changes:', snapshot.docChanges().length);
-            if (!blogPostsContainer) return;
-
-            // Update cache (optional, but good practice if cache is used elsewhere)
-            postsCache = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-
-            // Process each change individually
-            snapshot.docChanges().forEach(change => {
-                const post = change.doc.data();
-                post.id = change.doc.id;
-                const existingPostElement = blogPostsContainer.querySelector(`[data-firestore="true"][data-id="${post.id}"]`);
-                console.log(`Processing change: ${change.type} for post ${post.id}`);
-
-                if (change.type === 'added') {
-                    // Add the new post element to the DOM. Prepend to show newest first.
-                    if (!existingPostElement) {
-                        const article = createBlogPostCard(post);
-                        if (article) {
-                             blogPostsContainer.insertBefore(article, blogPostsContainer.firstChild);
-                             console.log('Prepended added post:', post.id);
-                        }
-                    } else {
-                         console.log('Post already exists, not adding again:', post.id);
-                    }
-                } else if (change.type === 'modified') {
-                    // Replace the existing post element with the updated one
-                    if (existingPostElement) {
-                        const newArticle = createBlogPostCard(post);
-                        if (newArticle) {
-                             blogPostsContainer.replaceChild(newArticle, existingPostElement);
-                             console.log('Replaced modified post:', post.id);
-                        }
-                    }
-                } else if (change.type === 'removed') {
-                    // Remove the post element from the DOM
-                    if (existingPostElement) {
-                        existingPostElement.remove();
-                        console.log('Removed post:', post.id);
-                    }
-                }
-            });
-
-            // Update pagination state and button visibility after processing changes
-            lastVisiblePost = snapshot.docs[snapshot.docs.length - 1];
-            hasMorePosts = snapshot.docs.length === POSTS_PER_PAGE;
-            updateLoadMoreButton();
-
-            // Show the container after initial content is loaded and processed
-            if (isInitialLoad) {
-                console.log('Initial load complete, showing container.');
-                isInitialLoad = false;
-                blogPostsContainer.style.display = '';
-                // Sort all posts after initial load
-                sortAllPostsByDate();
-            } else {
-                // Sort all posts after any changes
-                sortAllPostsByDate();
+            // Only update if there are actual changes
+            if (lastSnapshot && JSON.stringify(snapshot.docs.map(doc => doc.data())) === 
+                JSON.stringify(lastSnapshot.docs.map(doc => doc.data()))) {
+                return;
             }
+            lastSnapshot = snapshot;
+            debouncedUpdatePosts(snapshot, blogPostsContainer);
         }, error => {
             console.error('Error loading posts:', error);
-            // Show the container even if there's an error
             if (blogPostsContainer) {
                 blogPostsContainer.style.display = '';
             }
         });
     } catch (e) {
         console.error('Error setting up posts listener:', e);
-        // Show the container even if there's an error
         if (blogPostsContainer) {
             blogPostsContainer.style.display = '';
         }
@@ -972,15 +988,9 @@ function attachAllWishlistListeners() {
   // Attach new listeners for the current user
   wishlistCategories.forEach(category => {
     const syncKey = getSyncKey(); // Get the sync key *before* attaching listener
-    const unsub = db.collection('wishlists').doc(syncKey).collection(category).onSnapshot(snapshot => {
-      const items = [];
-      snapshot.forEach(doc => {
-        items.push({ id: doc.id, ...doc.data() });
-      });
-      renderWishlistCategory(category, items);
-    }, error => { // Add error handling to the snapshot listener
-        console.error(`Firestore snapshot listener error for ${category} (user ${syncKey}):`, error);
-    });
+    const unsub = db.collection('wishlists').doc(syncKey).collection(category).onSnapshot(
+        snapshot => debouncedUpdateWishlist(snapshot, category)
+    );
     wishlistUnsubs.push(unsub);
   });
 }
@@ -1440,3 +1450,12 @@ window.addEventListener('unload', () => {
         postsUnsubscribe = null;
     }
 });
+
+// Create debounced version of wishlist update
+const debouncedUpdateWishlist = debounce((snapshot, category) => {
+    const items = [];
+    snapshot.forEach(doc => {
+        items.push({ id: doc.id, ...doc.data() });
+    });
+    renderWishlistCategory(category, items);
+}, 1000);

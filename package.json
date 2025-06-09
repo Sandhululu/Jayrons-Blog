@@ -1,0 +1,10 @@
+{
+  "name": "jayrons-blog",
+  "version": "1.0.0",
+  "description": "Jayron's Blog",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {}
+} 

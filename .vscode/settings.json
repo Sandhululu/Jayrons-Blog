@@ -1,3 +1,14 @@
 {
-    "liveServer.settings.port": 5501
+    "liveServer.settings.port": 5502,
+    "liveServer.settings.donotShowInfoMsg": true,
+    "liveServer.settings.donotVerifyTags": true,
+    "liveServer.settings.delay": 0,
+    "liveServer.settings.useWebExt": false,
+    "liveServer.settings.disableAutoRefresh": true,
+    "liveServer.settings.ignoreFiles": [
+        ".git/**",
+        "**/.git/**",
+        "**/node_modules/**",
+        "**/.DS_Store"
+    ]
 }
