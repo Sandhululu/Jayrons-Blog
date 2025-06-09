@@ -523,23 +523,27 @@ document.addEventListener("DOMContentLoaded", async function () {
         postData.readingTime = document.getElementById('postBookReadingTime').value.trim();
         postData.totalWords = document.getElementById('postBookTotalWords').value.trim();
         postData.rating = document.getElementById('postBookRating').value.trim();
+        postData.description = document.getElementById('postBookDescription').value.trim();
       } else if (section === 'movies') {
         postData.title = document.getElementById('postMovieTitle').value.trim();
         postData.director = document.getElementById('postMovieDirector').value.trim();
         postData.genre = document.getElementById('postMovieGenre').value.trim();
         postData.releaseDate = document.getElementById('postMovieReleaseDate').value.trim();
         postData.rating = document.getElementById('postMovieRating').value.trim();
+        postData.description = document.getElementById('postMovieDescription').value.trim();
       } else if (section === 'tvshows') {
         postData.title = document.getElementById('postTVShowTitle').value.trim();
         postData.genre = document.getElementById('postTVShowGenre').value.trim();
         postData.finishedOn = document.getElementById('postTVShowFinishedOn').value.trim();
         postData.rating = document.getElementById('postTVShowRating').value.trim();
+        postData.description = document.getElementById('postTVShowDescription').value.trim();
       } else if (section === 'games') {
         postData.title = document.getElementById('postGameTitle').value.trim();
         postData.developer = document.getElementById('postGameDeveloper').value.trim();
         postData.genre = document.getElementById('postGameGenre').value.trim();
         postData.releaseDate = document.getElementById('postGameReleaseDate').value.trim();
         postData.rating = document.getElementById('postGameRating').value.trim();
+        postData.description = document.getElementById('postGameDescription').value.trim();
       } else if (section === 'food') {
         postData.title = document.getElementById('postFoodTitle').value.trim();
         postData.cuisine = document.getElementById('postFoodCuisine').value.trim();

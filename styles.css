@@ -916,9 +916,28 @@ ul, ol {
   margin-right: auto;
 }
 .wishlist-modal-content input:focus,
-.wishlist-modal-content select:focus {
-  outline: 2px solid #ffcc00;
-  border-color: #ffcc00;
+.wishlist-modal-content select:focus,
+.wishlist-modal-content textarea:focus {
+  border-color: var(--primary-color);
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(255, 204, 0, 0.2);
+}
+.wishlist-modal-content textarea {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 15px;
+    border: 1px solid #444;
+    border-radius: 8px;
+    background: #2a2a2a;
+    color: #fff;
+    font-size: 14px;
+    line-height: 1.5;
+    resize: vertical;
+    min-height: 100px;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+.wishlist-modal-content textarea::placeholder {
+    color: #888;
 }
 .wishlist-modal-close {
   position: absolute;
