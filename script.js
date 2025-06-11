@@ -587,8 +587,7 @@ const bookSeriesOrder = {
   "Star Wars Books": {
     "Heir to the Empire": 1,
     "Dark Force Rising": 2,
-    "The Last Command": 3,
-    "The Thrawn Trilogy": 4
+    "The Last Command": 3
   },
   "Shogun Books": {
     "Shogun": 1,
@@ -624,73 +623,6 @@ const bookSeriesOrder = {
     "Broken Angels": 2,
     "Woken Furies": 3
   }
-};
-
-// Predefined data for adding entire book series
-const predefinedBookSeriesData = {
-  "GOT": [
-    { title: "A Game of Thrones", author: "George R.R. Martin", order: 1 },
-    { title: "A Clash of Kings", author: "George R.R. Martin", order: 2 },
-    { title: "A Storm of Swords", author: "George R.R. Martin", order: 3 },
-    { title: "A Feast for Crows", author: "George R.R. Martin", order: 4 },
-    { title: "A Dance with Dragons", author: "George R.R. Martin", order: 5 },
-    { title: "The Winds of Winter", author: "George R.R. Martin", order: 6 }, // Placeholder
-    { title: "A Dream of Spring", author: "George R.R. Martin", order: 7 }  // Placeholder
-  ],
-  "The Lord of the Rings": [
-    { title: "The Fellowship of the Ring", author: "J.R.R. Tolkien", order: 1 },
-    { title: "The Two Towers", author: "J.R.R. Tolkien", order: 2 },
-    { title: "The Return of the King", author: "J.R.R. Tolkien", order: 3 },
-    { title: "The Hobbit", author: "J.R.R. Tolkien", order: 4 },
-    { title: "The Silmarillion", author: "J.R.R. Tolkien", order: 5 }
-  ],
-  "Dune Books": [
-    { title: "Dune", author: "Frank Herbert", order: 1 },
-    { title: "Dune Messiah", author: "Frank Herbert", order: 2 },
-    { title: "Children of Dune", author: "Frank Herbert", order: 3 },
-    { title: "God Emperor of Dune", author: "Frank Herbert", order: 4 },
-    { title: "Heretics of Dune", author: "Frank Herbert", order: 5 },
-    { title: "Chapterhouse: Dune", author: "Frank Herbert", order: 6 }
-  ],
-  "Star Wars Books": [
-    { title: "Heir to the Empire", author: "Timothy Zahn", order: 1 },
-    { title: "Dark Force Rising", author: "Timothy Zahn", order: 2 },
-    { title: "The Last Command", author: "Timothy Zahn", order: 3 }
-  ],
-  "Shogun Books": [
-    { title: "Shogun", author: "James Clavell", order: 1 },
-    { title: "Tai-Pan", author: "James Clavell", order: 2 },
-    { title: "Gai-Jin", author: "James Clavell", order: 3 },
-    { title: "King Rat", author: "James Clavell", order: 4 },
-    { title: "Noble House", author: "James Clavell", order: 5 },
-    { title: "Whirlwind", author: "James Clavell", order: 6 }
-  ],
-  "Murakami Books": [
-    { title: "Norwegian Wood", author: "Haruki Murakami", order: 1 },
-    { title: "Kafka on the Shore", author: "Haruki Murakami", order: 2 },
-    { title: "1Q84", author: "Haruki Murakami", order: 3 },
-    { title: "The Wind-Up Bird Chronicle", author: "Haruki Murakami", order: 4 },
-    { title: "Hard-Boiled Wonderland and the End of the World", author: "Haruki Murakami", order: 5 },
-    { title: "A Wild Sheep Chase", author: "Haruki Murakami", order: 6 },
-    { title: "Dance Dance Dance", author: "Haruki Murakami", order: 7 },
-    { title: "South of the Border, West of the Sun", author: "Haruki Murakami", order: 8 },
-    { title: "Sputnik Sweetheart", author: "Haruki Murakami", order: 9 },
-    { title: "After Dark", author: "Haruki Murakami", order: 10 },
-    { title: "Colorless Tsukuru Tazaki and His Years of Pilgrimage", author: "Haruki Murakami", order: 11 },
-    { title: "The Elephant Vanishes", author: "Haruki Murakami", order: 12 },
-    { title: "Men Without Women", author: "Haruki Murakami", order: 13 },
-    { title: "First Person Singular", author: "Haruki Murakami", order: 14 }
-  ],
-  "Neuromancer Books": [
-    { title: "Neuromancer", author: "William Gibson", order: 1 },
-    { title: "Count Zero", author: "William Gibson", order: 2 },
-    { title: "Mona Lisa Overdrive", author: "William Gibson", order: 3 }
-  ],
-  "Altered Carbon Books": [
-    { title: "Altered Carbon", author: "Richard K. Morgan", order: 1 },
-    { title: "Broken Angels", author: "Richard K. Morgan", order: 2 },
-    { title: "Woken Furies", author: "Richard K. Morgan", order: 3 }
-  ]
 };
 
 // 2. Render functions for each category
@@ -1024,43 +956,31 @@ return getWishlistCollection(category).add(data);
 // 5. Hook up modals to Firestore
 // --- Add Book ---
 document.getElementById('submitAddBook').addEventListener('click', async function() {
-  const seriesNameInput = document.getElementById('bookSeriesInput')?.value.trim();
+  const name = document.getElementById('bookNameInput').value.trim();
+  const author = document.getElementById('bookAuthorInput').value.trim();
+  let section = document.getElementById('bookGenreSelect').value;
+  const otherSection = document.getElementById('bookOtherSectionInput')?.value.trim();
+  const bookNumber = parseInt(document.getElementById('bookNumberInput')?.value.trim()); // Get book number
 
-  if (seriesNameInput && predefinedBookSeriesData[seriesNameInput]) {
-    // Add entire series
-    console.log(`DEBUG: Adding entire series: ${seriesNameInput}`);
-    const seriesBooks = predefinedBookSeriesData[seriesNameInput];
-    for (const book of seriesBooks) {
-      const bookData = {
-        title: book.title,
-        note: book.author,
-        section: seriesNameInput,
-        checked: false,
-        order: book.order
-      };
-      await addWishlistItem('books', bookData);
-      console.log(`DEBUG: Added book: ${book.title} from series ${seriesNameInput}`);
-    }
-    document.getElementById('bookSeriesInput').value = ''; // Clear series input
-    alert(`Series "${seriesNameInput}" added successfully!`);
-  } else {
-    // Add single book (existing logic)
-    const name = document.getElementById('bookNameInput').value.trim();
-    const author = document.getElementById('bookAuthorInput').value.trim();
-    let section = document.getElementById('bookGenreSelect').value;
-    const otherSection = document.getElementById('bookOtherSectionInput')?.value.trim();
-    const bookNumber = parseInt(document.getElementById('bookNumberInput')?.value.trim());
+  if (section === 'new-section' && otherSection) section = otherSection;
+  if (!name || !section) {
+    console.warn('WARNING: Missing book name or section. Not adding book.');
+    alert('Please provide a book name and a section/series.');
+    return; // Prevent submission if critical fields are missing
+  }
 
-    if (section === 'new-section' && otherSection) section = otherSection;
-    if (!name || !section) return;
+  const bookData = { title: name, note: author, section, checked: false };
+  if (!isNaN(bookNumber)) {
+    bookData.order = bookNumber; // Add order to book data if valid
+  }
 
-    const bookData = { title: name, note: author, section, checked: false };
-    if (!isNaN(bookNumber)) {
-      bookData.order = bookNumber;
-    }
-
+  try {
     await addWishlistItem('books', bookData);
+    console.log(`DEBUG: Successfully added single book: '${name}' to section '${section}'`);
     alert('Book added successfully!');
+  } catch (e) {
+    console.error(`ERROR: Failed to add single book '${name}':`, e);
+    alert('Error adding book: ' + e.message);
   }
 
   // Clear common fields after submission
@@ -1434,25 +1354,25 @@ document.addEventListener('DOMContentLoaded', async function () {
       blogPostsContainer.style.display = 'none';
   }
 
-  let searchInput = document.getElementById("searchInput");
-  let ratingFilter = document.getElementById("ratingFilter");
-  let sortFilter = document.getElementById("sortFilter");
-  let filterButtons = document.querySelectorAll("nav button");
-  let darkModeToggle = document.getElementById("darkModeToggle");
+    let searchInput = document.getElementById("searchInput");
+    let ratingFilter = document.getElementById("ratingFilter");
+    let sortFilter = document.getElementById("sortFilter");
+    let filterButtons = document.querySelectorAll("nav button");
+    let darkModeToggle = document.getElementById("darkModeToggle");
 
   // Ensure category buttons apply filtering
-  filterButtons.forEach(button => {
-      button.addEventListener("click", function () {
+    filterButtons.forEach(button => {
+        button.addEventListener("click", function () {
           let category = this.getAttribute("data-category");
-          filterPosts(category);
-      });
-  });
+            filterPosts(category);
+        });
+    });
 
   // Search bar event listener
-  if (searchInput) searchInput.addEventListener("keyup", searchPosts);
+    if (searchInput) searchInput.addEventListener("keyup", searchPosts);
 
   // Rating filter event listener
-  if (ratingFilter) ratingFilter.addEventListener("change", filterByRating);
+    if (ratingFilter) ratingFilter.addEventListener("change", filterByRating);
 
   // Sorting event listener
   // The sort filter change listener is now attached inside initializePostsListener
@@ -1460,64 +1380,64 @@ document.addEventListener('DOMContentLoaded', async function () {
   // The listener attachment was moved inside the isInitialLoad block in initializePostsListener.
 
   // Load Dark Mode from `localStorage`
-  if (localStorage.getItem("darkMode") === "enabled") {
-      enableDarkMode();
-  }
+    if (localStorage.getItem("darkMode") === "enabled") {
+        enableDarkMode();
+    }
 
-  if (darkModeToggle) {
-      darkModeToggle.addEventListener("click", function () {
-          document.body.classList.toggle("dark-mode");
-          document.querySelector("header").classList.toggle("dark-mode");
-          document.querySelectorAll(".post").forEach(post => post.classList.toggle("dark-mode"));
+    if (darkModeToggle) {
+        darkModeToggle.addEventListener("click", function () {
+            document.body.classList.toggle("dark-mode");
+            document.querySelector("header").classList.toggle("dark-mode");
+            document.querySelectorAll(".post").forEach(post => post.classList.toggle("dark-mode"));
 
-          if (document.body.classList.contains("dark-mode")) {
-              localStorage.setItem("darkMode", "enabled");
-          } else {
-              localStorage.setItem("darkMode", "disabled");
-          }
-      });
-  }
+            if (document.body.classList.contains("dark-mode")) {
+                localStorage.setItem("darkMode", "enabled");
+            } else {
+                localStorage.setItem("darkMode", "disabled");
+            }
+        });
+    }
 
   // Load saved ratings
-  document.querySelectorAll(".rating").forEach(rating => {
-      let postId = rating.getAttribute("data-post");
-      let savedRating = localStorage.getItem(postId) || 0;
-      let lastUpdated = localStorage.getItem(postId + "-lastUpdated") || "Never";
-      let savedNotes = localStorage.getItem(postId + "-notes") || "";
+    document.querySelectorAll(".rating").forEach(rating => {
+        let postId = rating.getAttribute("data-post");
+        let savedRating = localStorage.getItem(postId) || 0;
+        let lastUpdated = localStorage.getItem(postId + "-lastUpdated") || "Never";
+        let savedNotes = localStorage.getItem(postId + "-notes") || "";
 
-      let stars = rating.querySelectorAll(".star");
-      updateStarDisplay(stars, savedRating);
+        let stars = rating.querySelectorAll(".star");
+        updateStarDisplay(stars, savedRating);
 
-      let lastUpdatedElem = document.getElementById("lastUpdated-" + postId);
-      if (lastUpdatedElem) lastUpdatedElem.textContent = "Last Updated: " + lastUpdated;
+        let lastUpdatedElem = document.getElementById("lastUpdated-" + postId);
+        if (lastUpdatedElem) lastUpdatedElem.textContent = "Last Updated: " + lastUpdated;
 
-      let notesElem = document.getElementById("notes-" + postId);
-      if (notesElem) notesElem.value = savedNotes;
+        let notesElem = document.getElementById("notes-" + postId);
+        if (notesElem) notesElem.value = savedNotes;
 
-      stars.forEach(star => {
-          star.addEventListener("click", function () {
-              let value = this.getAttribute("data-value");
-              let now = new Date().toLocaleString();
+        stars.forEach(star => {
+            star.addEventListener("click", function () {
+                let value = this.getAttribute("data-value");
+                let now = new Date().toLocaleString();
 
-              localStorage.setItem(postId, value);
-              localStorage.setItem(postId + "-lastUpdated", now);
+                localStorage.setItem(postId, value);
+                localStorage.setItem(postId + "-lastUpdated", now);
 
-              updateStarDisplay(stars, value);
+                updateStarDisplay(stars, value);
 
-              if (lastUpdatedElem) lastUpdatedElem.textContent = "Last Updated: " + now;
-          });
-      });
+                if (lastUpdatedElem) lastUpdatedElem.textContent = "Last Updated: " + now;
+            });
+        });
 
-      stars.forEach(star => {
-          star.addEventListener("mouseover", function () {
-              updateStarDisplay(stars, this.getAttribute("data-value"));
-          });
+        stars.forEach(star => {
+            star.addEventListener("mouseover", function () {
+                updateStarDisplay(stars, this.getAttribute("data-value"));
+            });
 
-          star.addEventListener("mouseout", function () {
-              updateStarDisplay(stars, localStorage.getItem(postId) || 0);
-          });
-      });
-  });
+            star.addEventListener("mouseout", function () {
+                updateStarDisplay(stars, localStorage.getItem(postId) || 0);
+        });
+    });
+});
 
   // Add event listener for when new book reviews are added
   if (blogPostsContainer) {
@@ -1613,9 +1533,9 @@ document.addEventListener('DOMContentLoaded', async function () {
         gameOtherSection.style.display = '';
       } else {
         gameOtherSection.style.display = 'none';
-      }
+        }
     });
-  }
+}
 
   // Wishlist Add Restaurant Modal logic
   const restaurantLocationSelect = document.getElementById('restaurantLocationSelect');
