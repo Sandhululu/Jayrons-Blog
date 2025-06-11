@@ -720,13 +720,29 @@ function renderWishlistCategory(category, items) {
     console.log(`DEBUG: Rendering ${sectionKeys.length} sections for ${category}`);
     console.log(`DEBUG: Section keys (alphabetical):`, sectionKeys);
     
+    // Define sections that should always be sorted alphabetically by title
+    const alwaysAlphabeticalSections = ['F1', 'Cyberpunk', 'Economics/Psychology', 'Indian History', 'Others', 'Russian History', 'Self help'];
+
     sectionKeys.forEach(section => {
       console.log(`DEBUG: Processing section ${section} with ${sectionMap[section].length} items`);
       
-      // Sort items within each section for books/games, prioritizing 'order' field
+      // Sort items within each section for books/games, prioritizing 'order' field or alphabetical
       sectionMap[section].sort((a, b) => {
+        // If the current section is in the alwaysAlphabeticalSections list, force alphabetical sort
+        if (alwaysAlphabeticalSections.includes(section)) {
+          console.log(`DEBUG: Forcing alphabetical sort for section: ${section}`);
+          return a.title.localeCompare(b.title);
+        }
+
+        // Otherwise, use explicit order (Book No. or predefined series order), then alphabetical fallback
         const orderA = a.order !== null ? a.order : (bookSeriesOrder[section] ? bookSeriesOrder[section][a.title] : 999);
         const orderB = b.order !== null ? b.order : (bookSeriesOrder[section] ? bookSeriesOrder[section][b.title] : 999);
+        
+        // If explicit orders are the same or not defined, sort alphabetically by title
+        if (orderA === orderB) {
+          return a.title.localeCompare(b.title);
+        }
+        
         return orderA - orderB;
       });
 
