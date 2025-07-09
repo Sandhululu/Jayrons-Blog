@@ -223,18 +223,81 @@ body {
     color: #ffcc00; /* Add a golden touch for movies */
 }
 
-#ratingFilter {
-    padding: 8px;
-    border-radius: 5px;
-    border: 1px solid #666;
-    background: #333;
-    color: white;
+/* Filter Dropdown Styling - Black & Gold Theme */
+#ratingFilter,
+#cityFilter, 
+#cuisineFilter, 
+#restaurantRatingFilter {
+    padding: 10px 14px;
+    border-radius: 6px;
+    border: 1px solid #333;
+    background: #181818;
+    color: #ffcc00;
     font-size: 14px;
+    font-weight: 500;
     cursor: pointer;
+    margin-right: 10px;
+    margin-bottom: 6px;
+    transition: all 0.2s ease;
+    min-width: 110px;
+    outline: none;
 }
 
-#ratingFilter:hover {
-    background: #444;
+#ratingFilter:hover,
+#cityFilter:hover, 
+#cuisineFilter:hover, 
+#restaurantRatingFilter:hover {
+    background: #222;
+    border-color: #ffcc00;
+    color: #fff;
+}
+
+#ratingFilter:focus,
+#cityFilter:focus, 
+#cuisineFilter:focus, 
+#restaurantRatingFilter:focus {
+    background: #222;
+    border-color: #ffcc00;
+    color: #fff;
+    outline: none;
+}
+
+#ratingFilter option,
+#cityFilter option, 
+#cuisineFilter option, 
+#restaurantRatingFilter option {
+    background: #181818;
+    color: #ffcc00;
+    padding: 8px;
+}
+
+/* Filter container styling */
+#filter-sort-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 20px 0;
+}
+
+#restaurantFilters {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 20px 0;
+}
+
+/* Filter labels */
+#filter-sort-container label,
+#restaurantFilters label {
+    color: #ffcc00;
+    font-weight: 600;
+    font-size: 14px;
+    margin-right: 6px;
+    white-space: nowrap;
 }
 
 #blog-posts {
@@ -281,13 +344,38 @@ body {
 
 
 #sortFilter {
-    padding: 8px;
-    border-radius: 5px;
-    border: 1px solid #666;
-    background: #333;
-    color: white;
+    padding: 10px 14px;
+    border-radius: 6px;
+    border: 1px solid #333;
+    background: #181818;
+    color: #ffcc00;
     font-size: 14px;
+    font-weight: 500;
     cursor: pointer;
+    margin-right: 10px;
+    margin-bottom: 6px;
+    transition: all 0.2s ease;
+    min-width: 110px;
+    outline: none;
+}
+
+#sortFilter:hover {
+    background: #222;
+    border-color: #ffcc00;
+    color: #fff;
+}
+
+#sortFilter:focus {
+    background: #222;
+    border-color: #ffcc00;
+    color: #fff;
+    outline: none;
+}
+
+#sortFilter option {
+    background: #181818;
+    color: #ffcc00;
+    padding: 8px;
 }
 
 /* Food Image Styling */
@@ -593,6 +681,42 @@ ul, ol {
     position: absolute;
     left: 0;
     top: 0;
+}
+
+#ratingFilter {
+    padding: 10px 14px;
+    border-radius: 6px;
+    border: 1px solid #333;
+    background: #181818;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    margin-right: 10px;
+    margin-bottom: 6px;
+    transition: all 0.2s ease;
+    min-width: 110px;
+    outline: none;
+    /* Remove custom arrow */
+    background-image: none;
+    background-repeat: unset;
+    background-position: unset;
+    background-size: unset;
+    padding-right: 14px;
+}
+
+#ratingFilter option {
+    background: #181818;
+    color: #fff;
+    padding: 8px;
+}
+
+#ratingFilter:hover,
+#ratingFilter:focus {
+    background: #222;
+    border-color: #ffcc00;
+    color: #fff;
+    outline: none;
 }
 
 #cityFilter, #cuisineFilter, #restaurantRatingFilter {
