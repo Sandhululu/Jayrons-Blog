@@ -162,11 +162,6 @@ const debouncedUpdatePosts = debounce((snapshot, blogPostsContainer) => {
       }
   });
 
-  // Update pagination state and button visibility
-  lastVisiblePost = snapshot.docs[snapshot.docs.length - 1];
-  hasMorePosts = snapshot.docs.length === POSTS_PER_PAGE;
-  updateLoadMoreButton();
-
   // Show the container after initial content is loaded
   if (isInitialLoad) {
       console.log('Initial load complete, showing container.');
@@ -190,7 +185,13 @@ function sortAllPostsByDate() {
   posts.sort((a, b) => {
       const dateA = a.getAttribute('data-uploaded');
       const dateB = b.getAttribute('data-uploaded');
-      return dateB.localeCompare(dateA); // This will sort newest first
+      
+      // Convert to Date objects for proper comparison
+      const dateObjA = new Date(dateA);
+      const dateObjB = new Date(dateB);
+      
+      // Sort newest first
+      return dateObjB - dateObjA;
   });
 
   // Reorder the posts in the DOM
@@ -213,10 +214,9 @@ function initializePostsListener() {
   }
 
   try {
-      // Initial query with pagination (already ordered by created desc)
+      // Query all posts, ordered by created desc (no pagination)
       const initialQuery = db.collection('posts')
-          .orderBy('created', 'desc')
-          .limit(POSTS_PER_PAGE);
+          .orderBy('created', 'desc');
 
       let lastSnapshot = null;
       postsUnsubscribe = initialQuery.onSnapshot(snapshot => {
@@ -241,48 +241,7 @@ function initializePostsListener() {
   }
 }
 
-// Load more posts function
-async function loadMorePosts() {
-  if (!hasMorePosts || !lastVisiblePost) return;
-
-  try {
-      const nextQuery = db.collection('posts')
-          .orderBy('created', 'desc')
-          .startAfter(lastVisiblePost)
-          .limit(POSTS_PER_PAGE);
-
-      const snapshot = await nextQuery.get();
-      const blogPostsContainer = document.getElementById('blog-posts');
-      if (!blogPostsContainer) return;
-
-      // Update cache
-      const newPosts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      postsCache = [...postsCache, ...newPosts];
-      lastVisiblePost = snapshot.docs[snapshot.docs.length - 1];
-      hasMorePosts = snapshot.docs.length === POSTS_PER_PAGE;
-
-      // Add new posts
-      newPosts.forEach(post => {
-          const article = createBlogPostCard(post);
-          if (article) {
-              blogPostsContainer.appendChild(article);
-          }
-      });
-
-      // Update load more button
-      updateLoadMoreButton();
-  } catch (e) {
-      console.error('Error loading more posts:', e);
-  }
-}
-
-// Update load more button visibility
-function updateLoadMoreButton() {
-  const loadMoreBtn = document.getElementById('loadMoreBtn');
-  if (loadMoreBtn) {
-      loadMoreBtn.style.display = hasMorePosts ? 'block' : 'none';
-  }
-}
+// REMOVE: loadMorePosts, updateLoadMoreButton, and all pagination logic
 
 // 🎭 **Fix: Category Filtering Now Works Correctly**
 function filterPosts(category) {
@@ -1347,6 +1306,9 @@ function renderBlogPostCard(post) {
 // Consolidated DOMContentLoaded event listener
 document.addEventListener('DOMContentLoaded', async function () {
   console.log(`DEBUG: Consolidated DOMContentLoaded fired. wishlistUserId: ${wishlistUserId}, currentUser: ${currentUser ? currentUser.uid : 'null'}`);
+
+  // Initialize posts listener to load Firestore posts
+  initializePostsListener();
 
   // Hide the blog posts container initially
   const blogPostsContainer = document.getElementById('blog-posts');
