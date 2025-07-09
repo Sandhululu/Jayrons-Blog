@@ -1219,3 +1219,26 @@ ul, ol {
 #openAddPostModalBtn:hover {
   background-color: var(--primary-color-dark);
 }
+
+#uploadPostImageBtn {
+    background: #181818;
+    color: #ffcc00;
+    border: 1.5px solid #ffcc00;
+    border-radius: 6px;
+    padding: 10px 22px;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.10);
+    transition: background 0.18s, color 0.18s, border-color 0.18s, transform 0.18s;
+    margin: 10px 0;
+    letter-spacing: 0.2px;
+    outline: none;
+}
+#uploadPostImageBtn:hover, #uploadPostImageBtn:focus {
+    background: #ffcc00;
+    color: #181818;
+    border-color: #ffcc00;
+    transform: translateY(-1px) scale(1.03);
+    outline: none;
+}
