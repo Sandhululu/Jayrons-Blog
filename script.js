@@ -1303,6 +1303,28 @@ function renderBlogPostCard(post) {
   targetSection.insertBefore(article, targetSection.firstChild);
 }
 
+// Only alphabetize the Add Book modal genre/section dropdown
+function alphabetizeSelectOptions(selectId, exceptLastValue) {
+  const select = document.getElementById(selectId);
+  if (!select) return;
+  let options = Array.from(select.options);
+  let lastOption = null;
+  if (exceptLastValue) {
+    lastOption = options.find(opt => opt.value === exceptLastValue);
+    options = options.filter(opt => opt.value !== exceptLastValue);
+  }
+  // Only keep a placeholder at the top if its value is '' or 'all'
+  let placeholderOption = null;
+  if (options.length && (options[0].value === '' || options[0].value === 'all')) {
+    placeholderOption = options.shift();
+  }
+  options.sort((a, b) => a.text.localeCompare(b.text));
+  select.innerHTML = '';
+  if (placeholderOption) select.appendChild(placeholderOption);
+  options.forEach(opt => select.appendChild(opt));
+  if (lastOption) select.appendChild(lastOption);
+}
+
 // Consolidated DOMContentLoaded event listener
 document.addEventListener('DOMContentLoaded', async function () {
   console.log(`DEBUG: Consolidated DOMContentLoaded fired. wishlistUserId: ${wishlistUserId}, currentUser: ${currentUser ? currentUser.uid : 'null'}`);
@@ -1756,4 +1778,5 @@ document.addEventListener('DOMContentLoaded', async function () {
     window.postsListenerInitialized = true;
     initializePostsListener();
   }
+  alphabetizeSelectOptions('bookGenreSelect', 'new-section');
 });

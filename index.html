@@ -409,21 +409,21 @@
         <input type="number" id="bookNumberInput" placeholder="e.g., 1" min="1">
         <label for="bookGenreSelect">Genre/Section:</label>
         <select id="bookGenreSelect">
-          <option value="GOT">GOT</option>
-          <option value="The Lord of the Rings">The Lord of the Rings</option>
-          <option value="Dune Books">Dune Books</option>
-          <option value="Star Wars Books">Star Wars Books</option>
-          <option value="Shogun Books">Shogun Books</option>
-          <option value="Murakami Books">Murakami Books</option>
-          <option value="Neuromancer Books">Neuromancer Books</option>
           <option value="Altered Carbon Books">Altered Carbon Books</option>
           <option value="Cyberpunk">Cyberpunk</option>
-          <option value="Russian History">Russian History</option>
-          <option value="Indian History">Indian History</option>
-          <option value="Self help">Self help</option>
+          <option value="Dune Books">Dune Books</option>
           <option value="Economics/Psychology">Economics/Psychology</option>
           <option value="F1">F1</option>
+          <option value="GOT">GOT</option>
+          <option value="Indian History">Indian History</option>
+          <option value="Murakami Books">Murakami Books</option>
+          <option value="Neuromancer Books">Neuromancer Books</option>
           <option value="Others">Others</option>
+          <option value="Russian History">Russian History</option>
+          <option value="Self help">Self help</option>
+          <option value="Shogun Books">Shogun Books</option>
+          <option value="Star Wars Books">Star Wars Books</option>
+          <option value="The Lord of the Rings">The Lord of the Rings</option>
           <option value="new-section">New Section</option>
         </select>
         <div id="bookOtherSectionContainer" style="display:none;">
@@ -454,18 +454,18 @@
         <input type="text" id="gameNameInput" placeholder="Type name of game here">
         <label for="gameGenreSelect">Genre/Section:</label>
         <select id="gameGenreSelect">
+          <option value="Bethesda">Bethesda</option>
+          <option value="Bioware Games">Bioware Games</option>
+          <option value="CD Projekt Red">CD Projekt Red</option>
           <option value="Games to play over summer 2024">Games to play over summer 2024</option>
-          <option value="PS4 Games">PS4 Games</option>
-          <option value="Xbox Games">Xbox Games</option>
           <option value="Games to play over summer 2025">Games to play over summer 2025</option>
+          <option value="ID Software">ID Software</option>
+          <option value="OTHERS">OTHERS</option>
+          <option value="PS Exclusives">PS Exclusives</option>
+          <option value="PS4 Games">PS4 Games</option>
           <option value="Remedy Games">Remedy Games</option>
           <option value="Rockstar Games">Rockstar Games</option>
-          <option value="Bioware Games">Bioware Games</option>
-          <option value="PS Exclusives">PS Exclusives</option>
-          <option value="Bethesda">Bethesda</option>
-          <option value="ID Software">ID Software</option>
-          <option value="CD Projekt Red">CD Projekt Red</option>
-          <option value="OTHERS">OTHERS</option>
+          <option value="Xbox Games">Xbox Games</option>
           <option value="new-section">New Section</option>
         </select>
         <div id="gameOtherSectionContainer" style="display:none;">
@@ -485,12 +485,12 @@
         <input type="text" id="restaurantNameInput" placeholder="Type name of restaurant here">
         <label for="restaurantLocationSelect">Location:</label>
         <select id="restaurantLocationSelect">
-          <option value="York">York</option>
+          <option value="Birmingham">Birmingham</option>
           <option value="Leeds">Leeds</option>
           <option value="London">London</option>
           <option value="Manchester">Manchester</option>
-          <option value="Birmingham">Birmingham</option>
           <option value="Others">Others</option>
+          <option value="York">York</option>
           <option value="new-location">New Location</option>
         </select>
         <div id="restaurantNewLocationContainer" style="display:none;">
@@ -498,16 +498,16 @@
         </div>
         <label for="restaurantCuisineSelect">Cuisine:</label>
         <select id="restaurantCuisineSelect">
-          <option value="Italian">Italian</option>
-          <option value="Indian">Indian</option>
-          <option value="Chinese">Chinese</option>
-          <option value="Japanese">Japanese</option>
-          <option value="Thai">Thai</option>
-          <option value="French">French</option>
           <option value="American">American</option>
+          <option value="Chinese">Chinese</option>
+          <option value="French">French</option>
+          <option value="Indian">Indian</option>
+          <option value="Italian">Italian</option>
+          <option value="Japanese">Japanese</option>
           <option value="Mediterranean">Mediterranean</option>
           <option value="Mexican">Mexican</option>
           <option value="Others">Others</option>
+          <option value="Thai">Thai</option>
           <option value="new-cuisine">New Cuisine</option>
         </select>
         <div id="restaurantNewCuisineContainer" style="display:none;">
@@ -525,7 +525,14 @@
         <label for="tvShowNameInput">Name of Show:</label>
         <input type="text" id="tvShowNameInput" placeholder="Type name of show here">
         <label for="tvShowServiceInput">Streaming Service:</label>
-        <input type="text" id="tvShowServiceInput" placeholder="Type streaming service here">
+        <select id="tvShowServiceInput">
+          <option value="Apple TV+">Apple TV+</option>
+          <option value="Crunchyroll">Crunchyroll</option>
+          <option value="Disney Plus">Disney Plus</option>
+          <option value="HBO Max">HBO Max</option>
+          <option value="Netflix">Netflix</option>
+          <option value="Prime Video">Prime Video</option>
+        </select>
         <button id="submitAddTvShow" class="wishlist-action-btn">Submit</button>
       </div>
     </div>
@@ -581,10 +588,10 @@
         <label for="postSectionSelect">Section:</label>
         <select id="postSectionSelect">
           <option value="books">Books</option>
+          <option value="food">Food</option>
+          <option value="games">Games</option>
           <option value="movies">Movies</option>
           <option value="tvshows">TV Shows</option>
-          <option value="games">Games</option>
-          <option value="food">Food</option>
         </select>
         <div id="postFieldsBooks" class="post-section-fields">
           <label for="postBookTitle">Book Title:</label>
