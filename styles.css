@@ -1022,12 +1022,17 @@ ul, ol {
   margin-top: 8px;
   margin-bottom: 4px;
   color: #ffcc00;
-  text-align: center;
+  text-align: left;
   width: 100%;
 }
 .wishlist-modal-content input,
-.wishlist-modal-content select {
-  width: 100%;
+.wishlist-modal-content select,
+.wishlist-modal-content textarea:not(#postFoodSummary):not(#postFoodIngredients):not(#postFoodInstructions):not(#postFoodFinalThoughts):not(#postBookDescription):not(#postMovieDescription):not(#postTVShowDescription):not(#postGameDescription) {
+  width: 522px !important;
+  height: 40.5px !important;
+  min-height: unset !important;
+  max-width: 100%;
+  box-sizing: border-box;
   padding: 10px;
   border-radius: 8px;
   border: 1px solid #444;
@@ -1038,6 +1043,52 @@ ul, ol {
   display: block;
   margin-left: auto;
   margin-right: auto;
+}
+
+/* Keep excluded textareas at 100% width and their own height */
+#postFoodSummary,
+#postFoodIngredients,
+#postFoodInstructions,
+#postFoodFinalThoughts,
+#postBookDescription,
+#postMovieDescription,
+#postTVShowDescription,
+#postGameDescription {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-height: 4000px !important;
+  height: 4000px !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  box-sizing: border-box;
+}
+
+/* Force Section dropdown to match other modal fields */
+#wishlist-modal-content #postSectionSelect,
+#addPostModal #postSectionSelect,
+#postSectionSelect {
+  width: 100% !important;
+  height: 40.5px !important;
+  min-height: unset !important;
+  max-width: 100% !important;
+  box-sizing: border-box;
+  padding: 10px !important;
+  border-radius: 8px !important;
+  border: 1px solid #444 !important;
+  background: #181818 !important;
+  color: #fff !important;
+  margin-bottom: 8px !important;
+  font-size: 1em !important;
+  display: block !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+/* Ensure all modal labels are left-aligned, including those in post sections */
+.wishlist-modal-content label,
+.post-section-fields label {
+  text-align: left !important;
+  width: 100%;
 }
 .wishlist-modal-content input:focus,
 .wishlist-modal-content select:focus,
@@ -1241,4 +1292,41 @@ ul, ol {
     border-color: #ffcc00;
     transform: translateY(-1px) scale(1.03);
     outline: none;
+}
+
+.wishlist-modal-content label,
+.post-section-fields label,
+.wishlist-modal-content strong,
+.post-section-fields strong {
+  text-align: left !important;
+  width: 100%;
+  display: block;
+}
+
+#postBookDescription,
+#postMovieDescription,
+#postTVShowDescription,
+#postGameDescription {
+  width: 100% !important;
+  max-width: 100% !important;
+  height: 1000px !important;
+  min-height: unset !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  box-sizing: border-box;
+  resize: vertical !important;
+}
+
+#postFoodSummary,
+#postFoodIngredients,
+#postFoodInstructions,
+#postFoodFinalThoughts {
+  width: 100% !important;
+  max-width: 100% !important;
+  height: 200px !important;
+  min-height: unset !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  box-sizing: border-box;
+  resize: vertical !important;
 }
