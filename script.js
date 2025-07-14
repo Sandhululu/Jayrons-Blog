@@ -166,12 +166,12 @@ const debouncedUpdatePosts = debounce((snapshot, blogPostsContainer) => {
   if (isInitialLoad) {
       console.log('Initial load complete, showing container.');
       isInitialLoad = false;
-      blogPostsContainer.style.display = '';
+      blogPostsContainer.hidden = false;
       sortAllPostsByDate();
   } else {
       sortAllPostsByDate();
   }
-}, 1000);
+}, 0);
 
 // Function to sort all posts by upload date
 function sortAllPostsByDate() {
@@ -210,7 +210,7 @@ function initializePostsListener() {
   // Hide the blog posts container initially
   const blogPostsContainer = document.getElementById('blog-posts');
   if (blogPostsContainer) {
-      blogPostsContainer.style.display = 'none';
+      blogPostsContainer.hidden = true;
   }
 
   try {
@@ -230,13 +230,13 @@ function initializePostsListener() {
       }, error => {
           console.error('Error loading posts:', error);
           if (blogPostsContainer) {
-              blogPostsContainer.style.display = '';
+              blogPostsContainer.hidden = false;
           }
       });
   } catch (e) {
       console.error('Error setting up posts listener:', e);
       if (blogPostsContainer) {
-          blogPostsContainer.style.display = '';
+          blogPostsContainer.hidden = false;
       }
   }
 }
@@ -1335,7 +1335,7 @@ document.addEventListener('DOMContentLoaded', async function () {
   // Hide the blog posts container initially
   const blogPostsContainer = document.getElementById('blog-posts');
   if (blogPostsContainer) {
-      blogPostsContainer.style.display = 'none';
+      blogPostsContainer.hidden = true;
   }
 
     let searchInput = document.getElementById("searchInput");

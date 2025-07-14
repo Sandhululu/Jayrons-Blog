@@ -26,7 +26,6 @@
             <p id="bookGenre"></p>
             <p id="bookReadingTime"></p>
             <p id="bookTotalWords"></p>
-            <p id="bookFinishedOn"></p>
             <p id="bookRating"></p>
 
             <hr class="divider">
@@ -74,7 +73,6 @@
                         document.getElementById('bookGenre').innerHTML = `<strong>🎭 Genre:</strong> ${post.genre || 'N/A'}`;
                         document.getElementById('bookReadingTime').innerHTML = `<strong>⏳ Reading Time:</strong> ${post.readingTime || 'N/A'}`;
                         document.getElementById('bookTotalWords').innerHTML = `<strong>📚 Total Words:</strong> ${post.totalWords || 'N/A'}`;
-                        document.getElementById('bookFinishedOn').innerHTML = `<strong>📅 Finished On:</strong> ${post.finishedOn || 'N/A'}`;
                         document.getElementById('bookRating').innerHTML = `<strong>⭐ Rating:</strong> <span class="rating-bar"><span style="width: ${parseFloat(post.rating) * 10}%"></span></span> ${post.rating}/10`;
 
                         // Render review text with proper paragraph formatting
