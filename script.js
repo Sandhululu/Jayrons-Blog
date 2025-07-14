@@ -162,11 +162,14 @@ const debouncedUpdatePosts = debounce((snapshot, blogPostsContainer) => {
       }
   });
 
-  // Show the container after initial content is loaded
+  // Hide loading state and show posts after initial content is loaded
   if (isInitialLoad) {
-      console.log('Initial load complete, showing container.');
+      console.log('Initial load complete, hiding loading state.');
       isInitialLoad = false;
-      blogPostsContainer.hidden = false;
+      const loadingElement = document.getElementById('posts-loading');
+      if (loadingElement) {
+          loadingElement.classList.add('hidden');
+      }
       sortAllPostsByDate();
   } else {
       sortAllPostsByDate();
@@ -207,10 +210,11 @@ function initializePostsListener() {
       return;
   }
 
-  // Hide the blog posts container initially
+  // Show loading state immediately
   const blogPostsContainer = document.getElementById('blog-posts');
-  if (blogPostsContainer) {
-      blogPostsContainer.hidden = true;
+  const loadingElement = document.getElementById('posts-loading');
+  if (blogPostsContainer && loadingElement) {
+      loadingElement.classList.remove('hidden');
   }
 
   try {
@@ -229,14 +233,14 @@ function initializePostsListener() {
           debouncedUpdatePosts(snapshot, blogPostsContainer);
       }, error => {
           console.error('Error loading posts:', error);
-          if (blogPostsContainer) {
-              blogPostsContainer.hidden = false;
+          if (loadingElement) {
+              loadingElement.classList.add('hidden');
           }
       });
   } catch (e) {
       console.error('Error setting up posts listener:', e);
-      if (blogPostsContainer) {
-          blogPostsContainer.hidden = false;
+      if (loadingElement) {
+          loadingElement.classList.add('hidden');
       }
   }
 }
@@ -1331,12 +1335,6 @@ document.addEventListener('DOMContentLoaded', async function () {
 
   // Initialize posts listener to load Firestore posts
   initializePostsListener();
-
-  // Hide the blog posts container initially
-  const blogPostsContainer = document.getElementById('blog-posts');
-  if (blogPostsContainer) {
-      blogPostsContainer.hidden = true;
-  }
 
     let searchInput = document.getElementById("searchInput");
     let ratingFilter = document.getElementById("ratingFilter");

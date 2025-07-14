@@ -113,7 +113,13 @@
       </div>
     </section>
 
-    <main id="blog-posts" hidden>
+    <main id="blog-posts">
+        <!-- Loading state -->
+        <div id="posts-loading">
+            <div class="loading-text">Loading posts...</div>
+            <div class="loading-spinner"></div>
+        </div>
+        
         <!-- Dynamic posts only: static posts removed -->
         <section class="restaurant-list-section" id="main-restaurant-list-section" style="display: none;">
           <button id="addMainRestaurantBtn" class="wishlist-action-btn" style="margin-bottom: 18px;">Add Restaurant</button>
