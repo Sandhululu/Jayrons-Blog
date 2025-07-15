@@ -261,6 +261,9 @@ function filterPosts(category) {
   let mainRestaurantListSection = document.getElementById("main-restaurant-list-section");
   const addPostBtn = document.getElementById('openAddPostModalBtn'); // Get the add post button
 
+  // Categories where Add Post button should be visible
+  const showAddPostCategories = ["all", "food", "movies", "tv", "books", "games"];
+
   // Wishlist mode
   if (category === "wishlist") {
       if (wishlistSection) wishlistSection.classList.add("show");
@@ -271,7 +274,7 @@ function filterPosts(category) {
       if (filterSortContainer) filterSortContainer.style.display = "none";
       if (wordCountContainer) wordCountContainer.style.display = "none";
       if (mainRestaurantListSection) mainRestaurantListSection.style.display = "none";
-      if (addPostBtn) addPostBtn.style.display = "none"; // Hide add post button in wishlist
+      if (addPostBtn) addPostBtn.style.display = "none";
       return;
   } else {
       if (wishlistSection) wishlistSection.classList.remove("show");
@@ -279,7 +282,8 @@ function filterPosts(category) {
       if (ratingFilter) ratingFilter.style.display = "inline-block";
       if (sortFilter) sortFilter.style.display = "inline-block";
       if (filterSortContainer) filterSortContainer.style.display = "block";
-      if (addPostBtn) addPostBtn.style.display = "block"; // Show add post button in main blog view
+      // Only show Add Post button for allowed categories
+      if (addPostBtn) addPostBtn.style.display = showAddPostCategories.includes(category) ? "block" : "none";
   }
 
   // Show/hide word count container based on category
@@ -300,17 +304,17 @@ function filterPosts(category) {
       filterRestaurants();
       if (mainRestaurantListSection) mainRestaurantListSection.style.display = "block";
       posts.forEach(post => post.style.display = "none");
-      if (addPostBtn) addPostBtn.style.display = "none"; // Hide add post button in restaurants
+      if (addPostBtn) addPostBtn.style.display = "none";
   } else {
       restaurantFilters.style.display = "none";
       if (ratingFilter) ratingFilter.style.display = "inline-block";
       if (sortFilter) sortFilter.style.display = "inline-block";
       if (filterSortContainer) filterSortContainer.style.display = "block";
       if (mainRestaurantListSection) mainRestaurantListSection.style.display = "none";
-  posts.forEach(post => {
-      let belongsToCategory = post.classList.contains(category) || category === "all";
+      posts.forEach(post => {
+          let belongsToCategory = post.classList.contains(category) || category === "all";
           post.style.display = belongsToCategory ? "" : "none";
-  });
+      });
       if (category !== "restaurants") filterByRating();
   }
 }
@@ -1333,6 +1337,9 @@ function alphabetizeSelectOptions(selectId, exceptLastValue) {
 document.addEventListener('DOMContentLoaded', async function () {
   console.log(`DEBUG: Consolidated DOMContentLoaded fired. wishlistUserId: ${wishlistUserId}, currentUser: ${currentUser ? currentUser.uid : 'null'}`);
 
+  // Define blogPostsContainer for use throughout this block
+  const blogPostsContainer = document.getElementById('blog-posts');
+
   // Initialize posts listener to load Firestore posts
   initializePostsListener();
 
@@ -1346,9 +1353,22 @@ document.addEventListener('DOMContentLoaded', async function () {
     filterButtons.forEach(button => {
         button.addEventListener("click", function () {
           let category = this.getAttribute("data-category");
+          
+          // Remove active class from all buttons
+          filterButtons.forEach(btn => btn.classList.remove('active'));
+          
+          // Add active class to clicked button
+          this.classList.add('active');
+          
             filterPosts(category);
         });
     });
+
+    // Set "All" button as active by default
+    const allButton = document.querySelector('nav button[data-category="all"]');
+    if (allButton) {
+        allButton.classList.add('active');
+    }
 
   // Search bar event listener
     if (searchInput) searchInput.addEventListener("keyup", searchPosts);
@@ -1761,15 +1781,6 @@ document.addEventListener('DOMContentLoaded', async function () {
           populateMainRestaurantDropdowns();
       });
       observer.observe(mainListSection.querySelector('.restaurant-list'), { childList: true, subtree: true });
-  }
-  // Add load more button to DOM
-  if (blogPostsContainer) {
-      const loadMoreBtn = document.createElement('button');
-      loadMoreBtn.id = 'loadMoreBtn';
-      loadMoreBtn.textContent = 'Load More';
-      loadMoreBtn.style.display = 'none';
-      loadMoreBtn.addEventListener('click', loadMorePosts);
-      blogPostsContainer.parentNode.insertBefore(loadMoreBtn, blogPostsContainer.nextSibling);
   }
   // Only initialize posts listener if it hasn't been initialized yet
   if (!window.postsListenerInitialized) {
